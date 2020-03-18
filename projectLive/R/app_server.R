@@ -4,4 +4,5 @@ app_server <- function(input, output,session) {
   callModule(mod_summary_snapshot_server, "summary_snapshot_ui_1")
   callModule(mod_file_status_server, "file_status_ui_1")
   callModule(mod_study_lead_server, "study_lead_ui")
+  #callModule(mod_analysis_server, "analysis_ui")
 }
