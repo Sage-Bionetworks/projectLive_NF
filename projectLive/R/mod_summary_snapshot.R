@@ -8,7 +8,7 @@
 #' @param output internal
 #' @param session internal
 #'
-#' @rdname mod_file_status
+#' @rdname mod_summary_snapshot
 #'
 #' @keywords internal
 #' @export 
@@ -31,12 +31,38 @@ mod_summary_snapshot_ui <- function(id){
       
     dashboardBody(
       fluidPage(
+        #add analytics
+#         tags$head(includeScript("<!-- Global site tag (gtag.js) - Google Analytics -->
+# <script async src=\"https://www.googletagmanager.com/gtag/js?id=UA-160814003-1\"></script>
+# <script>
+#   window.dataLayer = window.dataLayer || [];
+#   function gtag(){dataLayer.push(arguments);}
+#   gtag('js', new Date());
+# 
+#   gtag('config', 'UA-160814003-1');
+# </script>
+# "),
+                  #includeScript("www/google_analytics.js")),
+        
       box(title = "Funding Partner",
           width = 12,
           solidHeader = T,
           status = "primary",
           shiny::textOutput(ns('funding_agency'))),
       
+      box(title = "Overview",
+          status = "primary",
+          solidHeader = TRUE,
+          width = 12,
+          collapsible = FALSE,
+          fluidRow(
+          shinydashboard::infoBoxOutput(ns('centersBox'), width = 3),
+                        #shinycssloaders::withSpinner(proxy.height = "125px"), ## throws an ui_element error if uncommented
+          shinydashboard::infoBoxOutput(ns('filesBox'), width = 3),
+          shinydashboard::infoBoxOutput(ns('samplesBox'), width = 3),
+          shinydashboard::infoBoxOutput(ns('pubsBox'), width = 3) #,
+                      #shinydashboard::infoBoxOutput("pubsBox", width = 3)
+                    )),
       
       box(title = "Consortium Activity", 
           status = "primary", 
@@ -50,7 +76,6 @@ mod_summary_snapshot_ui <- function(id){
           status = "primary", 
           solidHeader = TRUE,
           width = 12,
-          #height = 6,
           collapsible = FALSE,
           plotly::plotlyOutput(ns('files_per_study'))
       )
@@ -76,6 +101,65 @@ mod_summary_snapshot_server <- function(input, output, session){
   
   output$funding_agency <- shiny::renderText({
     print(glue::glue("You are now viewing studies funded by {input$funder}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
+  })
+  
+  output$centersBox <- shinydashboard::renderInfoBox({
+    data <- as.data.frame(plotdata())
+    
+    centers <- as.numeric(dplyr::n_distinct(data$projectId))
+
+    shinydashboard::infoBox(
+      "Studies",
+      centers,
+      icon = icon("university"), ### changed to studies
+      color = "light-blue",
+      fill = TRUE
+    )
+  })
+  
+  output$filesBox <- shinydashboard::renderInfoBox({
+    data <- as.data.frame(plotdata())
+    files <- dplyr::n_distinct(data$id)
+
+    shinydashboard::infoBox(
+      "Files",
+      files,
+      icon = icon("file"),
+      color = "light-blue",
+      fill = TRUE
+    )
+  })
+  
+  output$samplesBox <- shinydashboard::renderInfoBox({
+    data <- as.data.frame(plotdata())
+    samples <- base::sum(
+      dplyr::n_distinct(data$individualID),
+      # sum(ntap_center_study_summary_df$cellLine),
+      dplyr::n_distinct(data$specimenID)
+    )
+
+    shinydashboard::infoBox(
+      "Samples",
+      samples,
+      icon = icon("tag"),
+      color = "light-blue",
+      fill = TRUE
+    )
+  })
+  # 
+  pubs <- reactive({
+    projectLive::pubs %>%
+      dplyr::filter(fundingAgency == input$funder)
+  })
+  
+  output$pubsBox <- shinydashboard::renderInfoBox({
+    pubdata <- as.data.frame(pubs())
+    
+   pubinfo <- pubdata %>% dplyr::tally()
+    infoBox(
+      "Publications", pubinfo, icon = icon("pencil"),
+      color = "light-blue", fill = TRUE
+    )
   })
   
   output$study_per_consortium <- plotly::renderPlotly({
@@ -139,8 +223,8 @@ mod_summary_snapshot_server <- function(input, output, session){
 }
 
 ## To be copied in the UI
-# mod_file_status_ui("file_status_ui")
+# mod_summary_snapshot_ui("summary_snapshot_ui")
 
 ## To be copied in the server
-# callModule(mod_file_status_server, "file_status_ui")
+# callModule(mod_summary_snapshot_server, "summary_snapshot_ui")
 
