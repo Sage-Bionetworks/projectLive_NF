@@ -51,9 +51,9 @@ mod_study_lead_ui <- function(id){
           width = 12,
           # height = 12,
           collapsible = FALSE,
-          shiny::selectizeInput(ns("studylead"), 
+          shiny::selectInput(ns("studylead"), 
                                 label = "Select a principal investigator", 
-                                choices = sort(unique(projectLive::studies$studyLeads)),
+                                choices = NULL,
                                 selected = "Select an investigator", 
                                 multiple = F),
           plotly::plotlyOutput(ns('anno_status'))
@@ -83,6 +83,12 @@ mod_study_lead_server <- function(input, output, session){
   plotdata2 <- reactive({
     projectLive::files %>% 
       dplyr::filter(fundingAgency == input$funder)
+  })
+  
+  shiny::observeEvent(plotdata1(), {
+    shiny::updateSelectInput(session = session, 
+                             inputId = "studylead", 
+                             choices = sort(unique(as.data.frame(plotdata1())$studyLeads)))
   })
   
   anno_data <- reactive({
@@ -140,13 +146,12 @@ mod_study_lead_server <- function(input, output, session){
       facet_grid(. ~ year, scales="free")
   })
   
+  #
+  
   
   output$anno_status <- plotly::renderPlotly({
     
     plot_anno_data <- as.data.frame(anno_data())
-    
-    validate(need(length(plot_anno_data$studyLeads) > 0 , 
-                  "The selected investigator/investigators is/are not funded by the selected funder. Please modify your selections to include an investigator from the above list."))
     
     validate(need(length(plot_anno_data$assay) > 0 , 
                   "The investigator/investigators has/have not uploaded any files yet. Please check back later."))
