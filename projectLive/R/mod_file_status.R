@@ -21,20 +21,34 @@ mod_file_status_ui <- function(id){
   tagList(
     dashboardPage(
       dashboardHeader(disable = T),
-      dashboardSidebar(
-        h3("Funding Partner"),
-        shiny::selectizeInput(ns("funder"), 
-                              label = "Select a funding partner", 
-                              choices = unique(projectLive::studies$fundingAgency),
-                              selected = "NTAP", 
-                              multiple = F)),
+      dashboardSidebar(disable = T),
+      
       dashboardBody(
         fluidPage(
-        box(title = "Funding Partner", 
-            width = 12,
-            solidHeader = T,
-            status = "primary",
-            shiny::textOutput(ns('funding_agency'))),
+          #add analytics
+          #         tags$head(includeScript("<!-- Global site tag (gtag.js) - Google Analytics -->
+          # <script async src=\"https://www.googletagmanager.com/gtag/js?id=UA-160814003-1\"></script>
+          # <script>
+          #   window.dataLayer = window.dataLayer || [];
+          #   function gtag(){dataLayer.push(arguments);}
+          #   gtag('js', new Date());
+          # 
+          #   gtag('config', 'UA-160814003-1');
+          # </script>
+          # "),
+          #includeScript("www/google_analytics.js")),
+          
+          box(title = "Funding Partner",
+              width = 12,
+              solidHeader = T,
+              status = "primary",
+              shiny::selectizeInput(ns("funder"), 
+                                    label = "", 
+                                    choices = unique(projectLive::studies$fundingAgency),
+                                    selected = "NTAP", 
+                                    multiple = F),
+              shiny::textOutput(ns('funding_agency')),
+          ),
         
         
         box(title = "Publication Status", 
@@ -49,7 +63,6 @@ mod_file_status_ui <- function(id){
             status = "primary", 
             solidHeader = TRUE,
             width = 12,
-            #height = 6,
             collapsible = FALSE,
             plotly::plotlyOutput(ns('pub_disease'))
         )
@@ -67,7 +80,6 @@ mod_file_status_ui <- function(id){
 mod_file_status_server <- function(input, output, session){
   ns <- session$ns
   
-  #funder <- funder
   # filter the data
   plotdata <- reactive({
     projectLive::pubs %>% 
@@ -76,9 +88,8 @@ mod_file_status_server <- function(input, output, session){
 
   output$funding_agency <- shiny::renderText({
     
-    #funder <- reactive({funder})
-    
-      print(glue::glue("You are now viewing studies funded by {input$funder}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
+      print(glue::glue("You are now viewing studies funded by {input$funder}. 
+                       Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
 
     
   })
@@ -88,18 +99,19 @@ mod_file_status_server <- function(input, output, session){
     data <- as.data.frame(plotdata())
       #make plot
       ggplot(data, aes(x=year, fill=studyName, color= studyName)) + 
-        geom_histogram( binwidth=0.5, alpha=0.8, position="dodge") +
-        theme(legend.position="right") +
-        scale_fill_manual(values=color_list[[4]])+
-        scale_color_manual(values=color_list[[4]])+
+        geom_histogram( binwidth=0.5, alpha=0.8, position="stack") +
+        viridis::scale_color_viridis(discrete=TRUE) +
+        viridis::scale_fill_viridis(discrete=TRUE) +
         labs(title="", y = "Number of publications") +
-        ylim(0, 5) +
+        ylim(0, 10) +
         theme_bw() +
         theme(legend.text = element_blank(), #element_text(size=8), 
               axis.text.x  = element_text(size=10),
               axis.text.y = element_text(size=10),
               text = element_text(size=10),
-              legend.position="none") 
+              legend.position="none",
+              panel.grid = element_blank(),
+              panel.background = element_rect(fill = "grey95")) 
 
   })
   
@@ -109,10 +121,9 @@ mod_file_status_server <- function(input, output, session){
     data <- as.data.frame(plotdata())
     #make plot
     ggplot(data, aes(x=year, fill=manifestation, color= manifestation)) + 
-      geom_histogram( binwidth=0.5, alpha=0.8, position="dodge") +
-      theme(legend.position="right") +
-      scale_fill_manual(values=color_list[[4]])+
-      scale_color_manual(values=color_list[[4]])+
+      geom_histogram( binwidth=0.5, alpha=0.8, position="stack") +
+      viridis::scale_color_viridis(discrete=TRUE) +
+      viridis::scale_fill_viridis(discrete=TRUE) +
       labs(title="", y = "Number of publications") +
       ylim(0, 5) +
       theme_bw() +
@@ -120,7 +131,9 @@ mod_file_status_server <- function(input, output, session){
             axis.text.x  = element_text(size=10),
             axis.text.y = element_text(size=10),
             text = element_text(size=10),
-            legend.position="none")
+            legend.position="bottom",
+            panel.grid = element_blank(),
+            panel.background = element_rect(fill = "grey95"))
     
   })
   
