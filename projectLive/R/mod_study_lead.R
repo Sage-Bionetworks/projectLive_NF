@@ -8,7 +8,7 @@
 #' @param output internal
 #' @param session internal
 #'
-#' @rdname mod_file_status
+#' @rdname mod_study_lead
 #'
 #' @keywords internal
 #' @export 
@@ -21,20 +21,35 @@ mod_study_lead_ui <- function(id){
   tagList(
     dashboardPage(
     dashboardHeader(disable = T),
-    dashboardSidebar(
-      h3("Funding Partner"),
-      shiny::selectizeInput(ns("funder"), 
-                            label = "Select a funding partner", 
-                            choices = unique(projectLive::studies$fundingAgency),
-                            selected = "NTAP", 
-                            multiple = F)),
+    dashboardSidebar(disable = T),
+    
     dashboardBody(
       fluidPage(
-      box(title = "Funding Partner", 
-          width = 12,
-          solidHeader = T,
-          status = "primary",
-          shiny::textOutput(ns('funding_agency'))),
+        #add analytics
+        #         tags$head(includeScript("<!-- Global site tag (gtag.js) - Google Analytics -->
+        # <script async src=\"https://www.googletagmanager.com/gtag/js?id=UA-160814003-1\"></script>
+        # <script>
+        #   window.dataLayer = window.dataLayer || [];
+        #   function gtag(){dataLayer.push(arguments);}
+        #   gtag('js', new Date());
+        # 
+        #   gtag('config', 'UA-160814003-1');
+        # </script>
+        # "),
+        #includeScript("www/google_analytics.js")),
+        
+        box(title = "Funding Partner",
+            width = 12,
+            solidHeader = T,
+            status = "primary",
+            shiny::selectizeInput(ns("funder"), 
+                                  label = "", 
+                                  choices = unique(projectLive::studies$fundingAgency),
+                                  selected = "NTAP", 
+                                  multiple = F),
+            shiny::textOutput(ns('funding_agency')),
+            #DT::dataTableOutput(ns('study_table'))
+        ),
       
       
       box(title = "Yearly Upload Status", 
@@ -49,13 +64,17 @@ mod_study_lead_ui <- function(id){
           status = "primary", 
           solidHeader = TRUE,
           width = 12,
-          # height = 12,
           collapsible = FALSE,
           shiny::selectInput(ns("studylead"), 
                                 label = "Select a principal investigator", 
                                 choices = NULL,
                                 selected = "Select an investigator", 
                                 multiple = F),
+          # shiny::selectInput(ns("time"), 
+          #                    label = "Select a time window", 
+          #                    choices = c("year", "month"),
+          #                    selected = "year", 
+          #                    multiple = F),
           plotly::plotlyOutput(ns('anno_status'))
       )
       
@@ -95,7 +114,8 @@ mod_study_lead_server <- function(input, output, session){
     data1 <- as.data.frame(plotdata1())
     data2 <- as.data.frame(plotdata2())
     data2 <- data2 %>% 
-      mutate(year= lubridate::year(data2$createdOn)) 
+      mutate(year= lubridate::year(data2$createdOn)) %>% 
+      mutate(month= lubridate::month(data2$createdOn)) 
     
     data <- merge(data1[,c("studyLeads", "studyName")], data2, by= "studyName")
     
@@ -132,8 +152,8 @@ mod_study_lead_server <- function(input, output, session){
     ggplot(data, aes(x=studyLeads, fill=resourceType, color=resourceType)) + 
       geom_bar(stat= "count", alpha=0.8, position="stack") +
       coord_flip() +
-      scale_fill_manual(values=color_list[[4]])+
-      scale_color_manual(values=color_list[[4]])+
+      viridis::scale_color_viridis(discrete=TRUE) +
+      viridis::scale_fill_viridis(discrete=TRUE) +
       labs(title="", y = "Number of files uploaded") +
       #ylim(0, 5) +
       theme_bw() +
@@ -142,7 +162,9 @@ mod_study_lead_server <- function(input, output, session){
             axis.text.y = element_text(size=10),
             text = element_text(size=10),
             strip.text.x = element_text(size = 10),
-            legend.position="none") +
+            legend.position="right",
+            panel.grid.major.y = element_blank(),
+            panel.background = element_rect(fill = "grey95")) +
       facet_grid(. ~ year, scales="free")
   })
   
@@ -156,13 +178,12 @@ mod_study_lead_server <- function(input, output, session){
     validate(need(length(plot_anno_data$assay) > 0 , 
                   "The investigator/investigators has/have not uploaded any files yet. Please check back later."))
     
-    
     #make plot
     ggplot(plot_anno_data, aes(x=studyLeads, fill=assay, color=assay)) + 
       geom_bar(stat= "count", alpha=0.8, position="stack") +
       coord_flip() +
-      scale_fill_manual(values=color_list[[4]])+
-      scale_color_manual(values=color_list[[4]])+
+      viridis::scale_color_viridis(discrete=TRUE) +
+      viridis::scale_fill_viridis(discrete=TRUE) +
       labs(title="", y = "Number of files annotated") +
       #ylim(0, 5) +
       theme_bw() +
@@ -171,7 +192,9 @@ mod_study_lead_server <- function(input, output, session){
             axis.text.y = element_text(size=10),
             text = element_text(size=10),
             strip.text.x = element_text(size = 10),
-            legend.position="none") +
+            legend.position="right",
+            panel.grid.major.y = element_blank(),
+            panel.background = element_rect(fill = "grey95")) +
       facet_grid(. ~ year, scales="fixed")
     
   })

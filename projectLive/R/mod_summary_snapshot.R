@@ -21,34 +21,36 @@ mod_summary_snapshot_ui <- function(id){
   tagList(
     dashboardPage(
       dashboardHeader(disable = T),
-      dashboardSidebar(
-        h3("Funding Partner"),
-        shiny::selectizeInput(ns("funder"), 
-                              label = "Select a funding partner", 
-                              choices = unique(projectLive::studies$fundingAgency),
-                              selected = "NTAP", 
-                              multiple = F)),
+      dashboardSidebar(disable = T),
       
-    dashboardBody(
-      fluidPage(
-        #add analytics
-#         tags$head(includeScript("<!-- Global site tag (gtag.js) - Google Analytics -->
-# <script async src=\"https://www.googletagmanager.com/gtag/js?id=UA-160814003-1\"></script>
-# <script>
-#   window.dataLayer = window.dataLayer || [];
-#   function gtag(){dataLayer.push(arguments);}
-#   gtag('js', new Date());
-# 
-#   gtag('config', 'UA-160814003-1');
-# </script>
-# "),
-                  #includeScript("www/google_analytics.js")),
-        
-      box(title = "Funding Partner",
-          width = 12,
-          solidHeader = T,
-          status = "primary",
-          shiny::textOutput(ns('funding_agency'))),
+      dashboardBody(
+        fluidPage(
+          #add analytics
+          #         tags$head(includeScript("<!-- Global site tag (gtag.js) - Google Analytics -->
+          # <script async src=\"https://www.googletagmanager.com/gtag/js?id=UA-160814003-1\"></script>
+          # <script>
+          #   window.dataLayer = window.dataLayer || [];
+          #   function gtag(){dataLayer.push(arguments);}
+          #   gtag('js', new Date());
+          # 
+          #   gtag('config', 'UA-160814003-1');
+          # </script>
+          # "),
+          #includeScript("www/google_analytics.js")),
+  
+        box(title = "Funding Partner",
+              width = 12,
+              solidHeader = T,
+              status = "primary",
+              shiny::selectizeInput(ns("funder"), 
+                                    label = "", 
+                                    choices = unique(projectLive::studies$fundingAgency),
+                                    selected = "NTAP", 
+                                    multiple = F),
+              shiny::textOutput(ns('funding_agency')),
+              #DT::dataTableOutput(ns('study_table'))
+          ),
+          
       
       box(title = "Overview",
           status = "primary",
@@ -72,7 +74,7 @@ mod_summary_snapshot_ui <- function(id){
           plotly::plotlyOutput(ns('study_per_consortium'))
       ),
       
-      box(title = "Study Activity", 
+      box(title = "Resources Generated", 
           status = "primary", 
           solidHeader = TRUE,
           width = 12,
@@ -90,9 +92,9 @@ mod_summary_snapshot_ui <- function(id){
 #' @export
 #' @keywords internal
 
-mod_summary_snapshot_server <- function(input, output, session){
+mod_summary_snapshot_server <- function(input, output, session, funding_partner){
   ns <- session$ns
-
+  
   # filter the data
   plotdata <- reactive({
     projectLive::files %>% 
@@ -125,7 +127,7 @@ mod_summary_snapshot_server <- function(input, output, session){
       "Files",
       files,
       icon = icon("file"),
-      color = "light-blue",
+      color = "light-blue", #Valid colors are: red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, orange, fuchsia, purple, maroon, black.
       fill = TRUE
     )
   })
@@ -134,7 +136,6 @@ mod_summary_snapshot_server <- function(input, output, session){
     data <- as.data.frame(plotdata())
     samples <- base::sum(
       dplyr::n_distinct(data$individualID),
-      # sum(ntap_center_study_summary_df$cellLine),
       dplyr::n_distinct(data$specimenID)
     )
 
@@ -177,8 +178,8 @@ mod_summary_snapshot_server <- function(input, output, session){
     ggplot(data, aes(x=consortium, y= studyName, fill=accessType, color= accessType)) +
       geom_bar(stat="identity", position= "stack", alpha=0.8, na.rm=TRUE) +
       coord_flip() +
-      scale_fill_manual(values=color_list[[4]])+
-      scale_color_manual(values=color_list[[4]])+
+      viridis::scale_color_viridis(discrete=TRUE) +
+      viridis::scale_fill_viridis(discrete=TRUE) +
       labs(title="", y = "Number of studies per Consortium") +
       #ylim(0, 5) +
       theme_bw() +
@@ -187,7 +188,9 @@ mod_summary_snapshot_server <- function(input, output, session){
             axis.text.y = element_text(size=10),
             text = element_text(size=10),
             strip.text.x = element_text(size = 10),
-            legend.position="none") +
+            legend.position="right",
+            panel.grid.major.y = element_blank(),
+            panel.background = element_rect(fill = "grey95")) +
     facet_grid(.~ year)
   })
   
@@ -200,13 +203,16 @@ mod_summary_snapshot_server <- function(input, output, session){
     data$studyName[is.na(data$studyName) == TRUE] <- "Not Annotated"
     data$consortium[is.na(data$consortium) == TRUE] <- "Not Applicable"
     data$assay[is.na(data$assay) == TRUE] <- "Not Annotated"
+    data$dataType[data$dataType == "drugScreen"] <- "drugScreening"
+    data$dataType[data$dataType == "drugCombinationScreen"] <- "drugScreening"
+    data$dataType[!data$dataType %in% c("immunofluorescence", "genomicVariants", "geneExpression", "drugScreening", "cellularPhysiology", "chromatinActivity")] <- "Other"
     
     #make plot
     ggplot(data, aes(x=dataType, fill=studyName, color= studyName)) + 
-      geom_bar(stat="count", position= "stack", alpha=0.8, na.rm=TRUE) +
+      geom_bar(stat="count", position= "stack", alpha=1.0, na.rm=TRUE) +
       coord_flip() +
-      scale_fill_manual(values=color_list[[4]])+
-      scale_color_manual(values=color_list[[4]])+
+      viridis::scale_color_viridis(discrete=TRUE) +
+      viridis::scale_fill_viridis(discrete=TRUE) +
       labs(title="", y = "Number of files per study") +
       #ylim(0, 5) +
       theme_bw() +
@@ -215,7 +221,9 @@ mod_summary_snapshot_server <- function(input, output, session){
             axis.text.y = element_text(size=10),
             text = element_text(size=10),
             strip.text.x = element_text(size = 10),
-            legend.position="none") +
+            legend.position="none",
+            panel.grid.major.y = element_blank(),
+            panel.background = element_rect(fill = "grey95")) +
       facet_grid(. ~ year, scales="free")
     
   })
