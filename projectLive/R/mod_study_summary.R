@@ -136,37 +136,65 @@ mod_study_summary_server <- function(input, output, session){
       dplyr::filter(fundingAgency == input$funder)
   })
   
-  output$funding_agency <- shiny::renderText({
-    print(glue::glue("You are now viewing studies funded by {input$funder}. Please select a study from the table below to view the details."))
-  })
-  
-  output$study_table <- DT::renderDataTable({
-    
-    data1 <- as.data.frame(plotdata1())
-    data2 <- as.data.frame(plotdata2())
-    data3 <- as.data.frame(plotdata3()) 
+  merged_dataset <- reactive({
+    data1 <- base::as.data.frame(plotdata1())
+    data2 <- base::as.data.frame(plotdata2())
+    data3 <- base::as.data.frame(plotdata3()) 
     data2 <- data2 %>%
       mutate(year= lubridate::year(data2$createdOn)) %>% 
-      mutate(month= lubridate::month(data2$createdOn,label = TRUE, abbr = FALSE))
+      mutate(month= lubridate::month(data2$createdOn,label = TRUE, abbr = TRUE))
     
-    data <- merge(data1[,c("studyName", "studyStatus", "dataStatus", "studyLeads", "diseaseFocus")], data2, by= "studyName")
+    data <- merge(data1[,c("studyName", "studyStatus", "dataStatus", "studyLeads", "diseaseFocus", "summary", "consortium")], data2, by= "studyName")
     table_data <- merge(data, data3[,c("studyName", "softwareName")], by= "studyName", all.x = TRUE)
-    
-   table_data %>% 
+    table_data
+  })
+  
+  table <- reactive({
+    merged_dataset() %>% 
+      base::as.data.frame() %>% 
       dplyr::group_by(studyName) %>% 
       dplyr::mutate(Individuals= dplyr::n_distinct(individualID),
                     Specimens = dplyr::n_distinct(specimenID),
                     Assays = dplyr::n_distinct(assay),
                     Files = dplyr::n_distinct(id),
                     Tools = dplyr::n_distinct(softwareName)) %>% 
-      dplyr::select(studyName, studyStatus, dataStatus, diseaseFocus, Individuals, Specimens, Assays, Files, Tools) %>% 
+      dplyr::select(studyName, studyLeads, studyStatus, dataStatus, diseaseFocus, Individuals, Specimens, Assays, Files, Tools) %>% 
       dplyr::ungroup() %>% 
       base::unique()
+  })
+  
+  ##start making outputs
+  output$funding_agency <- shiny::renderText({
+    print(glue::glue("You are now viewing studies funded by {input$funder}. Please select a study from the table below to view the details."))
+  })
+  
+  output$study_table <- DT::renderDataTable({
+    
+    base::as.data.frame(table())
       
   }, server = TRUE, selection = 'single')
   
   
   shiny::observeEvent(input$study_table_rows_selected, {
+    
+    
+    #Remind user of selected studyName 
+    output$study <- shinydashboard::renderInfoBox({
+      #Extract the index of the row that was clicked by user
+      selected_study <- input$study_table_rows_selected
+      
+      #Extract the studyName in the clicked row
+      selected_data <- table()[selected_study, ]
+      selected_studyName <- selected_data$studyName
+      
+      shinydashboard::infoBox(
+        "You have selected",
+        selected_studyName,
+        icon = icon("file"),
+        color = "light-blue", #Valid colors are: red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, orange, fuchsia, purple, maroon, black.
+        fill = FALSE
+      )
+    })
     
     output$study_data <- plotly::renderPlotly({
       
@@ -174,17 +202,12 @@ mod_study_summary_server <- function(input, output, session){
       selected_study <- input$study_table_rows_selected
       
       #Extract the studyName in the clicked row
-      selected_data <- plotdata1()[selected_study, ]
+      selected_data <- table()[selected_study, ]
       selected_studyName <- selected_data$studyName
       
-      #Prep the files and studies df to get info
-      data1 <- as.data.frame(plotdata1())
-      data2 <- as.data.frame(plotdata2())
-      data2 <- data2 %>%
-        mutate(year= lubridate::year(data2$createdOn)) %>% 
-        mutate(month= lubridate::month(data2$createdOn,label = TRUE, abbr = FALSE))
-      data <- merge(data1[,c("studyLeads", "studyName")], data2, by= "studyName")
-      data <- data %>%
+      #Make the dataframe
+      data <- merged_dataset() %>%
+        base::as.data.frame() %>% 
         dplyr::filter(studyName == selected_studyName) %>% 
         dplyr::add_count(assay, name = "Assays_used") %>% 
         dplyr::add_count(resourceType, name = "Resource_added") %>% 
@@ -285,50 +308,25 @@ mod_study_summary_server <- function(input, output, session){
       
     })
     
+    
     output$study_timeline <- plotly::renderPlotly({
       
       #Extract the index of the row that was clicked by user
       selected_study <- input$study_table_rows_selected
       
       #Extract the studyName in the clicked row
-      selected_data <- plotdata1()[selected_study, ]
+      selected_data <- table()[selected_study, ]
       selected_studyName <- selected_data$studyName
       
-      #Prep the files and studies df to get info
-      data1 <- as.data.frame(plotdata1())
-      data2 <- as.data.frame(plotdata2())
-      data2 <- data2 %>%
-        mutate(year= lubridate::year(data2$createdOn)) %>% 
-        mutate(month= lubridate::month(data2$createdOn,label = TRUE, abbr = FALSE))
-      data <- merge(data1[,c("studyLeads", "studyName")], data2, by= "studyName")
-      data <- data %>%
+      #Selected Study
+      data <- merged_dataset() %>%
+        base::as.data.frame() %>% 
         dplyr::filter(studyName == selected_studyName)
-      
-      #Remind user of selected studyName 
-      output$study <- shinydashboard::renderInfoBox({
-        selected_data <- plotdata1()[selected_study, ]
-        selected_studyName <- selected_data$studyName
-        
-        shinydashboard::infoBox(
-          "You have selected",
-          selected_studyName,
-          icon = icon("file"),
-          color = "light-blue", #Valid colors are: red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, orange, fuchsia, purple, maroon, black.
-          fill = FALSE
-        )
-      })
       
       #Catch errors where no files are present
       validate(need(length(data$resourceType) > 0 , 
                     "The investigator/investigators has/have not uploaded any files yet. Please check back later."))
       
-      #populate the choose menu
-      # shiny::observeEvent(data(), {
-      #   shiny::updateSelectInput(session = session, 
-      #                            inputId = "variable", 
-      #                            choices = c("resourceType", "tumorType", "assay"))
-      # })
-
       #Plot the results
       ggplot(data, aes(x=studyName, fill=resourceType, color=resourceType)) +
         geom_bar(stat= "count", alpha=0.8, position="stack") +
@@ -356,13 +354,14 @@ mod_study_summary_server <- function(input, output, session){
       selected_study <- input$study_table_rows_selected
       
       #Extract the studyName in the clicked row
-      selected_data <- plotdata1()[selected_study, ]
+      selected_data <- table()[selected_study, ]
       selected_studyName <- selected_data$studyName
       
-      center_data_df <- selected_data %>%
+      center_data_df <- merged_dataset() %>%
         base::as.data.frame() %>% 
         dplyr::filter(studyName == selected_studyName) %>%
-        dplyr::select(studyId, studyStatus, dataStatus, summary, diseaseFocus) %>%
+        dplyr::select(projectId, studyStatus, dataStatus, summary, diseaseFocus) %>%
+        base::unique() %>% 
         tidyr::gather(field, val) %>%
         dplyr::mutate(field = stringr::str_to_title(field),
                       field = stringr::str_c("<b>", field, "</b>")
