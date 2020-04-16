@@ -102,7 +102,7 @@ mod_summary_snapshot_server <- function(input, output, session, funding_partner)
   })
   
   output$funding_agency <- shiny::renderText({
-    print(glue::glue("You are now viewing studies funded by {funding_partner()}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
+    print(glue::glue("You are now viewing studies funded by {input$funder}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
   })
   
   output$centersBox <- shinydashboard::renderInfoBox({
