@@ -17,4 +17,4 @@ tools <- synapser::synTableQuery(glue::glue("SELECT '{paste(select_colnames,coll
 #                                  'studyId','studyName', 'fundingAgency', 'contact', 'type', 'subtype', 
 #                                  'diseaseFocus', 'manifestation','name' FROM syn16859448")$asDataFrame()
 
-usethis::use_data(tools)
+usethis::use_data(tools, overwrite = TRUE)
