@@ -148,6 +148,9 @@ mod_study_lead_server <- function(input, output, session){
     data$consortium[is.na(data$consortium) == TRUE] <- "Not Applicable"
     data$assay[is.na(data$assay) == TRUE] <- "Not Annotated"
     
+    validate(need(length(data$assay) > 0 , 
+                  "The investigators have not uploaded any files yet. Please check back later."))
+    
     #make plot
     ggplot(data, aes(x=studyLeads, fill=resourceType, color=resourceType)) + 
       geom_bar(stat= "count", alpha=0.8, position="stack") +

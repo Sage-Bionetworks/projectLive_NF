@@ -17,5 +17,5 @@ files <- synapser::synTableQuery(glue::glue("SELECT '{paste(select_colnames,coll
 #files <- synapser::synTableQuery("SELECT * FROM syn16858331")$asDataFrame()
 
 #load("data-raw/pubs.RData")
-usethis::use_data(files)
+usethis::use_data(files, overwrite = TRUE)
 
