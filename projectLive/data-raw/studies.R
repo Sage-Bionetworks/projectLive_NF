@@ -21,4 +21,4 @@ studies <- synapser::synTableQuery(glue::glue("SELECT '{paste(select_colnames,co
 #                                    'relatedStudies', 'institutions' FROM syn16787123")$asDataFrame()
 
 #load("data-raw/pubs.RData")
-usethis::use_data(studies)
+usethis::use_data(studies, overwrite = TRUE)

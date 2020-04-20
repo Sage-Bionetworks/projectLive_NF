@@ -22,4 +22,4 @@ pubs <- synapser::synTableQuery(glue::glue("SELECT '{paste(select_colnames,colla
 names(pubs) <- gsub("_depr","",names(pubs),ignore.case=T)
 
 #load("data-raw/pubs.RData")
-usethis::use_data(pubs)
+usethis::use_data(pubs, overwrite = TRUE)
