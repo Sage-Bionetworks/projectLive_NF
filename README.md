@@ -1,2 +1,2 @@
 # projectLive
-Live view of projects of funding partners
+Track the impact of our funding partners in real time
