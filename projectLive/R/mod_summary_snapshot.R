@@ -174,6 +174,10 @@ mod_summary_snapshot_server <- function(input, output, session, funding_partner)
     data$assay[is.na(data$assay) == TRUE] <- "Not Annotated"
     data$accessType[is.na(data$accessType) == TRUE] <- "Not Annotated"
     
+    #Catch errors where no files are present
+    validate(need(length(data$resourceType) > 0 , 
+                  "The investigator/investigators has/have not uploaded any files yet. Please check back later."))
+    
     #make plot
     ggplot(data, aes(x=consortium, y= studyName, fill=accessType, color= accessType)) +
       geom_bar(stat="identity", position= "stack", alpha=0.8, na.rm=TRUE) +
@@ -206,6 +210,10 @@ mod_summary_snapshot_server <- function(input, output, session, funding_partner)
     data$dataType[data$dataType == "drugScreen"] <- "drugScreening"
     data$dataType[data$dataType == "drugCombinationScreen"] <- "drugScreening"
     data$dataType[!data$dataType %in% c("immunofluorescence", "genomicVariants", "geneExpression", "drugScreening", "cellularPhysiology", "chromatinActivity")] <- "Other"
+    
+    #Catch errors where no files are present
+    validate(need(length(data$resourceType) > 0 , 
+                  "The investigator/investigators has/have not uploaded any files yet. Please check back later."))
     
     #make plot
     ggplot(data, aes(x=dataType, fill=studyName, color= studyName)) + 
