@@ -9,7 +9,7 @@
     ]
   },
   "Bioconductor": {
-    "Version": "3.9"
+    "Version": "3.10"
   },
   "Packages": {
     "AnnotationDbi": {
