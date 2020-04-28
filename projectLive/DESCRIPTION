@@ -34,7 +34,8 @@ Imports:
     wesanderson,
     RColorBrewer,
     shinythemes,
-    viridis
+    viridis,
+    digest
 RoxygenNote: 7.1.0
 Suggests: 
     testthat (>= 2.1.0),
@@ -43,3 +44,4 @@ Suggests:
 VignetteBuilder: knitr
 #URL: https://github.com/jaybee84/projectLive
 #BugReports: https://github.com/jaybee84/projectLive/issues
+Additional_repositories: http://ran.synapse.org
