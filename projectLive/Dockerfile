@@ -5,8 +5,15 @@ RUN apt-get update && apt-get install -y \
         pandoc \
         python3 \
         python3-pip \
-        libssl-dev \
-        libffi-dev 
+        #synapser dependencies
+        libssl-dev \  
+        libffi-dev \ 
+        dpkg-dev \ 
+        zlib1g-dev \ 
+        curl \ 
+        libcurl4-openssl-dev \
+        #xml2 dependency
+        libxml2-dev
         
 # Add app to docker
 RUN mkdir /root/projectLive/
