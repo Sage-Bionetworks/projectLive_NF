@@ -2,7 +2,7 @@
   options(
     repos = c(
       CRAN = "https://cran.rstudio.com/",
-      Sage = "http://ran.synapse.org"
+      SAGE = "http://ran.synapse.org"
     )
   )
 }
