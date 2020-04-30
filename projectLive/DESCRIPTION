@@ -43,5 +43,5 @@ Suggests:
     rmarkdown
 VignetteBuilder: knitr
 #URL: https://github.com/jaybee84/projectLive
-#BugReports: https://github.com/jaybee84/projectLive/issues
+#BugReports: https://github.com/jaybee84/projectLive/issues 
 Additional_repositories: http://ran.synapse.org
