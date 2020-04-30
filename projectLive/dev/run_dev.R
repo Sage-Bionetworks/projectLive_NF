@@ -10,5 +10,3 @@ golem::document_and_reload()
 
 # Run the application
 projectLive::run_app()
-
-
