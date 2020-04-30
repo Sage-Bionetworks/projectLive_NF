@@ -20,6 +20,3 @@ RUN R -e 'renv::restore()'
 
 EXPOSE 80
 CMD R -e "options('shiny.port'=80,shiny.host='0.0.0.0');projectLive::run_app()"
-
-#EXPOSE 3838
-#CMD ["R", "-e", "shiny::runApp('projectLive')"]
