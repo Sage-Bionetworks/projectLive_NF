@@ -1,25 +1,26 @@
 ## code to prepare `DATASET` dataset goes here
 #
-library(synapser)
+library(reticulate)
 library(purrr)
 library(glue)
 library(dplyr)
 
-synapser::synLogin()
+# use your own condaenv here!!!!!
+# reticulate::use_condaenv(
+#   condaenv = "py37b",
+#   required = TRUE,
+#   conda = "/home/aelamb/anaconda3/condabin/conda"
+# )
 
-#select columns from a synTable that are not STRING_LISTs
+synapseclient <- reticulate::import("synapseclient")
+syntab <- reticulate::import("synapseclient.table")
+syn <- synapseclient$Synapse()
+syn$login()
+
 synid <- "syn16857542"
-columns <- as.list(synapser::synGetTableColumns(glue::glue("{synid}")))
-select_cols <- columns %>% purrr::keep(function(x) !x$columnType == "STRING_LIST")
-select_colnames <- base::unlist(base::lapply(select_cols, '[[', "name"))
-pubs <- synapser::synTableQuery(glue::glue("SELECT '{paste(select_colnames,collapse=\"','\")}' FROM {synid}"))$asDataFrame()
+pubs <- syn$tableQuery(glue::glue("SELECT * FROM {synid}")) %>% 
+  purrr::pluck("filepath") %>% 
+  readr::read_csv(.) %>% 
+  dplyr::select(!dplyr::contains("depr"))
 
-# pubs <- synapser::synTableQuery("SELECT 'studyId', 'studyName', 'fundingAgency_depr', 'doi', 'diseaseFocus',
-#                                 'featured', 'journal', 'title', 'author', 'year', 
-#                                 'pmid', 'manifestation_depr' FROM syn16857542")$asDataFrame()
-
-#get rid of "_depr" from colnames
-names(pubs) <- gsub("_depr","",names(pubs),ignore.case=T)
-
-#load("data-raw/pubs.RData")
 usethis::use_data(pubs, overwrite = TRUE)
