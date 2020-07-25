@@ -82,6 +82,8 @@ mod_file_status_server <- function(input, output, session){
   
   # filter the data
   plotdata <- reactive({
+    print(input$funder)
+    print(projectLive::pubs)
     projectLive::pubs %>% 
       dplyr::filter(fundingAgency == input$funder)
   })
@@ -95,30 +97,36 @@ mod_file_status_server <- function(input, output, session){
   })
   
   output$pub_status <- plotly::renderPlotly({
-      
-    data <- as.data.frame(plotdata())
+    
+    data <- plotdata() %>% 
+      dplyr::select(year, studyName) %>% 
+      tidyr::unnest(cols = studyName) %>% 
+      print()
       #make plot
-      ggplot(data, aes(x=year, fill=studyName, color= studyName)) + 
-        geom_histogram( binwidth=0.5, alpha=0.8, position="stack") +
-        viridis::scale_color_viridis(discrete=TRUE) +
-        viridis::scale_fill_viridis(discrete=TRUE) +
-        labs(title="", y = "Number of publications") +
-        ylim(0, 10) +
-        theme_bw() +
-        theme(legend.text = element_blank(), #element_text(size=8), 
-              axis.text.x  = element_text(size=10),
-              axis.text.y = element_text(size=10),
-              text = element_text(size=10),
-              legend.position="none",
-              panel.grid = element_blank(),
-              panel.background = element_rect(fill = "grey95")) 
+    ggplot(data, aes(x=year, fill=studyName, color= studyName)) + 
+      geom_histogram( binwidth=0.5, alpha=0.8, position="stack") +
+      viridis::scale_color_viridis(discrete=TRUE) +
+      viridis::scale_fill_viridis(discrete=TRUE) +
+      labs(title="", y = "Number of publications") +
+      ylim(0, 10) +
+      theme_bw() +
+      theme(legend.text = element_blank(), #element_text(size=8), 
+            axis.text.x  = element_text(size=10),
+            axis.text.y = element_text(size=10),
+            text = element_text(size=10),
+            legend.position="none",
+            panel.grid = element_blank(),
+            panel.background = element_rect(fill = "grey95")) 
 
   })
   
   
   output$pub_disease <- plotly::renderPlotly({
     
-    data <- as.data.frame(plotdata())
+    data <- plotdata() %>% 
+      dplyr::select(year, manifestation) %>% 
+      tidyr::unnest(cols = manifestation) %>% 
+      print()
     #make plot
     ggplot(data, aes(x=year, fill=manifestation, color= manifestation)) + 
       geom_histogram( binwidth=0.5, alpha=0.8, position="stack") +
