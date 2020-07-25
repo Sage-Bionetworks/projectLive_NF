@@ -98,7 +98,8 @@ mod_file_status_server <- function(input, output, session){
     
     data <- plotdata() %>% 
       dplyr::select(year, studyName) %>% 
-      tidyr::unnest(cols = studyName) 
+      dplyr::mutate(studyName = purrr::map_chr(studyName, stringr::str_c, collapse = ";")) %>% 
+      print()
       #make plot
     ggplot(data, aes(x=year, fill=studyName, color= studyName)) + 
       geom_histogram( binwidth=0.5, alpha=0.8, position="stack") +
@@ -122,7 +123,8 @@ mod_file_status_server <- function(input, output, session){
     
     data <- plotdata() %>% 
       dplyr::select(year, manifestation) %>% 
-      tidyr::unnest(cols = manifestation) 
+      dplyr::mutate(manifestation = purrr::map_chr(manifestation, stringr::str_c, collapse = ";")) %>% 
+      print()
     #make plot
     ggplot(data, aes(x=year, fill=manifestation, color= manifestation)) + 
       geom_histogram( binwidth=0.5, alpha=0.8, position="stack") +
