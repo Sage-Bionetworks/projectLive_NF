@@ -82,10 +82,8 @@ mod_file_status_server <- function(input, output, session){
   
   # filter the data
   plotdata <- reactive({
-    print(input$funder)
-    print(projectLive::pubs)
     projectLive::pubs %>% 
-      dplyr::filter(fundingAgency == input$funder)
+      dplyr::filter(purrr::map_lgl(fundingAgency, ~input$funder %in% .x))
   })
 
   output$funding_agency <- shiny::renderText({
@@ -100,8 +98,7 @@ mod_file_status_server <- function(input, output, session){
     
     data <- plotdata() %>% 
       dplyr::select(year, studyName) %>% 
-      tidyr::unnest(cols = studyName) %>% 
-      print()
+      tidyr::unnest(cols = studyName) 
       #make plot
     ggplot(data, aes(x=year, fill=studyName, color= studyName)) + 
       geom_histogram( binwidth=0.5, alpha=0.8, position="stack") +
@@ -125,8 +122,7 @@ mod_file_status_server <- function(input, output, session){
     
     data <- plotdata() %>% 
       dplyr::select(year, manifestation) %>% 
-      tidyr::unnest(cols = manifestation) %>% 
-      print()
+      tidyr::unnest(cols = manifestation) 
     #make plot
     ggplot(data, aes(x=year, fill=manifestation, color= manifestation)) + 
       geom_histogram( binwidth=0.5, alpha=0.8, position="stack") +
