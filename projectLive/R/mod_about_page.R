@@ -93,7 +93,7 @@ mod_about_page_server <- function(input, output, session){
       "NF-OSI" = c("CTF", "GFF", "NTAP"),
       "CTF" = "CTF",
       "GFF" = "GFF",
-      "NTAP" = "HTAP",
+      "NTAP" = "NTAP",
       "test_team" = "NTAP"
     )
     
