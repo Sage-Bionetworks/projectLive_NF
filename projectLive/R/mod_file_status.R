@@ -83,7 +83,7 @@ mod_file_status_server <- function(input, output, session){
   # filter the data
   plotdata <- reactive({
     projectLive::pubs %>% 
-      dplyr::filter(fundingAgency == input$funder)
+      dplyr::filter(purrr::map_lgl(fundingAgency, ~input$funder %in% .x))
   })
 
   output$funding_agency <- shiny::renderText({
@@ -95,30 +95,42 @@ mod_file_status_server <- function(input, output, session){
   })
   
   output$pub_status <- plotly::renderPlotly({
-      
-    data <- as.data.frame(plotdata())
+    
+    data <- plotdata() %>% 
+      dplyr::select(year, studyName) %>% 
+      dplyr::mutate(
+        studyName = purrr::map_chr(studyName, stringr::str_c, collapse = " | ")
+      ) %>% 
+      dplyr::arrange(year)
+    
       #make plot
-      ggplot(data, aes(x=year, fill=studyName, color= studyName)) + 
-        geom_histogram( binwidth=0.5, alpha=0.8, position="stack") +
-        viridis::scale_color_viridis(discrete=TRUE) +
-        viridis::scale_fill_viridis(discrete=TRUE) +
-        labs(title="", y = "Number of publications") +
-        ylim(0, 10) +
-        theme_bw() +
-        theme(legend.text = element_blank(), #element_text(size=8), 
-              axis.text.x  = element_text(size=10),
-              axis.text.y = element_text(size=10),
-              text = element_text(size=10),
-              legend.position="none",
-              panel.grid = element_blank(),
-              panel.background = element_rect(fill = "grey95")) 
+    ggplot(data, aes(x=year, fill=studyName, color= studyName)) + 
+      geom_histogram( binwidth=0.5, alpha=0.8, position="stack") +
+      viridis::scale_color_viridis(discrete=TRUE) +
+      viridis::scale_fill_viridis(discrete=TRUE) +
+      labs(title="", y = "Number of publications") +
+      ylim(0, 10) +
+      theme_bw() +
+      theme(legend.text = element_blank(), #element_text(size=8), 
+            axis.text.x  = element_text(size=10),
+            axis.text.y = element_text(size=10),
+            text = element_text(size=10),
+            legend.position="none",
+            panel.grid = element_blank(),
+            panel.background = element_rect(fill = "grey95")) 
 
   })
   
   
   output$pub_disease <- plotly::renderPlotly({
     
-    data <- as.data.frame(plotdata())
+    data <- plotdata() %>% 
+      dplyr::select(year, manifestation) %>% 
+      dplyr::mutate(manifestation = purrr::map_chr(
+        manifestation, stringr::str_c, collapse = " | ")
+      ) %>% 
+      dplyr::arrange(year) 
+      
     #make plot
     ggplot(data, aes(x=year, fill=manifestation, color= manifestation)) + 
       geom_histogram( binwidth=0.5, alpha=0.8, position="stack") +
