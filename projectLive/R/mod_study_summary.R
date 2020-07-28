@@ -43,11 +43,6 @@ mod_study_summary_ui <- function(id){
               width = 12,
               solidHeader = T,
               status = "primary",
-              shiny::selectizeInput(ns("funder"), 
-                                    label = "", 
-                                    choices = unique(projectLive::studies$fundingAgency),
-                                    selected = "NTAP", 
-                                    multiple = F),
               shiny::textOutput(ns('funding_agency')),
               ),
           
@@ -117,55 +112,55 @@ mod_study_summary_ui <- function(id){
 #' @export
 #' @keywords internal
 
-mod_study_summary_server <- function(input, output, session){
+mod_study_summary_server <- function(input, output, session, funding_partner){
   ns <- session$ns
   
   # filter the data
   plotdata1 <- reactive({
     projectLive::studies %>% 
-      dplyr::filter(fundingAgency == input$funder) 
+      dplyr::filter(fundingAgency == funding_partner()) 
   })
   
   plotdata2 <- reactive({
     projectLive::files %>% 
-      dplyr::filter(fundingAgency == input$funder)
+      dplyr::filter(fundingAgency == funding_partner())
   })
   
   plotdata3 <- reactive({
     projectLive::tools %>% 
-      dplyr::filter(fundingAgency == input$funder)
+      dplyr::filter(fundingAgency == funding_partner())
   })
   
   merged_dataset <- reactive({
-    data1 <- base::as.data.frame(plotdata1())
-    data2 <- base::as.data.frame(plotdata2())
-    data3 <- base::as.data.frame(plotdata3()) 
-    data2 <- data2 %>%
-      mutate(year= lubridate::year(data2$createdOn)) %>% 
-      mutate(month= lubridate::month(data2$createdOn,label = TRUE, abbr = TRUE))
+    data1 <- plotdata1()
+    data2 <- plotdata2()
+    data3 <- plotdata3()
+    data2 <- data2 %>% 
+      dplyr::mutate(
+        year = synapse_dates_to_year(createdOn),
+        month = synapse_dates_to_month(createdOn)
+      )
     
-    data <- merge(data1[,c("studyName", "studyStatus", "dataStatus", "studyLeads", "diseaseFocus", "summary", "consortium")], data2, by= "studyName")
-    table_data <- merge(data, data3[,c("studyName", "softwareName")], by= "studyName", all.x = TRUE)
+    data <- dplyr::full_join(data1[,c("studyName", "studyStatus", "dataStatus", "studyLeads", "diseaseFocus", "summary", "consortium")], data2, by= "studyName")
+    table_data <- dplyr::left_join(data, data3[,c("studyName", "softwareName")], by= "studyName")
     table_data
   })
   
   table <- reactive({
     merged_dataset() %>% 
-      base::as.data.frame() %>% 
       dplyr::group_by(studyName) %>% 
       dplyr::mutate(Individuals= dplyr::n_distinct(individualID),
                     Specimens = dplyr::n_distinct(specimenID),
                     Assays = dplyr::n_distinct(assay),
                     Files = dplyr::n_distinct(id),
                     Tools = dplyr::n_distinct(softwareName)) %>% 
-      dplyr::select(studyName, studyLeads, studyStatus, dataStatus, diseaseFocus, Individuals, Specimens, Assays, Files, Tools) %>% 
       dplyr::ungroup() %>% 
-      base::unique()
+      dplyr::select(studyName, studyLeads, studyStatus, dataStatus, diseaseFocus, Individuals, Specimens, Assays, Files, Tools)
   })
   
   ##start making outputs
   output$funding_agency <- shiny::renderText({
-    print(glue::glue("You are now viewing studies funded by {input$funder}. Please select a study from the table below to view the details."))
+    print(glue::glue("You are now viewing studies funded by {funding_partner()}. Please select a study from the table below to view the details."))
   })
   
   output$study_table <- DT::renderDataTable({
@@ -197,7 +192,7 @@ mod_study_summary_server <- function(input, output, session){
     })
     
     output$study_data <- plotly::renderPlotly({
-      
+  
       #Extract the index of the row that was clicked by user
       selected_study <- input$study_table_rows_selected
       
@@ -207,7 +202,6 @@ mod_study_summary_server <- function(input, output, session){
       
       #Make the dataframe
       data <- merged_dataset() %>%
-        base::as.data.frame() %>% 
         dplyr::filter(studyName == selected_studyName) %>% 
         dplyr::add_count(assay, name = "Assays_used") %>% 
         dplyr::add_count(resourceType, name = "Resource_added") %>% 
