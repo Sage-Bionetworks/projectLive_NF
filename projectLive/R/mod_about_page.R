@@ -55,11 +55,7 @@ mod_about_page_ui <- function(id){
               width = 12,
               solidHeader = T,
               status = "primary",
-              shiny::selectizeInput(ns("funder"), 
-                                    label = "", 
-                                    choices = unique(projectLive::studies$fundingAgency),
-                                    selected = "NTAP", 
-                                    multiple = F),
+              shiny::uiOutput(ns("agency_selection_ui")),
               shiny::textOutput(ns('funding_agency'))
               #DT::dataTableOutput(ns('study_table'))
           )
@@ -75,6 +71,68 @@ mod_about_page_ui <- function(id){
     
 mod_about_page_server <- function(input, output, session){
   ns <- session$ns
+  
+  current_user_synapse_id <- shiny::reactive({
+    # code to get the synapse id of the current user here
+    # This user has permisions to CTF and NTAP
+    return(273966)
+  })
+  
+  agencies_allowed <- shiny::reactive({
+    synapser::synLogin()
+    
+    team_id_list <- c(
+      "NF-OSI" = 3378999L,
+      "CTF" = 3359657L,
+      "GFF" = 3406072L,
+      "NTAP" = 3331266L,
+      "test_team" = 3413244L
+    )
+    
+    team_permission_list <- list(
+      "NF-OSI" = c("CTF", "GFF", "NTAP"),
+      "CTF" = "CTF",
+      "GFF" = "GFF",
+      "NTAP" = "NTAP",
+      "test_team" = "NTAP"
+    )
+    
+    get_team_members <- function(team_id){
+      team_id %>% 
+        synapser::synGetTeamMembers() %>%
+        synapser::as.list() %>% 
+        purrr::map(., purrr::pluck("member")) %>% 
+        purrr::map_chr(., purrr::pluck("ownerId")) %>% 
+        as.integer()
+    }
+  
+    team_member_list <- purrr::map(
+      team_id_list,
+      get_team_members
+    )
+    
+    teams_user_is_in <-
+      purrr::map_lgl(team_member_list, ~ (current_user_synapse_id() %in% .x)) %>% 
+      purrr::keep(., .) %>% 
+      names()
+    
+    if(length(teams_user_is_in) == 0) return(NULL)
+    
+    allowed_agencies <- team_permission_list %>% 
+      purrr::keep(., . %in% teams_user_is_in) %>% 
+      unlist() %>% 
+      unname() %>% 
+      unique()
+  })
+  
+  output$agency_selection_ui <- shiny::renderUI({
+    shiny::selectizeInput(
+      ns("funder"), 
+      label = "", 
+      choices = agencies_allowed(),
+      multiple = F
+    )
+  })
   
   output$funding_agency <- shiny::renderText({
     print(glue::glue("You are now viewing studies funded by {input$funder}. 

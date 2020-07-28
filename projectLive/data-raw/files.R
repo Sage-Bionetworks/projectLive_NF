@@ -1,21 +1,24 @@
 ## code to prepare `DATASET` dataset goes here
 
-library(synapser)
-library(purrr)
-library(glue)
-library(dplyr)
 
-synapser::synLogin()
+source("get_synapse_tbl.R")
 
-#select columns from a synTable that are not STRING_LISTs
-synid <- "syn16858331"
-columns <- as.list(synapser::synGetTableColumns(glue::glue("{synid}")))
-select_cols <- columns %>% purrr::keep(function(x) !x$columnType == "STRING_LIST")
-select_colnames <- base::unlist(base::lapply(select_cols, '[[', "name"))
-files <- synapser::synTableQuery(glue::glue("SELECT '{paste(select_colnames,collapse=\"','\")}' FROM {synid}"))$asDataFrame()
+library(magrittr)
 
-#files <- synapser::synTableQuery("SELECT * FROM syn16858331")$asDataFrame()
+# use your own condaenv here!!!!!
+reticulate::use_condaenv(
+  condaenv = "py37b",
+  required = TRUE,
+  conda = "/home/aelamb/anaconda3/condabin/conda"
+)
 
-#load("data-raw/pubs.RData")
+synapseclient <- reticulate::import("synapseclient")
+syn <- synapseclient$Synapse()
+syn$login()
+
+files <- get_synapse_tbl(syn, "syn16858331")
+
 usethis::use_data(files, overwrite = TRUE)
+
+
 
