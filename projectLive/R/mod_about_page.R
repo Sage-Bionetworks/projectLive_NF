@@ -72,8 +72,30 @@ mod_about_page_ui <- function(id){
 mod_about_page_server <- function(input, output, session){
   ns <- session$ns
   
+  # Adding in-app authentication
+  session$sendCustomMessage(type = "readCookie", message = list())
+  
+  observeEvent(input$cookie, {
+    
+    syn_login(sessionToken=input$cookie, rememberMe = TRUE)
+    
+    ## Show message if user is not logged in to synapse
+    unauthorized <- observeEvent(input$authorized, {
+      showModal(
+        modalDialog(
+          title = "Not logged in",
+          HTML("You must log in to <a href=\"https://www.synapse.org/\">Synapse</a> to use this application. Please log in, and then refresh this page.")
+        )
+      )
+    })
+    
+    output$title <- renderUI({
+      titlePanel(sprintf("Welcome, %s", syn_getUserProfile()$userName))
+    })
+  
   current_user_synapse_id <- shiny::reactive({
     # code to get the synapse id of the current user here
+    synGetUserProfile()[['ownerId']]
     # This user has permisions to CTF and NTAP
     return(273966)
   })
