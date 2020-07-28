@@ -95,9 +95,10 @@ mod_about_page_server <- function(input, output, session){
   
   current_user_synapse_id <- shiny::reactive({
     # code to get the synapse id of the current user here
-    synGetUserProfile()[['ownerId']]
+    user <- synGetUserProfile()[['ownerId']]
     # This user has permisions to CTF and NTAP
-    return(273966)
+    #return(273966)
+    return(user)
   })
   
   agencies_allowed <- shiny::reactive({
