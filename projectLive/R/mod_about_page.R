@@ -121,15 +121,17 @@ mod_about_page_server <- function(input, output, session){
     allowed_agencies <- team_permission_list %>% 
       purrr::keep(., . %in% teams_user_is_in) %>% 
       unlist() %>% 
-      unname()
+      unname() %>% 
+      unique()
   })
   
   output$agency_selection_ui <- shiny::renderUI({
-    shiny::selectizeInput(ns("funder"), 
-                          label = "", 
-                          choices = agencies_allowed(),
-                          selected = "NTAP", 
-                          multiple = F)
+    shiny::selectizeInput(
+      ns("funder"), 
+      label = "", 
+      choices = agencies_allowed(),
+      multiple = F
+    )
   })
   
   output$funding_agency <- shiny::renderText({
