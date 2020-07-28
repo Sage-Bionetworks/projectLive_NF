@@ -42,11 +42,6 @@ mod_file_status_ui <- function(id){
               width = 12,
               solidHeader = T,
               status = "primary",
-              shiny::selectizeInput(ns("funder"), 
-                                    label = "", 
-                                    choices = unique(projectLive::studies$fundingAgency),
-                                    selected = "NTAP", 
-                                    multiple = F),
               shiny::textOutput(ns('funding_agency')),
           ),
         
@@ -77,18 +72,18 @@ mod_file_status_ui <- function(id){
 #' @export
 #' @keywords internal
 
-mod_file_status_server <- function(input, output, session){
+mod_file_status_server <- function(input, output, session, funding_partner){
   ns <- session$ns
   
   # filter the data
   plotdata <- reactive({
     projectLive::pubs %>% 
-      dplyr::filter(purrr::map_lgl(fundingAgency, ~input$funder %in% .x))
+      dplyr::filter(purrr::map_lgl(fundingAgency, ~funding_partner() %in% .x))
   })
 
   output$funding_agency <- shiny::renderText({
     
-      print(glue::glue("You are now viewing studies funded by {input$funder}. 
+      print(glue::glue("You are now viewing studies funded by {funding_partner()}. 
                        Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
 
     
