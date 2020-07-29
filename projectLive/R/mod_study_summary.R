@@ -139,7 +139,7 @@ mod_study_summary_server <- function(input, output, session, funding_partner){
       dplyr::mutate(
         year = synapse_dates_to_year(createdOn),
         month = synapse_dates_to_month(createdOn)
-      )
+      ) 
     
     data <- dplyr::full_join(data1[,c("studyName", "studyStatus", "dataStatus", "studyLeads", "diseaseFocus", "summary", "consortium")], data2, by= "studyName")
     table_data <- dplyr::left_join(data, data3[,c("studyName", "softwareName")], by= "studyName")
@@ -155,7 +155,8 @@ mod_study_summary_server <- function(input, output, session, funding_partner){
                     Files = dplyr::n_distinct(id),
                     Tools = dplyr::n_distinct(softwareName)) %>% 
       dplyr::ungroup() %>% 
-      dplyr::select(studyName, studyLeads, studyStatus, dataStatus, diseaseFocus, Individuals, Specimens, Assays, Files, Tools)
+      dplyr::select(studyName, studyLeads, studyStatus, dataStatus, diseaseFocus, Individuals, Specimens, Assays, Files, Tools) %>% 
+      dplyr::distinct()
   })
   
   ##start making outputs
