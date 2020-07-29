@@ -1,5 +1,6 @@
 ## code to prepare `DATASET` dataset goes here
-#
+
+source("get_synapse_tbl.R")
 
 library(magrittr)
 
@@ -11,27 +12,9 @@ reticulate::use_condaenv(
 )
 
 synapseclient <- reticulate::import("synapseclient")
-syntab <- reticulate::import("synapseclient.table")
 syn <- synapseclient$Synapse()
 syn$login()
 
-synid <- "syn16857542"
-
-list_columns <- synid %>% 
-  syn$getTableColumns() %>% 
-  reticulate::iterate(.) %>% 
-  purrr::keep(
-    ., 
-    stringr::str_detect(purrr::map_chr(., purrr::pluck, "columnType"), "_LIST")
-  ) %>% 
-  purrr::map_chr(purrr::pluck("name"))
-  
-
-pubs <- syn$tableQuery(glue::glue("SELECT * FROM {synid}")) %>% 
-  purrr::pluck("filepath") %>% 
-  readr::read_csv(.) %>% 
-  dplyr::select(!dplyr::contains("depr")) %>% 
-  dplyr::mutate_at(list_columns, ~stringr::str_remove_all(.x, '[\\"\\[\\]\\\\]')) %>% 
-  dplyr::mutate_at(list_columns, ~stringr::str_split(.x, ", "))
+pubs <- get_synapse_tbl(syn, "syn16857542")
 
 usethis::use_data(pubs, overwrite = TRUE)
