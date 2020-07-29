@@ -43,6 +43,7 @@ synapse_dates_to_month <- function(dates){
   dates %>% 
     magrittr::divide_by(., 1000) %>% 
     purrr::map(as.POSIXct, origin = "1970-01-01") %>% 
-    purrr::map_dbl(lubridate::month, label  = TRUE, abbr = TRUE)
+    purrr::map(lubridate::month, label  = TRUE, abbr = TRUE) %>% 
+    unlist()
 }
 
