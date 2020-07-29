@@ -15,7 +15,7 @@
 #' @importFrom shiny NS tagList 
 #' @import ggplot2
 #' @import plotly
-mod_summary_snapshot_ui <- function(id){
+mod_summary_snapshot_ui <- function(id, funding_partner){
   ns <- NS(id)
   
   tagList(
@@ -42,11 +42,6 @@ mod_summary_snapshot_ui <- function(id){
               width = 12,
               solidHeader = T,
               status = "primary",
-              shiny::selectizeInput(ns("funder"), 
-                                    label = "", 
-                                    choices = unique(projectLive::studies$fundingAgency),
-                                    selected = "NTAP", 
-                                    multiple = F),
               shiny::textOutput(ns('funding_agency')),
               #DT::dataTableOutput(ns('study_table'))
           ),
@@ -98,11 +93,11 @@ mod_summary_snapshot_server <- function(input, output, session, funding_partner)
   # filter the data
   plotdata <- reactive({
     projectLive::files %>% 
-      dplyr::filter(fundingAgency == input$funder) 
+      dplyr::filter(fundingAgency == funding_partner()) 
   })
   
   output$funding_agency <- shiny::renderText({
-    print(glue::glue("You are now viewing studies funded by {input$funder}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
+    print(glue::glue("You are now viewing studies funded by {funding_partner()}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
   })
   
   output$centersBox <- shinydashboard::renderInfoBox({
@@ -150,7 +145,7 @@ mod_summary_snapshot_server <- function(input, output, session, funding_partner)
   # 
   pubs <- reactive({
     projectLive::pubs %>%
-      dplyr::filter(fundingAgency == input$funder)
+      dplyr::filter(fundingAgency == funding_partner())
   })
   
   output$pubsBox <- shinydashboard::renderInfoBox({
@@ -165,9 +160,8 @@ mod_summary_snapshot_server <- function(input, output, session, funding_partner)
   
   output$study_per_consortium <- plotly::renderPlotly({
     
-    data <- as.data.frame(plotdata()) 
-    data <- data %>% 
-      mutate(year= lubridate::year(data$createdOn)) 
+    data <- plotdata() %>%
+      dplyr::mutate("year" = synapse_dates_to_year(createdOn)) 
     
     data$studyName[is.na(data$studyName) == TRUE] <- "Not Annotated"
     data$consortium[is.na(data$consortium) == TRUE] <- "Not Applicable"
@@ -201,9 +195,10 @@ mod_summary_snapshot_server <- function(input, output, session, funding_partner)
   
   output$files_per_study <- plotly::renderPlotly({
     
-    data <- as.data.frame(plotdata())
+    data <- plotdata()
     data <- data %>% 
-      mutate(year= lubridate::year(data$createdOn)) 
+      dplyr::mutate("year" = synapse_dates_to_year(createdOn)) 
+    
     data$studyName[is.na(data$studyName) == TRUE] <- "Not Annotated"
     data$consortium[is.na(data$consortium) == TRUE] <- "Not Applicable"
     data$assay[is.na(data$assay) == TRUE] <- "Not Annotated"

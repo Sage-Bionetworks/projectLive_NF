@@ -1,20 +1,20 @@
 ## code to prepare `DATASET` dataset goes here
 
-library(synapser)
-library(purrr)
-library(glue)
-library(dplyr)
+source("get_synapse_tbl.R")
 
-synapser::synLogin()
+library(magrittr)
 
-synid <- "syn16859448"
-columns <- as.list(synapser::synGetTableColumns(glue::glue("{synid}")))
-select_cols <- columns %>% purrr::keep(function(x) !x$columnType == "STRING_LIST")
-select_colnames <- base::unlist(base::lapply(select_cols, '[[', "name"))
-tools <- synapser::synTableQuery(glue::glue("SELECT '{paste(select_colnames,collapse=\"','\")}' FROM {synid}"))$asDataFrame()
+# use your own condaenv here!!!!!
+reticulate::use_condaenv(
+  condaenv = "py37b",
+  required = TRUE,
+  conda = "/home/aelamb/anaconda3/condabin/conda"
+)
 
-# tools <- synapser::synTableQuery("SELECT 'softwareName', 'summary', 'softwareLink', 'featured', 'link', 
-#                                  'studyId','studyName', 'fundingAgency', 'contact', 'type', 'subtype', 
-#                                  'diseaseFocus', 'manifestation','name' FROM syn16859448")$asDataFrame()
+synapseclient <- reticulate::import("synapseclient")
+syn <- synapseclient$Synapse()
+syn$login()
+
+tools <- get_synapse_tbl(syn, "syn16859448")
 
 usethis::use_data(tools, overwrite = TRUE)
