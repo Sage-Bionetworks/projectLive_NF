@@ -47,7 +47,7 @@ mod_study_lead_ui <- function(id){
         ),
       
       
-      box(title = "Yearly Upload Status", 
+      box(title = "File Upload Timeline", 
           status = "primary", 
           solidHeader = TRUE,
           width = 12,
@@ -55,7 +55,7 @@ mod_study_lead_ui <- function(id){
           plotly::plotlyOutput(ns('upload_status'))
       ),
       
-      box(title = "Yearly Annotation Status", 
+      box(title = "Annotation Activity", 
           status = "primary", 
           solidHeader = TRUE,
           width = 12,
@@ -199,7 +199,7 @@ mod_study_lead_server <- function(input, output, session, funding_partner){
       coord_flip() +
       viridis::scale_color_viridis(discrete=TRUE) +
       viridis::scale_fill_viridis(discrete=TRUE) +
-      labs(title="", y = "Number of files annotated") +
+      labs(title="", y = "Number of experimental data files") +
       #ylim(0, 5) +
       theme_bw() +
       theme(legend.text = element_blank(), #element_text(size=8), 
