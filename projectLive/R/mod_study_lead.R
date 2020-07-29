@@ -127,7 +127,7 @@ mod_study_lead_server <- function(input, output, session, funding_partner){
         "year" = synapse_dates_to_year(createdOn),
         "assay" = dplyr::if_else(
           is.na(assay),
-          "Not Annotated",
+          "Pending Annotation",
           "Annotated"
         ),
         "studyLeads" = purrr::map_chr(
@@ -155,7 +155,7 @@ mod_study_lead_server <- function(input, output, session, funding_partner){
         ),
         "studyName" = dplyr::if_else(
           is.na(studyName),
-          "Not Annotated",
+          "Pending Annotation",
           studyName
         )
       ) %>% 
