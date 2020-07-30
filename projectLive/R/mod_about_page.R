@@ -70,6 +70,8 @@ mod_about_page_ui <- function(id){
 #' @keywords internal
     
 mod_about_page_server <- function(input, output, session){
+  
+  require(magrittr)
   ns <- session$ns
   
   current_user_synapse_id <- shiny::reactive({
@@ -78,20 +80,21 @@ mod_about_page_server <- function(input, output, session){
     return(273966)
   })
   
-  agencies_allowed <- shiny::reactive({
-    
-    require(magrittr)
+  syn <- shiny::reactive({
     # use your own condaenv here!!!!!
-    # reticulate::use_condaenv(
-    #   condaenv = "py37b",
-    #   required = TRUE,
-    #   conda = "/home/aelamb/anaconda3/condabin/conda"
-    # )
-    
+    reticulate::use_condaenv(
+      condaenv = "py37b",
+      required = TRUE,
+      conda = "/home/aelamb/anaconda3/condabin/conda"
+    )
     synapseclient <- reticulate::import("synapseclient")
     syn <- synapseclient$Synapse()
     syn$login()
-    
+    return(syn)
+  })
+  
+  agencies_allowed <- shiny::reactive({
+    req(syn())
     team_id_list <- c(
       "NF-OSI" = 3378999L,
       "CTF" = 3359657L,
@@ -108,9 +111,9 @@ mod_about_page_server <- function(input, output, session){
       "test_team" = "NTAP"
     )
     
-    get_team_members <- function(team_id){
+    get_team_members <- function(team_id, syn){
       team_id %>%
-        syn$getTeamMembers(.) %>% 
+        syn()$getTeamMembers(.) %>% 
         reticulate::iterate(.) %>% 
         purrr::map(., purrr::pluck("member")) %>% 
         purrr::map_chr(., purrr::pluck("ownerId")) %>%
@@ -119,7 +122,8 @@ mod_about_page_server <- function(input, output, session){
   
     team_member_list <- purrr::map(
       team_id_list,
-      get_team_members
+      get_team_members,
+      syn()
     )
     
     teams_user_is_in <-
@@ -162,9 +166,35 @@ mod_about_page_server <- function(input, output, session){
     )
   })
   
+  funder <- shiny::reactive(input$funder)
   
-  funding_partner <- reactive({ input$funder })
-  return(funding_partner)
+  files_table <- shiny::reactive({
+    shiny::req(
+      syn(),
+      !is.null(funder()),
+      length(funder()) == 1
+    )
+    get_synapse_tbl(syn(), "syn16858331", funder()) 
+  })
+  
+  pubs_table <- shiny::reactive({
+    shiny::req(
+      syn(),
+      !is.null(funder()),
+      length(funder()) == 1
+    )
+    get_synapse_tbl(syn(), "syn16857542", funder())
+  })
+  
+  funder_object <- shiny::reactive({
+    list(
+      "funder" = funder(),
+      "files_table" = files_table(),
+      "pubs_table" = pubs_table()
+    )
+  })
+  
+  return(funder_object)
 }
     
 ## To be copied in the UI

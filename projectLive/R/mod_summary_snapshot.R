@@ -15,7 +15,7 @@
 #' @importFrom shiny NS tagList 
 #' @import ggplot2
 #' @import plotly
-mod_summary_snapshot_ui <- function(id, funding_partner){
+mod_summary_snapshot_ui <- function(id){
   ns <- NS(id)
   
   tagList(
@@ -87,21 +87,25 @@ mod_summary_snapshot_ui <- function(id, funding_partner){
 #' @export
 #' @keywords internal
 
-mod_summary_snapshot_server <- function(input, output, session, funding_partner){
+mod_summary_snapshot_server <- function(input, output, session, funder_object){
   ns <- session$ns
   
-  # filter the data
-  plotdata <- reactive({
-    projectLive::files %>% 
-      dplyr::filter(fundingAgency == funding_partner()) 
+  files_table <- shiny::reactive({
+    shiny::req(funder_object())
+    funder_object()$files_table
+  })
+  
+  pubs_table <- shiny::reactive({
+    shiny::req(funder_object())
+    funder_object()$pubs_table
   })
   
   output$funding_agency <- shiny::renderText({
-    print(glue::glue("You are now viewing studies funded by {funding_partner()}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
+    print(glue::glue("You are now viewing studies funded by {funder_object()$funder}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
   })
   
   output$centersBox <- shinydashboard::renderInfoBox({
-    data <- as.data.frame(plotdata())
+    data <- as.data.frame(files_table())
     
     centers <- as.numeric(dplyr::n_distinct(data$projectId))
 
@@ -115,7 +119,7 @@ mod_summary_snapshot_server <- function(input, output, session, funding_partner)
   })
   
   output$filesBox <- shinydashboard::renderInfoBox({
-    data <- as.data.frame(plotdata())
+    data <- as.data.frame(files_table())
     files <- dplyr::n_distinct(data$id)
 
     shinydashboard::infoBox(
@@ -128,7 +132,7 @@ mod_summary_snapshot_server <- function(input, output, session, funding_partner)
   })
   
   output$samplesBox <- shinydashboard::renderInfoBox({
-    data <- as.data.frame(plotdata())
+    data <- as.data.frame(files_table())
     samples <- base::sum(
       dplyr::n_distinct(data$individualID),
       dplyr::n_distinct(data$specimenID)
@@ -142,14 +146,9 @@ mod_summary_snapshot_server <- function(input, output, session, funding_partner)
       fill = TRUE
     )
   })
-  # 
-  pubs <- reactive({
-    projectLive::pubs %>%
-      dplyr::filter(fundingAgency == funding_partner())
-  })
   
   output$pubsBox <- shinydashboard::renderInfoBox({
-    pubdata <- as.data.frame(pubs())
+    pubdata <- as.data.frame(pubs_table())
     
    pubinfo <- pubdata %>% dplyr::tally()
     infoBox(
@@ -160,7 +159,7 @@ mod_summary_snapshot_server <- function(input, output, session, funding_partner)
   
   output$study_per_consortium <- plotly::renderPlotly({
     
-    data <- plotdata() %>%
+    data <- files_table() %>%
       dplyr::mutate("year" = synapse_dates_to_year(createdOn)) 
     
     data$studyName[is.na(data$studyName) == TRUE] <- "Not Annotated"
@@ -195,7 +194,7 @@ mod_summary_snapshot_server <- function(input, output, session, funding_partner)
   
   output$files_per_study <- plotly::renderPlotly({
     
-    data <- plotdata()
+    data <- files_table()
     data <- data %>% 
       dplyr::mutate("year" = synapse_dates_to_year(createdOn)) 
     
