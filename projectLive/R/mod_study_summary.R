@@ -112,29 +112,32 @@ mod_study_summary_ui <- function(id){
 #' @export
 #' @keywords internal
 
-mod_study_summary_server <- function(input, output, session, funding_partner){
+mod_study_summary_server <- function(input, output, session, funder_object){
   ns <- session$ns
   
-  # filter the data
-  plotdata1 <- reactive({
-    projectLive::studies %>% 
-      dplyr::filter(fundingAgency == funding_partner()) 
+  studies_table <- shiny::reactive({
+    shiny::req(funder_object())
+    funder_object()$studies_table
   })
   
-  plotdata2 <- reactive({
-    projectLive::files %>% 
-      dplyr::filter(fundingAgency == funding_partner())
+  files_table <- shiny::reactive({
+    shiny::req(funder_object())
+    funder_object()$files_table
   })
   
-  plotdata3 <- reactive({
-    projectLive::tools %>% 
-      dplyr::filter(fundingAgency == funding_partner())
+  tools_table <- shiny::reactive({
+    shiny::req(funder_object())
+    funder_object()$tools_table
   })
+  
+
+  
+
   
   merged_dataset <- reactive({
-    data1 <- plotdata1()
-    data2 <- plotdata2()
-    data3 <- plotdata3()
+    data1 <- studies_table()
+    data2 <- files_table()
+    data3 <- tools_table()
     data2 <- data2 %>% 
       dplyr::mutate(
         year = synapse_dates_to_year(createdOn),
@@ -161,7 +164,7 @@ mod_study_summary_server <- function(input, output, session, funding_partner){
   
   ##start making outputs
   output$funding_agency <- shiny::renderText({
-    print(glue::glue("You are now viewing studies funded by {funding_partner()}. Please select a study from the table below to view the details."))
+    print(glue::glue("You are now viewing studies funded by {funder_object()$funder}. Please select a study from the table below to view the details."))
   })
   
   output$study_table <- DT::renderDataTable({

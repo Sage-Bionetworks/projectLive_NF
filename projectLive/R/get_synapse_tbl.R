@@ -1,4 +1,4 @@
-get_synapse_tbl <- function(syn, table_id, funding_agency = NULL){
+get_synapse_tbl <- function(syn, table_id, query){
 
   list_columns <- table_id %>% 
     syn$getTableColumns() %>% 
@@ -11,17 +11,8 @@ get_synapse_tbl <- function(syn, table_id, funding_agency = NULL){
     ) %>% 
     purrr::map_chr(purrr::pluck("name")) 
   
-  if(is.null(funding_agency)){
-    query <- glue::glue("SELECT * FROM {table_id}")
-  } else {
-    query <- 
-      glue::glue(
-        "SELECT * FROM {table_id} WHERE fundingAgency = '{funding_agency}'"
-      )
-  }
-
   query %>% 
-    syn$tableQuery() %>% 
+    syn$tableQuery(includeRowIdAndRowVersion = F) %>% 
     purrr::pluck("filepath") %>% 
     readr::read_csv(.) %>% 
     dplyr::select(!dplyr::contains("depr")) %>% 
