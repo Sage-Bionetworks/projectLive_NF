@@ -81,23 +81,23 @@ mod_study_lead_ui <- function(id){
 #' @export
 #' @keywords internal
 
-mod_study_lead_server <- function(input, output, session, funding_partner){
+mod_study_lead_server <- function(input, output, session, funder_object){
   ns <- session$ns
   
   # filter the data
-  plotdata1 <- reactive({
-    projectLive::studies %>% 
-      dplyr::filter(fundingAgency == funding_partner())
+  studies_table <- shiny::reactive({
+    shiny::req(funder_object())
+    funder_object()$studies_table
   })
   
-  plotdata2 <- reactive({
-    projectLive::files %>% 
-      dplyr::filter(fundingAgency == funding_partner())
+  files_table <- shiny::reactive({
+    shiny::req(funder_object())
+    funder_object()$files_table
   })
   
   output$study_lead_ui <- shiny::renderUI({
     choices <- 
-      plotdata1() %>% 
+      studies_table() %>% 
       dplyr::pull("studyLeads") %>% 
       purrr::flatten_chr(.) %>% 
       unique() %>% 
@@ -111,16 +111,16 @@ mod_study_lead_server <- function(input, output, session, funding_partner){
   })
 
   
-  # shiny::observeEvent(plotdata1(), {
+  # shiny::observeEvent(studies_table(), {
   # 
   #   shiny::updateSelectInput(session = session, 
   #                            inputId = "studylead", 
-  #                            choices = sort(unique(as.data.frame(plotdata1())$studyLeads)))
+  #                            choices = sort(unique(as.data.frame(studies_table())$studyLeads)))
   # })
   
   anno_data <- reactive({
-    data1 <- dplyr::select(plotdata1(), "studyLeads", "studyName")
-    plotdata2() %>% 
+    data1 <- dplyr::select(studies_table(), "studyLeads", "studyName")
+    files_table() %>% 
       dplyr::inner_join(data1, by = "studyName") %>% 
       dplyr::filter(purrr::map_lgl(studyLeads, ~input$studylead %in% .x)) %>% 
       dplyr::mutate(
@@ -140,13 +140,13 @@ mod_study_lead_server <- function(input, output, session, funding_partner){
   
   
   output$funding_agency <- shiny::renderText({
-    print(glue::glue("You are now viewing studies funded by {funding_partner()}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
+    print(glue::glue("You are now viewing studies funded by {funder_object()$funder}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
   })
   
   output$upload_status <- plotly::renderPlotly({
     
-    data1 <- dplyr::select(plotdata1(), "studyLeads", "studyName")
-    data <- plotdata2() %>% 
+    data1 <- dplyr::select(studies_table(), "studyLeads", "studyName")
+    data <- files_table() %>% 
       dplyr::inner_join(data1, by = "studyName") %>% 
       dplyr::mutate(
         "year" = synapse_dates_to_year(createdOn),

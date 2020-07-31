@@ -174,7 +174,30 @@ mod_about_page_server <- function(input, output, session){
       !is.null(funder()),
       length(funder()) == 1
     )
-    get_synapse_tbl(syn(), "syn16858331", funder()) 
+    columns <- c(
+      "projectId",
+      "id",
+      "individualID",
+      "specimenID",
+      "createdOn",
+      "studyName",
+      "consortium",
+      "accessType",
+      "dataType",
+      "resourceType",
+      "assay", 
+      "species",
+      "tumorType"
+    )
+    
+    query <- 
+      columns %>% 
+      stringr::str_c(collapse = ",") %>% 
+      glue::glue(
+        "SELECT ", ., " FROM syn16858331 WHERE fundingAgency = '{funder()}'"
+      )
+    get_synapse_tbl(syn(), "syn16858331", query) %>% 
+      dplyr::mutate("year" = synapse_dates_to_year(createdOn)) 
   })
   
   pubs_table <- shiny::reactive({
@@ -183,14 +206,62 @@ mod_about_page_server <- function(input, output, session){
       !is.null(funder()),
       length(funder()) == 1
     )
-    get_synapse_tbl(syn(), "syn16857542", funder())
+    columns <- c(
+      "'year'",
+      "doi",
+      "diseaseFocus",
+      "featured",
+      "journal",
+      "title",
+      "pmid",
+      "author",
+      "manifestation",
+      "fundingAgency",
+      "studyId",
+      "studyName"
+    )
+    query <- 
+      columns %>% 
+      stringr::str_c(collapse = ",") %>% 
+      glue::glue(
+        "SELECT ", ., " FROM syn16857542 WHERE fundingAgency has ('{funder()}')"
+      ) 
+    get_synapse_tbl(syn(), "syn16857542", query)
+  })
+  
+  studies_table <- shiny::reactive({
+    shiny::req(
+      syn(),
+      !is.null(funder()),
+      length(funder()) == 1
+    )
+    query <- 
+      glue::glue(
+        "SELECT * FROM syn16787123 WHERE fundingAgency has ('{funder()}')"
+      ) 
+    get_synapse_tbl(syn(), "syn16787123", query)
+  })
+  
+  tools_table <- shiny::reactive({
+    shiny::req(
+      syn(),
+      !is.null(funder()),
+      length(funder()) == 1
+    )
+    query <- 
+      glue::glue(
+        "SELECT * FROM syn16859448 WHERE fundingAgency = '{funder()}'"
+      ) 
+    get_synapse_tbl(syn(), "syn16859448", query)
   })
   
   funder_object <- shiny::reactive({
     list(
       "funder" = funder(),
       "files_table" = files_table(),
-      "pubs_table" = pubs_table()
+      "pubs_table" = pubs_table(),
+      "studies_table" = studies_table(),
+      "tools_table" = tools_table()
     )
   })
   

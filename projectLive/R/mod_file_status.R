@@ -72,18 +72,20 @@ mod_file_status_ui <- function(id){
 #' @export
 #' @keywords internal
 
-mod_file_status_server <- function(input, output, session, funding_partner){
+mod_file_status_server <- function(input, output, session, funder_object){
   ns <- session$ns
   
   # filter the data
-  plotdata <- reactive({
-    projectLive::pubs %>% 
-      dplyr::filter(purrr::map_lgl(fundingAgency, ~funding_partner() %in% .x))
+  
+  pubs_table <- shiny::reactive({
+    shiny::req(funder_object())
+    funder_object()$pubs_table %>% 
+      dplyr::select("year", "studyName", "manifestation")
   })
 
   output$funding_agency <- shiny::renderText({
     
-      print(glue::glue("You are now viewing studies funded by {funding_partner()}. 
+      print(glue::glue("You are now viewing studies funded by {funder_object()$funder}. 
                        Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
 
     
@@ -91,7 +93,7 @@ mod_file_status_server <- function(input, output, session, funding_partner){
   
   output$pub_status <- plotly::renderPlotly({
     
-    data <- plotdata() %>% 
+    data <- pubs_table() %>% 
       dplyr::select(year, studyName) %>% 
       dplyr::mutate(
         studyName = purrr::map_chr(studyName, stringr::str_c, collapse = " | ")
@@ -119,7 +121,7 @@ mod_file_status_server <- function(input, output, session, funding_partner){
   
   output$pub_disease <- plotly::renderPlotly({
     
-    data <- plotdata() %>% 
+    data <- pubs_table() %>% 
       dplyr::select(year, manifestation) %>% 
       dplyr::mutate(manifestation = purrr::map_chr(
         manifestation, stringr::str_c, collapse = " | ")

@@ -92,12 +92,23 @@ mod_summary_snapshot_server <- function(input, output, session, funder_object){
   
   files_table <- shiny::reactive({
     shiny::req(funder_object())
-    funder_object()$files_table
+    funder_object()$files_table %>% 
+      dplyr::select(
+        "projectId",
+        "id",
+        "individualID",
+        "specimenID",
+        "year",
+        "studyName",
+        "consortium",
+        "accessType",
+        "dataType"
+      )
   })
   
   pubs_table <- shiny::reactive({
     shiny::req(funder_object())
-    funder_object()$pubs_table
+    funder_object()$pubs_table 
   })
   
   output$funding_agency <- shiny::renderText({
@@ -105,13 +116,14 @@ mod_summary_snapshot_server <- function(input, output, session, funder_object){
   })
   
   output$centersBox <- shinydashboard::renderInfoBox({
-    data <- as.data.frame(files_table())
-    
-    centers <- as.numeric(dplyr::n_distinct(data$projectId))
+    shiny::req(files_table())
+    n_centers <- files_table() %>% 
+      dplyr::pull("projectId") %>% 
+      dplyr::n_distinct()
 
     shinydashboard::infoBox(
       "Studies",
-      centers,
+      n_centers,
       icon = icon("university"), ### changed to studies
       color = "light-blue",
       fill = TRUE
@@ -119,12 +131,14 @@ mod_summary_snapshot_server <- function(input, output, session, funder_object){
   })
   
   output$filesBox <- shinydashboard::renderInfoBox({
-    data <- as.data.frame(files_table())
-    files <- dplyr::n_distinct(data$id)
+    shiny::req(files_table())
+    n_files <- files_table() %>% 
+      dplyr::pull("id") %>% 
+      dplyr::n_distinct()
 
     shinydashboard::infoBox(
       "Files",
-      files,
+      n_files,
       icon = icon("file"),
       color = "light-blue", #Valid colors are: red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, orange, fuchsia, purple, maroon, black.
       fill = TRUE
@@ -132,15 +146,15 @@ mod_summary_snapshot_server <- function(input, output, session, funder_object){
   })
   
   output$samplesBox <- shinydashboard::renderInfoBox({
-    data <- as.data.frame(files_table())
-    samples <- base::sum(
-      dplyr::n_distinct(data$individualID),
-      dplyr::n_distinct(data$specimenID)
+    shiny::req(files_table())
+    n_samples <- base::sum(
+      dplyr::n_distinct(files_table()$individualID),
+      dplyr::n_distinct(files_table()$specimenID)
     )
 
     shinydashboard::infoBox(
       "Samples",
-      samples,
+      n_samples,
       icon = icon("tag"),
       color = "light-blue",
       fill = TRUE
@@ -148,27 +162,31 @@ mod_summary_snapshot_server <- function(input, output, session, funder_object){
   })
   
   output$pubsBox <- shinydashboard::renderInfoBox({
-    pubdata <- as.data.frame(pubs_table())
     
-   pubinfo <- pubdata %>% dplyr::tally()
+    n_centers <- pubs_table() %>% 
+      dplyr::pull("title") %>% 
+      dplyr::n_distinct()
+    
     infoBox(
-      "Publications", pubinfo, icon = icon("pencil"),
-      color = "light-blue", fill = TRUE
+      "Publications",
+      n_centers, 
+      icon = icon("pencil"),
+      color = "light-blue",
+      fill = TRUE
     )
   })
   
   output$study_per_consortium <- plotly::renderPlotly({
     
-    data <- files_table() %>%
-      dplyr::mutate("year" = synapse_dates_to_year(createdOn)) 
+    data <- files_table() %>% 
+      dplyr::select("year", "studyName", "consortium", "accessType") 
     
     data$studyName[is.na(data$studyName) == TRUE] <- "Not Annotated"
     data$consortium[is.na(data$consortium) == TRUE] <- "Not Applicable"
-    data$assay[is.na(data$assay) == TRUE] <- "Not Annotated"
     data$accessType[is.na(data$accessType) == TRUE] <- "Not Annotated"
     
     #Catch errors where no files are present
-    validate(need(length(data$resourceType) > 0 , 
+    validate(need(nrow(data) > 0 , 
                   "The investigator/investigators has/have not uploaded any files yet. Please check back later."))
     
     #make plot
@@ -193,20 +211,16 @@ mod_summary_snapshot_server <- function(input, output, session, funder_object){
   
   
   output$files_per_study <- plotly::renderPlotly({
-    
-    data <- files_table()
-    data <- data %>% 
-      dplyr::mutate("year" = synapse_dates_to_year(createdOn)) 
+    data <- files_table() %>% 
+      dplyr::select("year", "studyName", "dataType") 
     
     data$studyName[is.na(data$studyName) == TRUE] <- "Not Annotated"
-    data$consortium[is.na(data$consortium) == TRUE] <- "Not Applicable"
-    data$assay[is.na(data$assay) == TRUE] <- "Not Annotated"
     data$dataType[data$dataType == "drugScreen"] <- "drugScreening"
     data$dataType[data$dataType == "drugCombinationScreen"] <- "drugScreening"
     data$dataType[!data$dataType %in% c("immunofluorescence", "genomicVariants", "geneExpression", "drugScreening", "cellularPhysiology", "chromatinActivity")] <- "Other"
     
     #Catch errors where no files are present
-    validate(need(length(data$resourceType) > 0 , 
+    validate(need(nrow(data) > 0 , 
                   "The investigator/investigators has/have not uploaded any files yet. Please check back later."))
     
     #make plot
