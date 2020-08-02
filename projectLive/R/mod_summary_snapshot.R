@@ -87,32 +87,21 @@ mod_summary_snapshot_ui <- function(id){
 #' @export
 #' @keywords internal
 
-mod_summary_snapshot_server <- function(input, output, session, funder_object){
+mod_summary_snapshot_server <- function(input, output, session, group_object){
   ns <- session$ns
   
   files_table <- shiny::reactive({
-    shiny::req(funder_object())
-    funder_object()$files_table %>% 
-      dplyr::select(
-        "projectId",
-        "id",
-        "individualID",
-        "specimenID",
-        "year",
-        "studyName",
-        "consortium",
-        "accessType",
-        "dataType"
-      )
+    shiny::req(group_object())
+    group_object()$files_table
   })
   
   pubs_table <- shiny::reactive({
-    shiny::req(funder_object())
-    funder_object()$pubs_table 
+    shiny::req(group_object())
+    group_object()$pubs_table 
   })
   
   output$funding_agency <- shiny::renderText({
-    print(glue::glue("You are now viewing studies funded by {funder_object()$funder}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
+    print(glue::glue("You are now viewing studies funded by {group_object()$selected_group}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
   })
   
   output$centersBox <- shinydashboard::renderInfoBox({
@@ -151,7 +140,6 @@ mod_summary_snapshot_server <- function(input, output, session, funder_object){
       dplyr::n_distinct(files_table()$individualID),
       dplyr::n_distinct(files_table()$specimenID)
     )
-
     shinydashboard::infoBox(
       "Samples",
       n_samples,
@@ -162,11 +150,9 @@ mod_summary_snapshot_server <- function(input, output, session, funder_object){
   })
   
   output$pubsBox <- shinydashboard::renderInfoBox({
-    
     n_centers <- pubs_table() %>% 
       dplyr::pull("title") %>% 
       dplyr::n_distinct()
-    
     infoBox(
       "Publications",
       n_centers, 
@@ -177,18 +163,14 @@ mod_summary_snapshot_server <- function(input, output, session, funder_object){
   })
   
   output$study_per_consortium <- plotly::renderPlotly({
-    
     data <- files_table() %>% 
       dplyr::select("year", "studyName", "consortium", "accessType") 
-    
     data$studyName[is.na(data$studyName) == TRUE] <- "Not Annotated"
     data$consortium[is.na(data$consortium) == TRUE] <- "Not Applicable"
     data$accessType[is.na(data$accessType) == TRUE] <- "Not Annotated"
-    
     #Catch errors where no files are present
     validate(need(nrow(data) > 0 , 
                   "The investigator/investigators has/have not uploaded any files yet. Please check back later."))
-    
     #make plot
     ggplot(data, aes(x=consortium, y= studyName, fill=accessType, color= accessType)) +
       geom_bar(stat="identity", position= "stack", alpha=0.8, na.rm=TRUE) +
@@ -213,16 +195,13 @@ mod_summary_snapshot_server <- function(input, output, session, funder_object){
   output$files_per_study <- plotly::renderPlotly({
     data <- files_table() %>% 
       dplyr::select("year", "studyName", "dataType") 
-    
     data$studyName[is.na(data$studyName) == TRUE] <- "Not Annotated"
     data$dataType[data$dataType == "drugScreen"] <- "drugScreening"
     data$dataType[data$dataType == "drugCombinationScreen"] <- "drugScreening"
     data$dataType[!data$dataType %in% c("immunofluorescence", "genomicVariants", "geneExpression", "drugScreening", "cellularPhysiology", "chromatinActivity")] <- "Other"
-    
     #Catch errors where no files are present
     validate(need(nrow(data) > 0 , 
                   "The investigator/investigators has/have not uploaded any files yet. Please check back later."))
-    
     #make plot
     ggplot(data, aes(x=dataType, fill=studyName, color= studyName)) + 
       geom_bar(stat="count", position= "stack", alpha=1.0, na.rm=TRUE) +
