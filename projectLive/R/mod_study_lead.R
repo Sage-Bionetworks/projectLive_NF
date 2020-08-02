@@ -81,18 +81,18 @@ mod_study_lead_ui <- function(id){
 #' @export
 #' @keywords internal
 
-mod_study_lead_server <- function(input, output, session, funder_object){
+mod_study_lead_server <- function(input, output, session, group_object){
   ns <- session$ns
   
   # filter the data
   studies_table <- shiny::reactive({
-    shiny::req(funder_object())
-    funder_object()$studies_table
+    shiny::req(group_object())
+    group_object()$studies_table
   })
   
   files_table <- shiny::reactive({
-    shiny::req(funder_object())
-    funder_object()$files_table
+    shiny::req(group_object())
+    group_object()$files_table
   })
   
   output$study_lead_ui <- shiny::renderUI({
@@ -118,13 +118,13 @@ mod_study_lead_server <- function(input, output, session, funder_object){
   #                            choices = sort(unique(as.data.frame(studies_table())$studyLeads)))
   # })
   
-  anno_data <- reactive({
+  anno_data <- shiny::reactive({
+    shiny::req(input$studylead)
     data1 <- dplyr::select(studies_table(), "studyLeads", "studyName")
     files_table() %>% 
-      dplyr::inner_join(data1, by = "studyName") %>% 
+      dplyr::left_join(data1, by = "studyName") %>% 
       dplyr::filter(purrr::map_lgl(studyLeads, ~input$studylead %in% .x)) %>% 
       dplyr::mutate(
-        "year" = synapse_dates_to_year(createdOn),
         "assay" = dplyr::if_else(
           is.na(assay),
           "Pending Annotation",
@@ -140,7 +140,7 @@ mod_study_lead_server <- function(input, output, session, funder_object){
   
   
   output$funding_agency <- shiny::renderText({
-    print(glue::glue("You are now viewing studies funded by {funder_object()$funder}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
+    print(glue::glue("You are now viewing studies funded by {group_object()$selected_group}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
   })
   
   output$upload_status <- plotly::renderPlotly({

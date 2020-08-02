@@ -55,8 +55,8 @@ mod_about_page_ui <- function(id){
               width = 12,
               solidHeader = T,
               status = "primary",
-              shiny::uiOutput(ns("agency_selection_ui")),
-              shiny::textOutput(ns('funding_agency'))
+              shiny::uiOutput(ns("group_selection_ui")),
+              shiny::textOutput(ns('group'))
               #DT::dataTableOutput(ns('study_table'))
           )
   
@@ -69,89 +69,38 @@ mod_about_page_ui <- function(id){
 #' @export
 #' @keywords internal
     
-mod_about_page_server <- function(input, output, session){
+mod_about_page_server <- function(input, output, session, syn, data_config){
   
-  require(magrittr)
   ns <- session$ns
   
   current_user_synapse_id <- shiny::reactive({
     # code to get the synapse id of the current user here
     # This user has permisions to CTF and NTAP
-    return(273966)
+    return(3389310)
   })
   
-  syn <- shiny::reactive({
-    # use your own condaenv here!!!!!
-    reticulate::use_condaenv(
-      condaenv = "py37b",
-      required = TRUE,
-      conda = "/home/aelamb/anaconda3/condabin/conda"
-    )
-    synapseclient <- reticulate::import("synapseclient")
-    syn <- synapseclient$Synapse()
-    syn$login()
-    return(syn)
+  groups_allowed <- shiny::reactive({
+    req(syn, data_config, current_user_synapse_id())
+    get_allowed_groups_from_synapse_user_id(
+      syn, data_config, current_user_synapse_id()
+    ) 
   })
   
-  agencies_allowed <- shiny::reactive({
-    req(syn())
-    team_id_list <- c(
-      "NF-OSI" = 3378999L,
-      "CTF" = 3359657L,
-      "GFF" = 3406072L,
-      "NTAP" = 3331266L,
-      "test_team" = 3413244L
-    )
-    
-    team_permission_list <- list(
-      "NF-OSI" = c("CTF", "GFF", "NTAP"),
-      "CTF" = "CTF",
-      "GFF" = "GFF",
-      "NTAP" = "NTAP",
-      "test_team" = "NTAP"
-    )
-    
-    get_team_members <- function(team_id, syn){
-      team_id %>%
-        syn()$getTeamMembers(.) %>% 
-        reticulate::iterate(.) %>% 
-        purrr::map(., purrr::pluck("member")) %>% 
-        purrr::map_chr(., purrr::pluck("ownerId")) %>%
-        as.integer()
-    }
-  
-    team_member_list <- purrr::map(
-      team_id_list,
-      get_team_members,
-      syn()
-    )
-    
-    teams_user_is_in <-
-      purrr::map_lgl(team_member_list, ~ (current_user_synapse_id() %in% .x)) %>% 
-      purrr::keep(., .) %>% 
-      names()
-    
-    if(length(teams_user_is_in) == 0) return(NULL)
-    
-    allowed_agencies <- team_permission_list %>% 
-      purrr::keep(., . %in% teams_user_is_in) %>% 
-      unlist() %>% 
-      unname() %>% 
-      unique()
-  })
-  
-  output$agency_selection_ui <- shiny::renderUI({
+  output$group_selection_ui <- shiny::renderUI({
+    shiny::req(groups_allowed())
     shiny::selectizeInput(
-      ns("funder"), 
+      ns("selected_group"), 
       label = "", 
-      choices = agencies_allowed(),
+      choices = groups_allowed(),
       multiple = F
     )
   })
   
-  output$funding_agency <- shiny::renderText({
-    print(glue::glue("You are now viewing studies funded by {input$funder}. 
-                     Navigate to the tabs at the top of the page to get more information about the funded investigators and the various resources that they have generated."))
+  output$group <- shiny::renderText({
+    print(glue::glue(
+      "You are now viewing studies funded by {input$selected_group}. 
+    Navigate to the tabs at the top of the page to get more information about the funded investigators and the various resources that they have generated."
+    ))
   })
   
  
@@ -166,98 +115,55 @@ mod_about_page_server <- function(input, output, session){
     )
   })
   
-  funder <- shiny::reactive(input$funder)
+  selected_group <- shiny::reactive(input$selected_group)
   
   files_table <- shiny::reactive({
-    shiny::req(
-      syn(),
-      !is.null(funder()),
-      length(funder()) == 1
-    )
-    columns <- c(
-      "projectId",
-      "id",
-      "individualID",
-      "specimenID",
-      "createdOn",
-      "studyName",
-      "consortium",
-      "accessType",
-      "dataType",
-      "resourceType",
-      "assay", 
-      "species",
-      "tumorType"
-    )
-    
-    query <- 
-      columns %>% 
-      stringr::str_c(collapse = ",") %>% 
-      glue::glue(
-        "SELECT ", ., " FROM syn16858331 WHERE fundingAgency = '{funder()}'"
-      )
-    get_synapse_tbl(syn(), "syn16858331", query) %>% 
-      dplyr::mutate("year" = synapse_dates_to_year(createdOn)) 
+    shiny::req(syn, data_config, selected_group())
+    tbl <-
+      read_rds_file_from_synapse(
+        syn,
+        purrr::pluck(data_config, "data_files", "files", "synapse_id")
+      ) %>% 
+      dplyr::filter(selected_group() == .data$fundingAgency) %>% 
+      dplyr::mutate(
+        "year" = synapse_dates_to_year(.data$createdOn),
+        "month" = synapse_dates_to_month(.data$createdOn)
+      ) 
   })
   
   pubs_table <- shiny::reactive({
-    shiny::req(
-      syn(),
-      !is.null(funder()),
-      length(funder()) == 1
-    )
-    columns <- c(
-      "'year'",
-      "doi",
-      "diseaseFocus",
-      "featured",
-      "journal",
-      "title",
-      "pmid",
-      "author",
-      "manifestation",
-      "fundingAgency",
-      "studyId",
-      "studyName"
-    )
-    query <- 
-      columns %>% 
-      stringr::str_c(collapse = ",") %>% 
-      glue::glue(
-        "SELECT ", ., " FROM syn16857542 WHERE fundingAgency has ('{funder()}')"
-      ) 
-    get_synapse_tbl(syn(), "syn16857542", query)
+    shiny::req(syn, data_config, selected_group())
+    tbl <-
+      read_rds_file_from_synapse(
+        syn,
+        purrr::pluck(data_config, "data_files", "publications", "synapse_id")
+      ) %>% 
+      dplyr::filter(selected_group() %in% .data$fundingAgency) 
   })
   
   studies_table <- shiny::reactive({
-    shiny::req(
-      syn(),
-      !is.null(funder()),
-      length(funder()) == 1
-    )
-    query <- 
-      glue::glue(
-        "SELECT * FROM syn16787123 WHERE fundingAgency has ('{funder()}')"
-      ) 
-    get_synapse_tbl(syn(), "syn16787123", query)
+    shiny::req(syn, data_config, selected_group())
+    tbl <-
+      read_rds_file_from_synapse(
+        syn,
+        purrr::pluck(data_config, "data_files", "studies", "synapse_id")
+      ) %>% 
+      dplyr::filter(selected_group() %in% .data$fundingAgency) 
   })
   
   tools_table <- shiny::reactive({
-    shiny::req(
-      syn(),
-      !is.null(funder()),
-      length(funder()) == 1
-    )
-    query <- 
-      glue::glue(
-        "SELECT * FROM syn16859448 WHERE fundingAgency = '{funder()}'"
-      ) 
-    get_synapse_tbl(syn(), "syn16859448", query)
+    shiny::req(syn, data_config, selected_group())
+    tbl <- 
+      read_rds_file_from_synapse(
+        syn,
+        purrr::pluck(data_config, "data_files", "tools", "synapse_id")
+      ) %>%
+      dplyr::filter(selected_group() == .data$fundingAgency) 
   })
   
-  funder_object <- shiny::reactive({
+  group_object <- shiny::reactive({
     list(
-      "funder" = funder(),
+      "selected_group" = selected_group(),
       "files_table" = files_table(),
       "pubs_table" = pubs_table(),
       "studies_table" = studies_table(),
@@ -265,7 +171,7 @@ mod_about_page_server <- function(input, output, session){
     )
   })
   
-  return(funder_object)
+  return(group_object)
 }
     
 ## To be copied in the UI
