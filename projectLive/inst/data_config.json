@@ -1,0 +1,141 @@
+{
+  "team_table": {
+    "synapse_id": "syn22279138",
+    "team_column": "TeamID",
+    "group_column": "Permission List"
+  },
+  "data_files": {
+    "files": {
+      "synapse_id": "syn22282675"
+    },
+    "publications": {
+      "synapse_id": "syn22282673"
+    },
+    "studies": {
+      "synapse_id": "syn22282670"
+    },
+    "tools": {
+      "synapse_id": "syn22282674"
+    }
+  },
+  "modules": {
+    "summary_snapshot": {
+      "outputs": {
+        "overview_boxes": {
+          "box1": {
+            "title": "Studies",
+            "table": "files_table",
+            "columns": ["projectId"],
+            "icon": "university"
+          },
+          "box2": {
+            "title": "Files",
+            "table": "files_table",
+            "columns": ["id"],
+            "icon": "file"
+          },
+          "box3": {
+            "title": "Samples",
+            "table": "files_table",
+            "columns": ["individualID", "specimenID"],
+            "icon": "file"
+          },
+          "box4": {
+            "title": "Publications",
+            "table": "publications_table",
+            "columns": ["title"],
+            "icon": "pencil"
+          }
+        },
+        "study_per_consortium": {
+          "table": "files_table",
+          "columns": {
+            "facet": {
+              "name": "year",
+              "display_name": "Year",
+              "type": "integer"
+            },
+            "y": {
+              "name": "studyName",
+              "display_name" : "Study Name",
+              "na_replace": "Not Annotated",
+              "type": "character"
+            },
+            "x": {
+              "name": "consortium",
+              "display_name": "Consortium",
+              "na_replace": "Not Applicable",
+              "type": "character"
+            },
+            "fill": {
+              "name": "accessType",
+              "display_name": "Access Type",
+              "na_replace": "Not Annotated",
+              "type": "character"
+            }
+          }
+        },
+        "files_per_study": {
+          "table": "files_table",
+          "columns": {
+            "facet": {
+              "name": "year",
+              "display_name": "Year",
+              "type": "integer"
+            },
+            "fill": {
+              "name": "studyName",
+              "display_name": "Study Name",
+              "type": "character",
+              "na_replace": "Not Applicable"
+            },
+            "x": {
+              "name": "dataType",
+              "display_name": "Data Type",
+              "type": "character",
+              "replace_values": {
+                "drugScreen": "Drug Screening", 
+                "drugCombinationScreen": "Drug Screening",
+                "immunofluorescence": "Immunofluorescence",
+                "genomicVariants": "Genomic Variants",
+                "geneExpression": "Gene Expression",
+                "cellularPhysiology": "Cellular Physiology",
+                "chromatinActivity": "Chromatin Activity"
+              },
+              "na_replace": "Other",
+              "default_replace": "Other"
+            }
+          }
+        }
+      }
+    },
+    "study_summary": {
+      "plots": {
+        "data_focus": {
+          "columns": [
+            {
+              "name": "assay",
+              "aggregate_name": "Assays Used",
+              "display_name": "Assay"
+            },
+            {
+              "name": "resourceType",
+              "aggregate_name": "Resource Added",
+              "display_name": "Resource Type"
+            },
+            {
+              "name": "species",
+              "aggregate_name": "Species Used",
+              "display_name":  "Species"
+            },
+            {
+              "name": "tumorType",
+              "aggregate_name":"Tumor Types Investigated",
+              "display_name": "Tumor Type"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

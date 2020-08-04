@@ -107,7 +107,9 @@ mod_study_summary_ui <- function(id){
 #' @export
 #' @keywords internal
 
-mod_study_summary_server <- function(input, output, session, group_object){
+mod_study_summary_server <- function(
+  input, output, session, group_object, data_config
+){
   ns <- session$ns
   
   studies_table <- shiny::reactive({
@@ -210,11 +212,21 @@ mod_study_summary_server <- function(input, output, session, group_object){
   })
   
   output$data_focus_selection <- shiny::renderUI({
+    shiny::req(data_config)
+    choices <- data_config %>% 
+      purrr::pluck(
+        "modules", 
+        "study_summary", 
+        "plots", 
+        "data_focus", 
+        "columns"
+      ) %>% 
+      purrr::map(purrr::pluck, "name")
     shiny::selectizeInput(
       ns('data_focus_columns'),
       label = "Choose to view",
-      choices = c("assay", "resourceType", "species", "tumorType"),
-      selected = c("assay", "resourceType", "species", "tumorType"),
+      choices = choices,
+      selected = choices,
       multiple = T
     )
   })

@@ -131,7 +131,7 @@ mod_about_page_server <- function(input, output, session, syn, data_config){
       ) 
   })
   
-  pubs_table <- shiny::reactive({
+  publications_table <- shiny::reactive({
     shiny::req(syn, data_config, selected_group())
     tbl <-
       read_rds_file_from_synapse(
@@ -163,11 +163,11 @@ mod_about_page_server <- function(input, output, session, syn, data_config){
   
   group_object <- shiny::reactive({
     list(
-      "selected_group" = selected_group(),
-      "files_table" = files_table(),
-      "pubs_table" = pubs_table(),
-      "studies_table" = studies_table(),
-      "tools_table" = tools_table()
+      "selected_group"     = selected_group(),
+      "files_table"        = files_table(),
+      "publications_table" = publications_table(),
+      "studies_table"      = studies_table(),
+      "tools_table"        = tools_table()
     )
   })
   
