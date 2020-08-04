@@ -1,3 +1,26 @@
+concatenate_list_columns <- function(tbl, columns){
+  dplyr::mutate_at(
+    tbl,
+    columns,
+    ~purrr::map_chr(.x, stringr::str_c, collapse = " | ")
+  ) 
+}
+
+concatenate_df_list_columns_with_param_list <- function(tbl, param_list){
+  list_columns <- param_list %>% 
+    purrr::pluck("columns") %>% 
+    dplyr::tibble(
+      "type" = safe_pluck_list(., "type"),
+      "name" = safe_pluck_list(., "name")
+    ) %>% 
+    dplyr::select("type", "name") %>% 
+    dplyr::filter(.data$type == "list:character") %>% 
+    dplyr::pull("name") %>% 
+    unname() 
+    
+  concatenate_list_columns(tbl, list_columns)
+}
+
 safe_pluck_list <- function(lst, n){
   lst %>% 
     purrr::map(purrr::pluck, n, .default = NA) %>% 
@@ -43,7 +66,10 @@ recode_column_values_with_param_list <- function(tbl, param_list){
 recode_df_with_param_list <- function(tbl, param_list){
   column_param_list <- param_list %>% 
     purrr::pluck("columns") %>%  
-    purrr::keep(., purrr::map(., purrr::pluck("type")) == "character")
+    purrr::keep(
+      ., 
+      purrr::map(., purrr::pluck("type")) %in% c("character", "list:character")
+    )
   for (param_list in column_param_list) {
     tbl <- recode_column_values_with_param_list(tbl, param_list)
   }
@@ -61,27 +87,6 @@ add_distinct_values_from_columns <- function(tbl, columns){
     purrr::map_int(columns, ~get_distinct_value_from_column(tbl, .x)) %>% 
     sum()
 }
-
-
-# build_translation_df_from_list <- function(lst, from_field, to_field){
-#   lst %>% 
-#     purrr::map(dplyr::as_tibble) %>% 
-#     dplyr::bind_rows() %>% 
-#     dplyr::select("name" = from_field, "new_name" = to_field) 
-# }
-# 
-# translate_column_names <- function(name_v, translation_df){
-#   name_v %>% 
-#     dplyr::tibble("name" = .) %>% 
-#     dplyr::left_join(translation_df, by = "name") %>% 
-#     dplyr::mutate("new_name" = dplyr::if_else(
-#       is.na(.data$new_name),
-#       stringr::str_to_title(.data$name),
-#       .data$new_name
-#     )) %>% 
-#     dplyr::pull("new_name")
-# }
-
 
 #' @importFrom magrittr %>% 
 #' @importFrom rlang := .data
