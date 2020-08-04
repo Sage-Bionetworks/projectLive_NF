@@ -16,15 +16,14 @@
 #' @import ggplot2
 #' @import plotly
 mod_file_status_ui <- function(id){
-  ns <- NS(id)
+  ns <- shiny::NS(id)
   
-  tagList(
-    dashboardPage(
-      dashboardHeader(disable = T),
-      dashboardSidebar(disable = T),
-      
-      dashboardBody(
-        fluidPage(
+  shiny::tagList(
+    shinydashboard::dashboardPage(
+      shinydashboard::dashboardHeader(disable = T),
+      shinydashboard::dashboardSidebar(disable = T),
+      shinydashboard::dashboardBody(
+        shiny::fluidPage(
           #add analytics
           #         tags$head(includeScript("<!-- Global site tag (gtag.js) - Google Analytics -->
           # <script async src=\"https://www.googletagmanager.com/gtag/js?id=UA-160814003-1\"></script>
@@ -38,32 +37,33 @@ mod_file_status_ui <- function(id){
           # "),
           #includeScript("www/google_analytics.js")),
           
-          box(title = "Funding Partner",
-              width = 12,
-              solidHeader = T,
-              status = "primary",
-              shiny::textOutput(ns('funding_agency')),
+          shinydashboard::box(
+            title = "Funding Partner",
+            width = 12,
+            solidHeader = T,
+            status = "primary",
+            shiny::textOutput(ns('funding_agency')),
           ),
-        
-        
-        box(title = "Publication Status", 
+          shinydashboard::box(
+            title = "Publication Status", 
             status = "primary", 
             solidHeader = TRUE,
             width = 12,
             collapsible = FALSE,
-            plotly::plotlyOutput(ns('pub_status'))
-        ),
-        
-        box(title = "Publication status by Disease Manifestation", 
+            plotly::plotlyOutput(ns('publication_status'))
+          ),
+          shinydashboard::box(
+            title = "Publication status by Disease Manifestation", 
             status = "primary", 
             solidHeader = TRUE,
             width = 12,
             collapsible = FALSE,
-            plotly::plotlyOutput(ns('pub_disease'))
+            plotly::plotlyOutput(ns('publication_disease'))
+          )
         )
-        
       )
-  )))
+    )
+  )
 }
 
 # Module Server
@@ -72,85 +72,79 @@ mod_file_status_ui <- function(id){
 #' @export
 #' @keywords internal
 
-mod_file_status_server <- function(input, output, session, funder_object){
+mod_file_status_server <- function(
+  input, output, session, group_object, data_config
+){
   ns <- session$ns
   
-  # filter the data
-  
-  pubs_table <- shiny::reactive({
-    shiny::req(funder_object())
-    funder_object()$pubs_table %>% 
+  publications_table <- shiny::reactive({
+    shiny::req(group_object())
+    group_object()$publications_table %>% 
       dplyr::select("year", "studyName", "manifestation")
   })
 
   output$funding_agency <- shiny::renderText({
-    
-      print(glue::glue("You are now viewing studies funded by {funder_object()$funder}. 
-                       Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
-
-    
+    print(glue::glue(
+      "You are now viewing studies funded by {group_object()$selected_group}. 
+      Please hover your cursor over the plots to view more information. 
+      You can also zoom into parts of the plot."
+    ))
   })
   
-  output$pub_status <- plotly::renderPlotly({
+  output$publication_status <- plotly::renderPlotly({
     
-    data <- pubs_table() %>% 
+    shiny::req(data_config, group_object())
+    
+    param_list <- purrr::pluck(
+      data_config,
+      "modules",
+      "file_status",
+      "outputs",
+      "publication_status"
+    )
+    
+    data <- group_object() %>% 
+      purrr::pluck(param_list$table) %>% 
       dplyr::select(year, studyName) %>% 
-      dplyr::mutate(
-        studyName = purrr::map_chr(studyName, stringr::str_c, collapse = " | ")
-      ) %>% 
-      dplyr::arrange(year)
+      concatenate_df_list_columns_with_param_list(param_list) %>% 
+      recode_df_with_param_list(param_list) %>% 
+      rename_df_columns_with_param_list(param_list) 
     
-      #make plot
-    ggplot(data, aes(x=year, fill=studyName, color= studyName)) + 
-      geom_histogram( binwidth=0.5, alpha=0.8, position="stack") +
-      viridis::scale_color_viridis(discrete=TRUE) +
-      viridis::scale_fill_viridis(discrete=TRUE) +
-      labs(title="", y = "Number of publications") +
-      ylim(0, 10) +
-      theme_bw() +
-      theme(legend.text = element_blank(), #element_text(size=8), 
-            axis.text.x  = element_text(size=10),
-            axis.text.y = element_text(size=10),
-            text = element_text(size=10),
-            legend.position="none",
-            panel.grid = element_blank(),
-            panel.background = element_rect(fill = "grey95")) 
-
+    create_publication_status_plot(
+      data, 
+      x     = purrr::pluck(param_list, "columns", "x", "display_name"),
+      fill  = purrr::pluck(param_list, "columns", "fill", "display_name"),
+      color = purrr::pluck(param_list, "columns", "fill", "display_name")
+    )
   })
   
-  
-  output$pub_disease <- plotly::renderPlotly({
+  output$publication_disease <- plotly::renderPlotly({
     
-    data <- pubs_table() %>% 
-      dplyr::select(year, manifestation) %>% 
-      dplyr::mutate(manifestation = purrr::map_chr(
-        manifestation, stringr::str_c, collapse = " | ")
-      ) %>% 
-      dplyr::arrange(year) 
-      
-    #make plot
-    ggplot(data, aes(x=year, fill=manifestation, color= manifestation)) + 
-      geom_histogram( binwidth=0.5, alpha=0.8, position="stack") +
-      viridis::scale_color_viridis(discrete=TRUE) +
-      viridis::scale_fill_viridis(discrete=TRUE) +
-      labs(title="", y = "Number of publications") +
-      ylim(0, 5) +
-      theme_bw() +
-      theme(legend.text = element_blank(), #element_text(size=8), 
-            axis.text.x  = element_text(size=10),
-            axis.text.y = element_text(size=10),
-            text = element_text(size=10),
-            legend.position="bottom",
-            panel.grid = element_blank(),
-            panel.background = element_rect(fill = "grey95"))
+    shiny::req(data_config, group_object())
     
+    param_list <- purrr::pluck(
+      data_config,
+      "modules",
+      "file_status",
+      "outputs",
+      "publication_disease"
+    )
+    
+    data <- group_object() %>% 
+      purrr::pluck(param_list$table) %>% 
+      dplyr::select(year, studyName) %>% 
+      concatenate_df_list_columns_with_param_list(param_list) %>% 
+      recode_df_with_param_list(param_list) %>% 
+      rename_df_columns_with_param_list(param_list) 
+    
+    create_publication_disease_plot(
+      data, 
+      x     = purrr::pluck(param_list, "columns", "x", "display_name"),
+      fill  = purrr::pluck(param_list, "columns", "fill", "display_name"),
+      color = purrr::pluck(param_list, "columns", "fill", "display_name")
+    )
   })
   
 }
 
-## To be copied in the UI
-# mod_file_status_ui("summary_snapshot_ui")
-
-## To be copied in the server
-# callModule(mod_file_status_server, "file_status_ui")
 

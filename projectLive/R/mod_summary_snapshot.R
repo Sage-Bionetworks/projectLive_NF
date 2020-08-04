@@ -96,7 +96,11 @@ mod_summary_snapshot_server <- function(
   })
   
   output$funding_agency <- shiny::renderText({
-    print(glue::glue("You are now viewing studies funded by {group_object()$selected_group}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
+    print(glue::glue(
+      "You are now viewing studies funded by {group_object()$selected_group}.
+      Please hover your cursor over the plots to view more information. 
+      You can also zoom into parts of the plot."
+    ))
   })
   
   output$box1 <- shinydashboard::renderInfoBox({
@@ -162,6 +166,7 @@ mod_summary_snapshot_server <- function(
     )
     
     data <- group_object()[[param_list$table]] %>% 
+      concatenate_df_list_columns_with_param_list(param_list) %>%    
       recode_df_with_param_list(param_list) %>% 
       rename_df_columns_with_param_list(param_list)
     
@@ -193,6 +198,7 @@ mod_summary_snapshot_server <- function(
     )
     
     data <- group_object()[[param_list$table]] %>% 
+      concatenate_df_list_columns_with_param_list(param_list) %>%    
       recode_df_with_param_list(param_list) %>% 
       rename_df_columns_with_param_list(param_list)
     

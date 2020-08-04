@@ -109,6 +109,41 @@
         }
       }
     },
+    "file_status": {
+       "outputs": {
+         "publication_status": {
+           "table": "publications_table",
+           "columns": {
+             "x": {
+              "name": "year",
+              "display_name": "Year",
+              "type": "integer"
+            },
+            "fill": {
+              "name": "studyName",
+              "display_name": "Study Name",
+              "type": "list:character"
+            }
+           }
+         },
+         "publication_disease": {
+           "table": "publications_table",
+           "columns": {
+             "x": {
+              "name": "year",
+              "display_name": "Year",
+              "type": "integer"
+            },
+            "fill": {
+              "name": "manifestation",
+              "display_name": "Manifestation",
+              "type": "list:character",
+              "na_replace": "None Listed"
+            }
+           }
+         }
+       }
+    },
     "study_summary": {
       "plots": {
         "data_focus": {

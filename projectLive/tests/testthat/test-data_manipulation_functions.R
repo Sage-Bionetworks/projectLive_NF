@@ -1,4 +1,32 @@
-test_that("safe_pluck_list",{
+test_that("concatenate_list_columns", {
+  tbl1 <- dplyr::tibble(
+    "cola" = list(c("a", "b"), "a", c("a", "c")),
+    "colb" = c("a", "b", "c")
+  )
+  col1 <- "cola"
+  col2 <- "colb"
+  res1 <- concatenate_list_columns(tbl1, col1)
+  res2 <- concatenate_list_columns(tbl1, col2)
+  res3 <- concatenate_list_columns(tbl1, c(col1, col2))
+  expect_equal(
+    res1,
+    dplyr::tibble(
+      "cola" = c("a | b", "a", "a | c"),
+      "colb" = c("a", "b", "c")
+    )
+  )
+  expect_equal(res2, tbl1)
+  expect_equal(
+    res3,
+    dplyr::tibble(
+      "cola" = c("a | b", "a", "a | c"),
+      "colb" = c("a", "b", "c")
+    )
+  )
+})
+
+
+test_that("safe_pluck_list", {
   list1 = list(
     list("name" = "col1", "display_name" = "Column1", "type" = "x"),
     list("name" = "col2", "type" = "x")
