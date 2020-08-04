@@ -16,15 +16,14 @@
 #' @import ggplot2
 #' @import plotly
 mod_summary_snapshot_ui <- function(id){
-  ns <- NS(id)
+  ns <- shiny::NS(id)
   
-  tagList(
-    dashboardPage(
-      dashboardHeader(disable = T),
-      dashboardSidebar(disable = T),
-      
-      dashboardBody(
-        fluidPage(
+  shiny::tagList(
+    shinydashboard::dashboardPage(
+      shinydashboard::dashboardHeader(disable = T),
+      shinydashboard::dashboardSidebar(disable = T),
+      shinydashboard::dashboardBody(
+        shiny::fluidPage(
           #add analytics
           #         tags$head(includeScript("<!-- Global site tag (gtag.js) - Google Analytics -->
           # <script async src=\"https://www.googletagmanager.com/gtag/js?id=UA-160814003-1\"></script>
@@ -37,48 +36,47 @@ mod_summary_snapshot_ui <- function(id){
           # </script>
           # "),
           #includeScript("www/google_analytics.js")),
-  
-        box(title = "Funding Partner",
-              width = 12,
-              solidHeader = T,
-              status = "primary",
-              shiny::textOutput(ns('funding_agency')),
-              #DT::dataTableOutput(ns('study_table'))
-          ),
           
-      
-      box(title = "Overview",
-          status = "primary",
-          solidHeader = TRUE,
-          width = 12,
-          collapsible = FALSE,
-          fluidRow(
-          shinydashboard::infoBoxOutput(ns('centersBox'), width = 3),
-                        #shinycssloaders::withSpinner(proxy.height = "125px"), ## throws an ui_element error if uncommented
-          shinydashboard::infoBoxOutput(ns('filesBox'), width = 3),
-          shinydashboard::infoBoxOutput(ns('samplesBox'), width = 3),
-          shinydashboard::infoBoxOutput(ns('pubsBox'), width = 3) #,
-                      #shinydashboard::infoBoxOutput("pubsBox", width = 3)
-                    )),
-      
-      box(title = "Consortium Activity", 
-          status = "primary", 
-          solidHeader = TRUE,
-          width = 12,
-          collapsible = FALSE,
-          plotly::plotlyOutput(ns('study_per_consortium'))
-      ),
-      
-      box(title = "Resources Generated", 
-          status = "primary", 
-          solidHeader = TRUE,
-          width = 12,
-          collapsible = FALSE,
-          plotly::plotlyOutput(ns('files_per_study'))
+          shinydashboard::box(
+            title = "Funding Partner",
+            width = 12,
+            solidHeader = T,
+            status = "primary",
+            shiny::textOutput(ns('funding_agency'))
+          ),
+          shinydashboard::box(
+            title = "Overview",
+            status = "primary",
+            solidHeader = TRUE,
+            width = 12,
+            collapsible = FALSE,
+            shiny::fluidRow(
+              shinydashboard::infoBoxOutput(ns('box1'), width = 3),
+              shinydashboard::infoBoxOutput(ns('box2'), width = 3),
+              shinydashboard::infoBoxOutput(ns('box3'), width = 3),
+              shinydashboard::infoBoxOutput(ns('box4'), width = 3)
+            )
+          ),
+          shinydashboard::box(
+            title = "Consortium Activity", 
+            status = "primary", 
+            solidHeader = TRUE,
+            width = 12,
+            collapsible = FALSE,
+            plotly::plotlyOutput(ns('study_per_consortium'))
+          ),
+          shinydashboard::box(
+            title = "Resources Generated", 
+            status = "primary", 
+            solidHeader = TRUE,
+            width = 12,
+            collapsible = FALSE,
+            plotly::plotlyOutput(ns('files_per_study'))
+          )
+        )
       )
-      
     )
-  )))
+  )
 }
 
 # Module Server
@@ -87,7 +85,9 @@ mod_summary_snapshot_ui <- function(id){
 #' @export
 #' @keywords internal
 
-mod_summary_snapshot_server <- function(input, output, session, group_object){
+mod_summary_snapshot_server <- function(
+  input, output, session, group_object, data_config
+){
   ns <- session$ns
   
   files_table <- shiny::reactive({
@@ -95,139 +95,117 @@ mod_summary_snapshot_server <- function(input, output, session, group_object){
     group_object()$files_table
   })
   
-  pubs_table <- shiny::reactive({
-    shiny::req(group_object())
-    group_object()$pubs_table 
-  })
-  
   output$funding_agency <- shiny::renderText({
     print(glue::glue("You are now viewing studies funded by {group_object()$selected_group}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
   })
   
-  output$centersBox <- shinydashboard::renderInfoBox({
-    shiny::req(files_table())
-    n_centers <- files_table() %>% 
-      dplyr::pull("projectId") %>% 
-      dplyr::n_distinct()
-
-    shinydashboard::infoBox(
-      "Studies",
-      n_centers,
-      icon = icon("university"), ### changed to studies
-      color = "light-blue",
-      fill = TRUE
+  output$box1 <- shinydashboard::renderInfoBox({
+    shiny::req(data_config, group_object())
+    param_list <- purrr::pluck(
+      data_config,
+      "modules",
+      "summary_snapshot",
+      "outputs",
+      "overview_boxes",
+      "box1"
     )
+    create_info_box(param_list, group_object())
   })
   
-  output$filesBox <- shinydashboard::renderInfoBox({
-    shiny::req(files_table())
-    n_files <- files_table() %>% 
-      dplyr::pull("id") %>% 
-      dplyr::n_distinct()
-
-    shinydashboard::infoBox(
-      "Files",
-      n_files,
-      icon = icon("file"),
-      color = "light-blue", #Valid colors are: red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, orange, fuchsia, purple, maroon, black.
-      fill = TRUE
+  output$box2 <- shinydashboard::renderInfoBox({
+    shiny::req(data_config, group_object())
+    param_list <- purrr::pluck(
+      data_config,
+      "modules",
+      "summary_snapshot",
+      "outputs",
+      "overview_boxes",
+      "box2"
     )
+    create_info_box(param_list, group_object())
   })
   
-  output$samplesBox <- shinydashboard::renderInfoBox({
-    shiny::req(files_table())
-    n_samples <- base::sum(
-      dplyr::n_distinct(files_table()$individualID),
-      dplyr::n_distinct(files_table()$specimenID)
+  output$box3 <- shinydashboard::renderInfoBox({
+    shiny::req(data_config, group_object())
+    param_list <- purrr::pluck(
+      data_config,
+      "modules",
+      "summary_snapshot",
+      "outputs",
+      "overview_boxes",
+      "box3"
     )
-    shinydashboard::infoBox(
-      "Samples",
-      n_samples,
-      icon = icon("tag"),
-      color = "light-blue",
-      fill = TRUE
-    )
+    create_info_box(param_list, group_object())
   })
   
-  output$pubsBox <- shinydashboard::renderInfoBox({
-    n_centers <- pubs_table() %>% 
-      dplyr::pull("title") %>% 
-      dplyr::n_distinct()
-    infoBox(
-      "Publications",
-      n_centers, 
-      icon = icon("pencil"),
-      color = "light-blue",
-      fill = TRUE
+  output$box4 <- shinydashboard::renderInfoBox({
+    shiny::req(data_config, group_object())
+    param_list <- purrr::pluck(
+      data_config,
+      "modules",
+      "summary_snapshot",
+      "outputs",
+      "overview_boxes",
+      "box4"
     )
+    create_info_box(param_list, group_object())
   })
   
   output$study_per_consortium <- plotly::renderPlotly({
-    data <- files_table() %>% 
-      dplyr::select("year", "studyName", "consortium", "accessType") 
-    data$studyName[is.na(data$studyName) == TRUE] <- "Not Annotated"
-    data$consortium[is.na(data$consortium) == TRUE] <- "Not Applicable"
-    data$accessType[is.na(data$accessType) == TRUE] <- "Not Annotated"
+    shiny::req(data_config, group_object())
+    param_list <- purrr::pluck(
+      data_config,
+      "modules",
+      "summary_snapshot",
+      "outputs",
+      "study_per_consortium"
+    )
+    
+    data <- group_object()[[param_list$table]] %>% 
+      recode_df_with_param_list(param_list) %>% 
+      rename_df_columns_with_param_list(param_list)
+    
     #Catch errors where no files are present
-    validate(need(nrow(data) > 0 , 
-                  "The investigator/investigators has/have not uploaded any files yet. Please check back later."))
-    #make plot
-    ggplot(data, aes(x=consortium, y= studyName, fill=accessType, color= accessType)) +
-      geom_bar(stat="identity", position= "stack", alpha=0.8, na.rm=TRUE) +
-      coord_flip() +
-      viridis::scale_color_viridis(discrete=TRUE) +
-      viridis::scale_fill_viridis(discrete=TRUE) +
-      labs(title="", y = "Number of studies per Consortium") +
-      #ylim(0, 5) +
-      theme_bw() +
-      theme(legend.text = element_text(size=8),
-            axis.text.x  = element_blank(), #element_text(size=10),
-            axis.text.y = element_text(size=10),
-            text = element_text(size=10),
-            strip.text.x = element_text(size = 10),
-            legend.position="right",
-            panel.grid.major.y = element_blank(),
-            panel.background = element_rect(fill = "grey95")) +
-    facet_grid(.~ year)
+    validate(need(
+      nrow(data) > 0 , 
+      "The investigator/investigators has/have not uploaded any files yet. Please check back later."
+    ))
+    
+    create_study_per_consortium_plot(
+      data  = data, 
+      x     = param_list$columns$x$display_name,
+      y     = param_list$columns$y$display_name,
+      fill  = param_list$columns$fill$display_name,
+      color = param_list$columns$fill$display_name,
+      param_list$columns$facet$display_name
+    )
   })
   
   
   output$files_per_study <- plotly::renderPlotly({
-    data <- files_table() %>% 
-      dplyr::select("year", "studyName", "dataType") 
-    data$studyName[is.na(data$studyName) == TRUE] <- "Not Annotated"
-    data$dataType[data$dataType == "drugScreen"] <- "drugScreening"
-    data$dataType[data$dataType == "drugCombinationScreen"] <- "drugScreening"
-    data$dataType[!data$dataType %in% c("immunofluorescence", "genomicVariants", "geneExpression", "drugScreening", "cellularPhysiology", "chromatinActivity")] <- "Other"
-    #Catch errors where no files are present
-    validate(need(nrow(data) > 0 , 
-                  "The investigator/investigators has/have not uploaded any files yet. Please check back later."))
-    #make plot
-    ggplot(data, aes(x=dataType, fill=studyName, color= studyName)) + 
-      geom_bar(stat="count", position= "stack", alpha=1.0, na.rm=TRUE) +
-      coord_flip() +
-      viridis::scale_color_viridis(discrete=TRUE) +
-      viridis::scale_fill_viridis(discrete=TRUE) +
-      labs(title="", y = "Number of files per study") +
-      #ylim(0, 5) +
-      theme_bw() +
-      theme(legend.text = element_blank(), #element_text(size=8), 
-            axis.text.x  = element_text(size=10),
-            axis.text.y = element_text(size=10),
-            text = element_text(size=10),
-            strip.text.x = element_text(size = 10),
-            legend.position="none",
-            panel.grid.major.y = element_blank(),
-            panel.background = element_rect(fill = "grey95")) +
-      facet_grid(. ~ year, scales="free")
+    shiny::req(data_config, group_object())
+    param_list <- purrr::pluck(
+      data_config,
+      "modules",
+      "summary_snapshot",
+      "outputs",
+      "files_per_study"
+    )
     
+    data <- group_object()[[param_list$table]] %>% 
+      recode_df_with_param_list(param_list) %>% 
+      rename_df_columns_with_param_list(param_list)
+    
+    validate(need(
+      nrow(data) > 0, 
+      "The investigator/investigators has/have not uploaded any files yet. Please check back later."
+    ))
+    create_files_per_study_plot(
+      data  = data,
+      x     = param_list$columns$x$display_name,
+      fill  = param_list$columns$fill$display_name,
+      color = param_list$columns$fill$display_name,
+      param_list$columns$facet$display_name
+    )
   })
-  
 }
-
-## To be copied in the UI
-# mod_summary_snapshot_ui("summary_snapshot_ui")
-
-## To be copied in the server
-# callModule(mod_summary_snapshot_server, "summary_snapshot_ui")
-
