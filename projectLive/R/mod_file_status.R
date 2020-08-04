@@ -105,7 +105,6 @@ mod_file_status_server <- function(
     
     data <- group_object() %>% 
       purrr::pluck(param_list$table) %>% 
-      dplyr::select(year, studyName) %>% 
       concatenate_df_list_columns_with_param_list(param_list) %>% 
       recode_df_with_param_list(param_list) %>% 
       rename_df_columns_with_param_list(param_list) 
@@ -132,7 +131,6 @@ mod_file_status_server <- function(
     
     data <- group_object() %>% 
       purrr::pluck(param_list$table) %>% 
-      dplyr::select(year, studyName) %>% 
       concatenate_df_list_columns_with_param_list(param_list) %>% 
       recode_df_with_param_list(param_list) %>% 
       rename_df_columns_with_param_list(param_list) 
