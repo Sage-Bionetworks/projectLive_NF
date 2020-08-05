@@ -144,6 +144,64 @@
          }
        }
     },
+    "study_lead": {
+       "outputs": {
+         "merged_table": {            
+           "join_column" : "studyName",
+           "tables": ["studies_table", "files_table"]
+         },
+         "study_lead_ui": {            
+           "table": "studies_table", 
+           "column": "studyLeads"
+         },
+         "upload_status":{
+           "empty_table_message": "The investigators have not uploaded any files yet. Please check back later.",
+           "table": "merged_table",
+           "columns": {
+             "x": {
+              "name": "studyLeads",
+              "display_name": "Study Leads",
+              "type": "list:character",
+              "na_replace": "Pending Annotation"
+            },
+            "fill": {
+              "name": "resourceType",
+              "display_name": "Resource Type",
+              "type": "character",
+              "na_replace": "Pending Annotation"
+            },
+            "facet": {
+              "name": "year",
+              "type": "integer",
+              "display_name": "Year"
+            }
+           }
+         },
+         "annotation_status":{
+           "table": "merged_table",
+           "empty_table_message": "The investigators have not uploaded any files yet. Please check back later.",
+           "columns": {
+             "x": {
+              "name": "studyLeads",
+              "display_name": "Study Leads",
+              "type": "list:character",
+              "na_replace": "Pending Annotation"
+            },
+            "fill": {
+              "name": "assay",
+              "display_name": "Assay",
+              "type": "character",
+              "na_replace": "Pending Annotation"
+            },
+            "facet": {
+              "name": "year",
+              "display_name": "Year",
+              "type": "integer"
+            }
+           }
+         }
+       }
+    },
     "study_summary": {
       "plots": {
         "data_focus": {
