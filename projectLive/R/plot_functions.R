@@ -123,6 +123,74 @@ create_publication_disease_plot <- function(data, x, fill, color){
     ) 
 }
 
+create_upload_status_plot <- function(data, x, fill, color, ...){
+  
+  data %>% 
+    ggplot2::ggplot() +
+    ggplot2::geom_bar(
+      ggplot2::aes(
+        x = !!rlang::sym(x),
+        fill = !!rlang::sym(fill),
+        color = !!rlang::sym(color)
+      ),
+      stat = "count",
+      alpha = 0.8, 
+      position = "stack"
+    ) +
+    ggplot2::coord_flip() +
+    viridis::scale_color_viridis(discrete = TRUE) +
+    viridis::scale_fill_viridis(discrete = TRUE) +
+    ggplot2::labs(title = "", y = "Number of files uploaded") +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      legend.text = ggplot2::element_blank(),
+      axis.text.x  = ggplot2::element_text(size = 10, angle = 45),
+      axis.text.y = ggplot2::element_text(size = 10),
+      text = ggplot2::element_text(size = 10),
+      strip.text.x = ggplot2::element_text(size = 10),
+      legend.position = "right",
+      panel.grid.major.y = ggplot2::element_blank(),
+      panel.background = ggplot2::element_rect(fill = "grey95")) +
+    ggplot2::facet_grid(
+      cols = ggplot2::vars(!!!rlang::syms(...)),
+      scales = "free"
+    )
+}
+
+create_annotation_status_plot <- function(data, x, fill, color, ...){
+  
+  data %>% 
+    ggplot2::ggplot() +
+    ggplot2::geom_bar(
+      ggplot2::aes(
+        x = !!rlang::sym(x),
+        fill = !!rlang::sym(fill),
+        color = !!rlang::sym(color)
+      ),
+      stat = "count",
+      alpha = 0.8, 
+      position = "stack"
+    ) +
+    ggplot2::coord_flip() +
+    viridis::scale_color_viridis(discrete = TRUE) +
+    viridis::scale_fill_viridis(discrete = TRUE) +
+    ggplot2::labs(title = "", y = "Number of experimental data files") +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      legend.text = ggplot2::element_blank(),
+      axis.text.x  = ggplot2::element_text(size = 10),
+      axis.text.y = ggplot2::element_text(size = 10),
+      text = ggplot2::element_text(size = 10),
+      strip.text.x = ggplot2::element_text(size = 10),
+      legend.position = "right",
+      panel.grid.major.y = ggplot2::element_blank(),
+      panel.background = ggplot2::element_rect(fill = "grey95")) +
+    ggplot2::facet_grid(
+      cols = ggplot2::vars(!!!rlang::syms(...)),
+      scales = "fixed"
+    )
+}
+
 
 create_study_summary_plot <- function(data, x, y, fill, color){
   
