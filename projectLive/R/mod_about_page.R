@@ -79,7 +79,18 @@ mod_about_page_server <- function(input, output, session){
   })
   
   agencies_allowed <- shiny::reactive({
-    synapser::synLogin()
+    
+    require(magrittr)
+    # use your own condaenv here!!!!!
+    # reticulate::use_condaenv(
+    #   condaenv = "py37b",
+    #   required = TRUE,
+    #   conda = "/home/aelamb/anaconda3/condabin/conda"
+    # )
+    
+    synapseclient <- reticulate::import("synapseclient")
+    syn <- synapseclient$Synapse()
+    syn$login()
     
     team_id_list <- c(
       "NF-OSI" = 3378999L,
@@ -98,11 +109,11 @@ mod_about_page_server <- function(input, output, session){
     )
     
     get_team_members <- function(team_id){
-      team_id %>% 
-        synapser::synGetTeamMembers() %>%
-        synapser::as.list() %>% 
+      team_id %>%
+        syn$getTeamMembers(.) %>% 
+        reticulate::iterate(.) %>% 
         purrr::map(., purrr::pluck("member")) %>% 
-        purrr::map_chr(., purrr::pluck("ownerId")) %>% 
+        purrr::map_chr(., purrr::pluck("ownerId")) %>%
         as.integer()
     }
   
