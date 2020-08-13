@@ -1,18 +1,18 @@
-create_study_per_consortium_plot <- function(data, x, y, fill, color, ...){
+create_study_per_consortium_plot <- function(data, x, fill, ...){
   
   data %>% 
     ggplot2::ggplot() +
     ggplot2::geom_bar(
       ggplot2::aes(
         x = !!rlang::sym(x),
-        y = !!rlang::sym(y),
         fill = !!rlang::sym(fill),
-        color = !!rlang::sym(color)
+        color = !!rlang::sym(fill)
       ),
-      stat = "identity",
+      stat = "count",
       position = "stack",
       alpha = 0.8, 
-      na.rm = TRUE
+      na.rm = TRUE,
+      show.legend = FALSE
     ) +
     ggplot2::coord_flip() +
     viridis::scale_color_viridis(discrete = TRUE) +
@@ -31,7 +31,7 @@ create_study_per_consortium_plot <- function(data, x, y, fill, color, ...){
     ggplot2::facet_grid(cols = ggplot2::vars(!!!rlang::syms(...)))
 }
 
-create_files_per_study_plot <- function(data, x, fill, color, ...){
+create_files_per_study_plot <- function(data, x, fill, ...){
   
   data %>% 
     ggplot2::ggplot() +
@@ -39,7 +39,7 @@ create_files_per_study_plot <- function(data, x, fill, color, ...){
       ggplot2::aes(
         x = !!rlang::sym(x),
         fill = !!rlang::sym(fill),
-        color = !!rlang::sym(color)
+        color = !!rlang::sym(fill)
       ),
       stat = "count",
       position = "stack",
@@ -63,7 +63,7 @@ create_files_per_study_plot <- function(data, x, fill, color, ...){
     ggplot2::facet_grid(cols = ggplot2::vars(!!!rlang::syms(...)))
 }
 
-create_publication_status_plot <- function(data, x, fill, color){
+create_publication_status_plot <- function(data, x, fill){
 
   data %>% 
     ggplot2::ggplot() +
@@ -71,7 +71,7 @@ create_publication_status_plot <- function(data, x, fill, color){
       ggplot2::aes(
         x = !!rlang::sym(x),
         fill = !!rlang::sym(fill),
-        color = !!rlang::sym(color)
+        color = !!rlang::sym(fill)
       ),
       binwidth = 0.5,  
       alpha = 0.8,
@@ -93,7 +93,7 @@ create_publication_status_plot <- function(data, x, fill, color){
     ) 
 }
 
-create_publication_disease_plot <- function(data, x, fill, color){
+create_publication_disease_plot <- function(data, x, fill){
   
   data %>% 
     ggplot2::ggplot() +
@@ -101,11 +101,11 @@ create_publication_disease_plot <- function(data, x, fill, color){
       ggplot2::aes(
         x = !!rlang::sym(x),
         fill = !!rlang::sym(fill),
-        color = !!rlang::sym(color)
+        color = !!rlang::sym(fill)
       ),
       binwidth = 0.5,  
       alpha = 0.8,
-      position="stack"
+      position = "stack"
     ) +
     viridis::scale_color_viridis(discrete = TRUE) +
     viridis::scale_fill_viridis(discrete = TRUE) +
@@ -123,7 +123,7 @@ create_publication_disease_plot <- function(data, x, fill, color){
     ) 
 }
 
-create_upload_status_plot <- function(data, x, fill, color, ...){
+create_upload_status_plot <- function(data, x, fill, ...){
   
   data %>% 
     ggplot2::ggplot() +
@@ -131,7 +131,7 @@ create_upload_status_plot <- function(data, x, fill, color, ...){
       ggplot2::aes(
         x = !!rlang::sym(x),
         fill = !!rlang::sym(fill),
-        color = !!rlang::sym(color)
+        color = !!rlang::sym(fill)
       ),
       stat = "count",
       alpha = 0.8, 
@@ -157,7 +157,7 @@ create_upload_status_plot <- function(data, x, fill, color, ...){
     )
 }
 
-create_annotation_status_plot <- function(data, x, fill, color, ...){
+create_annotation_status_plot <- function(data, x, fill, ...){
   
   data %>% 
     ggplot2::ggplot() +
@@ -165,7 +165,7 @@ create_annotation_status_plot <- function(data, x, fill, color, ...){
       ggplot2::aes(
         x = !!rlang::sym(x),
         fill = !!rlang::sym(fill),
-        color = !!rlang::sym(color)
+        color = !!rlang::sym(fill)
       ),
       stat = "count",
       alpha = 0.8, 

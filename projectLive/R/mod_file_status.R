@@ -112,9 +112,11 @@ mod_file_status_server <- function(
     create_publication_status_plot(
       data, 
       x     = purrr::pluck(param_list, "columns", "x", "display_name"),
-      fill  = purrr::pluck(param_list, "columns", "fill", "display_name"),
-      color = purrr::pluck(param_list, "columns", "fill", "display_name")
-    )
+      fill  = purrr::pluck(param_list, "columns", "fill", "display_name")
+    ) %>% 
+      plotly::ggplotly(
+        tooltip = c("count", param_list$columns$fill$display_name)
+      )
   })
   
   output$publication_disease <- plotly::renderPlotly({
@@ -138,9 +140,11 @@ mod_file_status_server <- function(
     create_publication_disease_plot(
       data, 
       x     = purrr::pluck(param_list, "columns", "x", "display_name"),
-      fill  = purrr::pluck(param_list, "columns", "fill", "display_name"),
-      color = purrr::pluck(param_list, "columns", "fill", "display_name")
-    )
+      fill  = purrr::pluck(param_list, "columns", "fill", "display_name")
+    ) %>% 
+      plotly::ggplotly(
+        tooltip = c("count", param_list$columns$fill$display_name)
+      )
   })
   
 }
