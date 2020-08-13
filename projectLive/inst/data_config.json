@@ -55,12 +55,6 @@
               "display_name": "Year",
               "type": "integer"
             },
-            "y": {
-              "name": "studyName",
-              "display_name" : "Study Name",
-              "na_replace": "Not Annotated",
-              "type": "character"
-            },
             "x": {
               "name": "consortium",
               "display_name": "Consortium",

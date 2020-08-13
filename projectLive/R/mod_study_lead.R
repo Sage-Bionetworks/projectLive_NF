@@ -125,15 +125,19 @@ mod_study_lead_server <- function(
       recode_df_with_param_list(param_list) %>% 
       rename_df_columns_with_param_list(param_list)  
     
+    .GlobalEnv$x <- data
+    
     validate(need(nrow(data) > 0, param_list$empty_table_message))
     
     create_upload_status_plot(
       data, 
       x = purrr::pluck(param_list, "columns", "x", "display_name"),
       fill = purrr::pluck(param_list, "columns", "fill", "display_name"),
-      color = purrr::pluck(param_list, "columns", "fill", "display_name"),
       purrr::pluck(param_list, "columns", "facet", "display_name")
-    )
+    ) %>% 
+      plotly::ggplotly(
+        tooltip = c("count", param_list$columns$fill$display_name)
+      )
   })
   
   output$study_lead_ui <- shiny::renderUI({
@@ -182,6 +186,8 @@ mod_study_lead_server <- function(
       concatenate_df_list_columns_with_param_list(param_list) %>% 
       recode_df_with_param_list(param_list) %>% 
       rename_df_columns_with_param_list(param_list)  
+    
+    .GlobalEnv$y <- data
       
 
     validate(need(nrow(data) > 0, param_list$empty_table_message))
@@ -190,9 +196,11 @@ mod_study_lead_server <- function(
       data, 
       x = purrr::pluck(param_list, "columns", "x", "display_name"),
       fill = purrr::pluck(param_list, "columns", "fill", "display_name"),
-      color = purrr::pluck(param_list, "columns", "fill", "display_name"),
-      purrr::pluck(param_list, "columns", "facet", "display_name")
-    )
+      purrr::pluck(param_list, "columns", "facet", "display_name") 
+    ) %>% 
+      plotly::ggplotly(
+        tooltip = c("count", param_list$columns$fill$display_name)
+      )
   })
 }
 

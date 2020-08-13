@@ -170,7 +170,6 @@ mod_summary_snapshot_server <- function(
       recode_df_with_param_list(param_list) %>% 
       rename_df_columns_with_param_list(param_list)
     
-    #Catch errors where no files are present
     validate(need(
       nrow(data) > 0 , 
       "The investigator/investigators has/have not uploaded any files yet. Please check back later."
@@ -179,11 +178,12 @@ mod_summary_snapshot_server <- function(
     create_study_per_consortium_plot(
       data  = data, 
       x     = param_list$columns$x$display_name,
-      y     = param_list$columns$y$display_name,
       fill  = param_list$columns$fill$display_name,
-      color = param_list$columns$fill$display_name,
       param_list$columns$facet$display_name
-    )
+    ) %>% 
+      plotly::ggplotly(
+        tooltip = c("count", param_list$columns$fill$display_name)
+      )
   })
   
   
@@ -210,8 +210,10 @@ mod_summary_snapshot_server <- function(
       data  = data,
       x     = param_list$columns$x$display_name,
       fill  = param_list$columns$fill$display_name,
-      color = param_list$columns$fill$display_name,
       param_list$columns$facet$display_name
-    )
+    ) %>%
+      plotly::ggplotly(
+        tooltip = c("count", param_list$columns$fill$display_name)
+      )
   })
 }
