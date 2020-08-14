@@ -139,16 +139,16 @@ mod_study_lead_server <- function(input, output, session){
     
     data1 <- as.data.frame(plotdata1())
     data2 <- as.data.frame(plotdata2())
-    data2 <- data2 %>% 
-      mutate(year= lubridate::year(data2$createdOn)) 
-    
+    data2 <- data2 %>%
+      mutate(year= lubridate::year(data2$createdOn))
+
     data <- merge(data1[,c("studyLeads", "studyName")], data2, by= "studyName")
-    
+
     data$studyName[is.na(data$studyName) == TRUE] <- "Not Annotated"
     data$consortium[is.na(data$consortium) == TRUE] <- "Not Applicable"
     data$assay[is.na(data$assay) == TRUE] <- "Not Annotated"
     
-    validate(need(length(data$assay) > 0 , 
+    validate(need(length(anno_data$assay) > 0 , 
                   "The investigators have not uploaded any files yet. Please check back later."))
     
     #make plot
