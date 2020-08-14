@@ -93,8 +93,7 @@ mod_about_page_server <- function(input, output, session){
     return(user)
   })
   
-  agencies_allowed <- shiny::reactive({
-    
+  agencies_allowed <- shiny::reactive({    
     # The following code chunk ensures that only members of specific teams can access the files below. 
     # Individual users will not be able to access the tables/files through this code even if they have access to the entity on synapse
     entity <- "syn22281727"
@@ -108,19 +107,21 @@ mod_about_page_server <- function(input, output, session){
     # the teams allowed to view the dashboard
     dashboard_teams <- syn$restGET(glue::glue("/entity/{entity}/acl"))
     allowed_teams <- purrr::map_chr(dashboard_teams$resourceAccess, function(x) x$principalId)
-    
+                                    
     #dashboard_team_names <- syn$tableQuery("SELECT * FROM syn22279138")$asDataFrame()
     
-    
-    allowed_viewers <- all_team_names[all_teams %in% allowed_teams] 
+    #final allowed agencies:
+     all_team_names[all_teams %in% allowed_teams] 
+
   })
   
   output$agency_selection_ui <- shiny::renderUI({
-    shiny::selectizeInput(ns("funder"), 
-                          label = "", 
-                          choices = agencies_allowed(),
-                          selected = "NTAP", 
-                          multiple = F)
+    shiny::selectizeInput(
+      ns("funder"), 
+      label = "", 
+      choices = agencies_allowed(),
+      multiple = F
+    )
   })
   
   output$funding_agency <- shiny::renderText({
