@@ -44,9 +44,11 @@ golem_add_external_resources <- function(){
   tags$head(
     golem::activate_js(),
     golem::favicon(),
+    includeScript(system.file("inst/app/www/readCookie.js", package = "projectLive")),
     # Add here all the external resources
     # If you have a custom.css in the inst/app/www
     # Or for example, you can add shinyalert::useShinyalert() here
     tags$link(rel="stylesheet", type="text/css", href="www/custom.css")
   )
+
 }
