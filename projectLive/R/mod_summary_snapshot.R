@@ -182,7 +182,7 @@ mod_summary_snapshot_server <- function(
       param_list$columns$facet$display_name
     ) %>% 
       plotly::ggplotly(
-        tooltip = c("count", param_list$columns$fill$display_name)
+        tooltip = c("count", "fill")
       )
   })
   
@@ -213,7 +213,7 @@ mod_summary_snapshot_server <- function(
       param_list$columns$facet$display_name
     ) %>%
       plotly::ggplotly(
-        tooltip = c("count", param_list$columns$fill$display_name)
+        tooltip = c("count", "fill")
       )
   })
 }

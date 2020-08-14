@@ -136,7 +136,7 @@ mod_study_lead_server <- function(
       purrr::pluck(param_list, "columns", "facet", "display_name")
     ) %>% 
       plotly::ggplotly(
-        tooltip = c("count", param_list$columns$fill$display_name)
+        tooltip = c("count", "fill")
       )
   })
   
@@ -186,9 +186,6 @@ mod_study_lead_server <- function(
       concatenate_df_list_columns_with_param_list(param_list) %>% 
       recode_df_with_param_list(param_list) %>% 
       rename_df_columns_with_param_list(param_list)  
-    
-    .GlobalEnv$y <- data
-      
 
     validate(need(nrow(data) > 0, param_list$empty_table_message))
     
@@ -199,7 +196,7 @@ mod_study_lead_server <- function(
       purrr::pluck(param_list, "columns", "facet", "display_name") 
     ) %>% 
       plotly::ggplotly(
-        tooltip = c("count", param_list$columns$fill$display_name)
+        tooltip = c("count", "fill")
       )
   })
 }
