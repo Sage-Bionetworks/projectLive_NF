@@ -115,7 +115,7 @@ mod_file_status_server <- function(
       fill  = purrr::pluck(param_list, "columns", "fill", "display_name")
     ) %>% 
       plotly::ggplotly(
-        tooltip = c("count", param_list$columns$fill$display_name)
+        tooltip = c("count", "fill")
       )
   })
   
@@ -143,7 +143,7 @@ mod_file_status_server <- function(
       fill  = purrr::pluck(param_list, "columns", "fill", "display_name")
     ) %>% 
       plotly::ggplotly(
-        tooltip = c("count", param_list$columns$fill$display_name)
+        tooltip = c("count", "fill")
       )
   })
   
