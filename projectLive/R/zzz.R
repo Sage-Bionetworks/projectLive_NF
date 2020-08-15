@@ -1,4 +1,4 @@
-# This file loads synapseclient and makes it globally available to the app
+### This file loads synapseclient and makes it globally available to the app
 ### Filename is zzz.R as per convention
 
 synapse <- NULL
