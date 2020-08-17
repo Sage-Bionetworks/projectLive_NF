@@ -26,3 +26,60 @@ test_that("create_files_per_study_plot", {
   print(p)
   expect_type(p, "list")
 })
+
+test_that("create_study_summary_plot", {
+  dplyr::tibble(
+      "Study Name" = "s1",
+      "Resource Type" = c(rep("r1", 10), rep("r2", 20)),
+      "Assay" = c(rep("s1", 15), rep("s2", 15))
+    ) %>% 
+    dplyr::select("Study Name", "Assay") %>% 
+    ggplot2::ggplot() +
+      ggplot2::geom_bar(
+        ggplot2::aes(
+          x = `Study Name`,
+          fill = Assay
+        ),
+        stat = "count",
+        alpha = 0.8,
+        position = "stack"
+      )
+})
+
+
+test_that("create_study_timeline_plot", {
+  tbl <- dplyr::tibble(
+    "Study Name" = c("s1", "s2", "s3"),
+    "Resource Type" = c("r1", "r2", "r3"),
+    "Year" = c(2000L, 2001L, 2002L),
+    "Month" = factor("Jul", "Jul", "Jun")
+  )
+  
+  fig1 <- create_study_timeline_plot(
+    tbl, 
+    x = "Study Name", 
+    fill = "Resource Type", 
+    list("Year", "Month")
+  ) %>%
+    plotly::ggplotly(
+      tooltip = c("count", "fill")
+    )
+  
+  print(fig1)
+  expect_type(fig1, "list")
+  
+  fig2 <- create_study_timeline_plot(
+    tbl, 
+    x = "Study Name", 
+    fill = "Resource Type", 
+    list("Year")
+  ) %>%
+    plotly::ggplotly(
+      tooltip = c("count", "fill")
+    )
+  
+  print(fig2)
+  expect_type(fig2, "list")
+})
+
+

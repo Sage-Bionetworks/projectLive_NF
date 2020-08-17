@@ -1,3 +1,9 @@
+create_data_focus_tables <- function(data, x_column, fill_columns){
+  purrr::map(fill_columns, ~ dplyr::select(data, x_column, .x)) %>% 
+    purrr::map(tidyr::drop_na) %>% 
+    purrr::discard(., purrr::map(., nrow) == 0)
+}
+
 concatenate_list_columns <- function(tbl, columns){
   dplyr::mutate_at(
     tbl,

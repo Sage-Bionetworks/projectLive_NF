@@ -28,7 +28,7 @@ create_study_per_consortium_plot <- function(data, x, fill, ...){
       legend.position = "right",
       panel.grid.major.y = ggplot2::element_blank(),
       panel.background = ggplot2::element_rect(fill = "grey95")) +
-    ggplot2::facet_grid(cols = ggplot2::vars(!!!rlang::syms(...)))
+    ggplot2::facet_grid(cols = ggplot2::vars(!!!rlang::syms(unlist(...))))
 }
 
 create_files_per_study_plot <- function(data, x, fill, ...){
@@ -60,8 +60,10 @@ create_files_per_study_plot <- function(data, x, fill, ...){
       legend.position = "right",
       panel.grid.major.y = ggplot2::element_blank(),
       panel.background = ggplot2::element_rect(fill = "grey95")) +
-    ggplot2::facet_grid(cols = ggplot2::vars(!!!rlang::syms(...)))
+    ggplot2::facet_grid(cols = ggplot2::vars(!!!rlang::syms(unlist(...))))
 }
+
+
 
 create_publication_status_plot <- function(data, x, fill){
 
@@ -152,7 +154,7 @@ create_upload_status_plot <- function(data, x, fill, ...){
       panel.grid.major.y = ggplot2::element_blank(),
       panel.background = ggplot2::element_rect(fill = "grey95")) +
     ggplot2::facet_grid(
-      cols = ggplot2::vars(!!!rlang::syms(...)),
+      cols = ggplot2::vars(!!!rlang::syms(unlist(...))),
       scales = "free"
     )
 }
@@ -186,31 +188,43 @@ create_annotation_status_plot <- function(data, x, fill, ...){
       panel.grid.major.y = ggplot2::element_blank(),
       panel.background = ggplot2::element_rect(fill = "grey95")) +
     ggplot2::facet_grid(
-      cols = ggplot2::vars(!!!rlang::syms(...)),
+      cols = ggplot2::vars(!!!rlang::syms(unlist(...))),
       scales = "fixed"
     )
 }
 
+create_data_focus_plots <- function(data_list, param_list, fill_columns){
+  data_list %>% 
+    purrr::map2(
+      ., 
+      fill_columns,
+      ~ create_data_focus_plot(
+        data = .x, 
+        x = param_list$plot$x, 
+        fill = .y
+      )
+    ) %>% 
+    purrr::map(plotly::ggplotly, tooltip = param_list$tooltips) %>% 
+    plotly::subplot(titleX = TRUE)
+}
 
-create_study_summary_plot <- function(data, x, y, fill, color){
-  
+create_data_focus_plot <- function(data, x, fill){
   data %>%  
     ggplot2::ggplot() +
     ggplot2::geom_bar(
       ggplot2::aes(
-        x = !!rlang::ensym(x),
-        y = !!rlang::ensym(y),
-        fill = !!rlang::ensym(fill),
-        color = !!rlang::ensym(color)
+        x = !!rlang::sym(x),
+        fill = !!rlang::sym(fill),
+        color = !!rlang::sym(fill)
       ),
-      stat = "identity", 
+      stat = "count", 
       alpha = 0.8, 
       position = "stack"
     ) +
     viridis::scale_color_viridis(discrete = TRUE) +
     viridis::scale_fill_viridis(discrete = TRUE) +
     ggplot2::labs(
-      title = "", y = "Number of files uploaded", x = y
+      title = "", y = "Number of files uploaded", x = fill
     ) +
     ggplot2::theme_bw() +
     ggplot2::theme(
@@ -225,12 +239,15 @@ create_study_summary_plot <- function(data, x, y, fill, color){
     ) 
 }
 
-create_study_summary_grid_plot <- function(data, x, fill, color, ...){
-  
+create_study_timeline_plot <- function(data, x, fill, ...){
   data %>%  
     ggplot2::ggplot() +
     ggplot2::geom_bar(
-      ggplot2::aes(x = {{x}}, fill = {{fill}}, color = {{color}}),
+      ggplot2::aes(
+        x = !!rlang::sym(x),
+        fill = !!rlang::sym(fill),
+        color = !!rlang::sym(fill)
+      ),
       stat = "count",
       alpha = 0.8,
       position = "stack"
@@ -245,9 +262,9 @@ create_study_summary_grid_plot <- function(data, x, fill, color, ...){
       axis.text.y = ggplot2::element_text(size = 10),
       text = ggplot2::element_text(size = 10),
       strip.text.x = ggplot2::element_text(size = 10),
-      legend.position="left",
+      legend.position = "left",
       panel.grid = ggplot2::element_blank(),
       panel.background = ggplot2::element_rect(fill = "grey95")
     ) +
-    ggplot2::facet_grid(cols = ggplot2::vars(...))
+    ggplot2::facet_grid(cols = ggplot2::vars(!!!rlang::syms(unlist(...))))
 }

@@ -67,7 +67,7 @@ mod_study_summary_ui <- function(id){
             collapsible = FALSE,
             #shinydashboard::infoBoxOutput(ns('study'), width = 12),
             #shiny::textOutput(ns('study')),
-            shiny::uiOutput(ns("data_focus_selection")),
+            shiny::uiOutput(ns("data_focus_selection_ui")),
             plotly::plotlyOutput(ns('data_focus_plot'))
           ),
           shinydashboard::box(
@@ -83,7 +83,7 @@ mod_study_summary_ui <- function(id){
             #                       multiple = F),
             #shinydashboard::infoBoxOutput(ns('study'), width = 12),
             #shiny::textOutput(ns('study')),
-            plotly::plotlyOutput(ns('study_timeline'))
+            plotly::plotlyOutput(ns('study_timeline_plot'))
           ),
           shinydashboard::box(
             title = "Study Summary",
@@ -110,7 +110,7 @@ mod_study_summary_server <- function(
 ){
   ns <- session$ns
   
-  merged_dataset <- shiny::reactive({
+  merged_table <- shiny::reactive({
     
     shiny::req(group_object(), data_config)
     
@@ -148,7 +148,7 @@ mod_study_summary_server <- function(
       "study_table"
     ) 
     
-    merged_dataset() %>% 
+    merged_table() %>% 
       dplyr::select_at(
         unlist(c(param_list$group_columns, param_list$count_columns))
       ) %>% 
@@ -192,7 +192,12 @@ mod_study_summary_server <- function(
     )
   })
   
-  output$data_focus_selection <- shiny::renderUI({
+  filtered_merged_table <- shiny::reactive({
+    shiny::req(merged_table(), selected_study_name())
+    dplyr::filter(merged_table(), .data$studyName == selected_study_name()) 
+  })
+  
+  output$data_focus_selection_ui <- shiny::renderUI({
     shiny::req(data_config)
     choices <- data_config %>% 
       purrr::pluck(
@@ -200,9 +205,9 @@ mod_study_summary_server <- function(
         "study_summary", 
         "outputs", 
         "data_focus", 
-        "columns"
-      ) %>% 
-      purrr::map(purrr::pluck, "name")
+        "plot",
+        "fill"
+      )
     shiny::selectizeInput(
       ns('data_focus_columns'),
       label = "Choose to view",
@@ -215,88 +220,65 @@ mod_study_summary_server <- function(
   output$data_focus_plot <- plotly::renderPlotly({
     
     shiny::req(
-      merged_dataset(), 
-      selected_study_name(),
-      input$data_focus_columns
+      filtered_merged_table(), 
+      input$data_focus_columns,
+      data_config
     )
     
-    column_list <- c(
-      "assay" = "Assays Used",
-      "resourceType" = "Resource Added",
-      "species" = "Species Used",
-      "tumorType" = "Tumor Types Investigated"
-    )
-
-    columns <- input$data_focus_columns
-    count_columns <- column_list[input$data_focus_columns]
-    
-    data <- merged_dataset() %>%
-      dplyr::select(c("studyName", columns)) %>% 
-      dplyr::filter(studyName == selected_study_name()) %>% 
-      tidyr::pivot_longer(-"studyName") %>% 
-      tidyr::drop_na() %>% 
-      dplyr::group_by(.data$studyName, .data$name, .data$value) %>% 
-      dplyr::summarise("count" = dplyr::n()) 
-    
-    dfs <- purrr::map2(
-      columns,
-      count_columns,
-      create_plot_df_from_count_df,
-      data
-    )
-
-    plots <- purrr::pmap(
-      dplyr::tibble(
-        "data" = dfs,
-        "x" = "studyName",
-        "y" = count_columns,
-        "color" = columns
-      ) %>%
-        dplyr::mutate("fill" = .data$color),
-      create_study_summary_plot
-    )
-
-    plotly::subplot(plots, titleX = TRUE)
-    
-  })
-  
-  output$study_timeline <- plotly::renderPlotly({
-    shiny::req(merged_dataset(), selected_study_name())
-    data <- merged_dataset() %>%
-      dplyr::filter(
-        .data$studyName == selected_study_name(),
-        !is.na(.data$resourceType)
-      ) %>% 
-      dplyr::select(
-        "Study Name" = "studyName", 
-        "Resource Type" = "resourceType", 
-        "Year" = "year", 
-        "Month" = "month"
+    param_list <- data_config %>% 
+      purrr::pluck(
+        "modules", 
+        "study_summary", 
+        "outputs", 
+        "data_focus"
       ) 
     
-    #Catch errors where no files are present
-    validate(need(
-      nrow(data) > 0 , 
-      "The investigator/investigators has/have not uploaded any files yet. Please check back later."
-    ))
+    data_list <- filtered_merged_table() %>% 
+      concatenate_df_list_columns_with_param_list(param_list) %>% 
+      recode_df_with_param_list(param_list) %>% 
+      rename_df_columns_with_param_list(param_list) %>% 
+      create_data_focus_tables(param_list$plot$x, input$data_focus_columns)
     
-    create_study_summary_grid_plot(
+    validate(need(length(data_list) > 0 , param_list$empty_table_message))
+    
+    create_data_focus_plots(data_list, param_list, input$data_focus_columns)
+  })
+  
+  output$study_timeline_plot <- plotly::renderPlotly({
+    shiny::req(filtered_merged_table(), data_config)
+    
+    param_list <- data_config %>% 
+      purrr::pluck(
+        "modules", 
+        "study_summary", 
+        "outputs", 
+        "study_timeline"
+      ) 
+    
+    data <- filtered_merged_table() %>%
+      concatenate_df_list_columns_with_param_list(param_list) %>% 
+      recode_df_with_param_list(param_list) %>% 
+      rename_df_columns_with_param_list(param_list)
+    
+    validate(need(nrow(data) > 0 , param_list$empty_table_message))
+    
+    create_study_timeline_plot(
       data, 
-      x = `Study Name`, 
-      fill = `Resource Type`, 
-      color = `Resource Type`,
-      Year,
-      Month
-    )
+      x = param_list$plot$x,
+      fill = param_list$plot$fill,
+      param_list$plot$facet
+    ) %>%
+      plotly::ggplotly(
+        tooltip = param_list$tooltips
+      )
   
   })
   
   output$study_details <- shiny::renderText({
     
-    shiny::req(merged_dataset(), selected_study_name())
+    shiny::req(filtered_merged_table(), selected_study_name())
     
-    merged_dataset() %>%
-      dplyr::filter(.data$studyName == selected_study_name()) %>%
+    filtered_merged_table() %>%
       dplyr::select(
         "projectId", "studyStatus", "dataStatus", "summary", "diseaseFocus"
       ) %>%
