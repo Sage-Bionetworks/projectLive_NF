@@ -227,26 +227,74 @@
         "data_focus": {
           "columns": [
             {
+              "name": "studyName",
+              "display_name": "Study Name",
+              "type": "character"
+            },
+            {
               "name": "assay",
-              "aggregate_name": "Assays Used",
-              "display_name": "Assay"
+              "display_name": "Assays Used",
+              "type": "character"
             },
             {
               "name": "resourceType",
-              "aggregate_name": "Resource Added",
-              "display_name": "Resource Type"
+              "display_name": "Resource Added",
+              "type": "character"
             },
             {
               "name": "species",
-              "aggregate_name": "Species Used",
-              "display_name":  "Species"
+              "display_name": "Species Used",
+              "type": "character"
             },
             {
               "name": "tumorType",
-              "aggregate_name":"Tumor Types Investigated",
-              "display_name": "Tumor Type"
+              "display_name": "Tumor Types Investigated",
+              "type": "character"
             }
-          ]
+          ],
+          "plot": {
+            "x": "Study Name",
+            "fill": [
+              "Assays Used",
+              "Resource Added",
+              "Species Used",
+              "Tumor Types Investigated"
+            ]
+          },
+          "tooltips": ["count", "fill"],
+          "empty_table_message": "No columns selected have data for current Study"
+        },
+        "study_timeline": {
+          "columns": [
+            {
+              "name": "studyName",
+              "display_name": "Study Name",
+              "type": "character"
+            },
+            {
+              "name": "resourceType",
+              "display_name": "Resource Type",
+              "type": "character"
+            },
+            {
+              "name": "year",
+              "display_name": "Year",
+              "type": "integer"
+            },
+            {
+              "name": "month",
+              "display_name": "Month",
+              "type": "factor"
+            }
+            
+          ],
+          "plot": {
+            "x": "Study Name",
+            "fill": "Resource Type",
+            "facet": ["Year", "Month"]
+          },
+          "tooltips": ["count", "fill"],
+          "empty_table_message": "The investigator/investigators has/have not uploaded any files yet. Please check back later."
         }
       }
     }
