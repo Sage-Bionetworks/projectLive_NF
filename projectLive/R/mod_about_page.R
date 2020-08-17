@@ -44,7 +44,7 @@ mod_about_page_ui <- function(id){
 #' @keywords internal
 
 
-mod_about_page_server <- function(input, output, session){
+mod_about_page_server <- function(input, output, session, syn){
   ns <- session$ns
   
   output$about <- shinydashboard::renderInfoBox({
@@ -55,33 +55,9 @@ mod_about_page_server <- function(input, output, session){
       icon = icon("university", "fa-1x"),
       color = "light-blue", #Valid colors are: red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, orange, fuchsia, purple, maroon, black.
       fill = TRUE
-    )
-  })
-  
-  
-  # Add synapse function
-  syn <- synapseclient$Synapse()
-  
-  # Adding in-app authentication
-  session$sendCustomMessage(type = "readCookie", message = list())
-  
-  # Show message if user is not logged in to synapse
-  unauthorized <- shiny::observeEvent(input$authorized, {
-    shiny::showModal(
-      shiny::modalDialog(
-        title = "Not logged in",
-        HTML("If you are a member of the funding team, you must log in to <a target=\"_blank\" href=\"https://www.synapse.org/\">Synapse</a> to access this resource. Please log in, and then refresh this page.") # nolint
       )
-    )
   })
-  
-  
-  # If logged in, store userid to check access
-  #observeEvent(input$cookie, {
-  
-  #syn$login(sessionToken=input$cookie)
-  syn$login()
-  
+   
   output$welcome <- shiny::renderText({
     print(glue::glue("Welcome {syn$getUserProfile()$displayName} !"))
   })
@@ -133,7 +109,7 @@ mod_about_page_server <- function(input, output, session){
   
   funding_partner <- reactive({ input$funder })
   return(funding_partner)
-  #})
+ 
 }
 
 
