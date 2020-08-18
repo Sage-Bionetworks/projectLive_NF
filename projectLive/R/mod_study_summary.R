@@ -132,8 +132,8 @@ mod_study_summary_server <- function(
       dplyr::select_at(unlist(param_list$table3_cols))
     
     table1 %>%
-      dplyr::full_join(table2, by = param_list$join_column1) %>%
-      dplyr::left_join(table3, by = param_list$join_column2)
+      dplyr::left_join(table2, by = param_list$join_column1) %>% 
+      dplyr::left_join(table3, by = param_list$join_column2) 
   })
   
   study_table <- shiny::reactive({
@@ -155,7 +155,8 @@ mod_study_summary_server <- function(
       dplyr::group_by_at(unlist(param_list$group_columns))%>% 
       dplyr::summarise_at(unlist(param_list$count_columns), dplyr::n_distinct) %>% 
       dplyr::ungroup() %>% 
-      format_plot_data_with_param_list(param_list)
+      format_plot_data_with_param_list(param_list) %>% 
+      dplyr::arrange(`Name`)
   })
   
   ##start making outputs
