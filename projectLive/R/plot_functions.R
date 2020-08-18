@@ -55,7 +55,10 @@ create_resources_generated_plot <- function(data, x, fill, facet){
     ggplot2::coord_flip() +
     viridis::scale_color_viridis(discrete = TRUE) +
     viridis::scale_fill_viridis(discrete = TRUE) +
-    ggplot2::labs(title = "", y = "Number of studies per Consortium") +
+    ggplot2::labs(
+      title = "", 
+      y = "Number of studies per Consortium"
+    ) +
     ggplot2::theme_bw() +
     ggplot2::theme(
       legend.text = ggplot2::element_text(size = 8),
@@ -198,11 +201,9 @@ create_annotation_activity_plot <- function(data, x, fill, facet){
     )
 }
 
-create_data_focus_plots <- function(data_list, param_list, fill_columns){
+create_data_focus_plots <- function(data_list, param_list){
   data_list %>% 
-    purrr::map2(
-      ., 
-      fill_columns,
+    purrr::imap(
       ~ create_data_focus_plot(
         data = .x, 
         x = param_list$plot$x, 

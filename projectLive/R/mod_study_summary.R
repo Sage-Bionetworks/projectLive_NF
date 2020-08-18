@@ -238,7 +238,7 @@ mod_study_summary_server <- function(
     
     validate(need(length(data_list) > 0 , param_list$empty_table_message))
     
-    create_data_focus_plots(data_list, param_list, input$data_focus_columns)
+    create_data_focus_plots(data_list, param_list)
   })
   
   output$study_timeline_plot <- plotly::renderPlotly({
@@ -251,9 +251,10 @@ mod_study_summary_server <- function(
         "outputs", 
         "study_timeline"
       ) 
-    
+
     data <- filtered_merged_table() %>%
-      format_plot_data_with_param_list(param_list)
+      format_plot_data_with_param_list(param_list) %>% 
+      tidyr::drop_na()
     
     validate(need(nrow(data) > 0 , param_list$empty_table_message))
     

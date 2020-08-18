@@ -7,8 +7,9 @@ format_plot_data_with_param_list <- function(data, param_list){
 
 create_data_focus_tables <- function(data, x_column, fill_columns){
   purrr::map(fill_columns, ~ dplyr::select(data, x_column, .x)) %>% 
+    purrr::set_names(fill_columns) %>% 
     purrr::map(tidyr::drop_na) %>% 
-    purrr::discard(., purrr::map(., nrow) == 0)
+    purrr::discard(., purrr::map(., nrow) == 0) 
 }
 
 concatenate_list_columns <- function(tbl, columns){
