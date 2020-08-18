@@ -49,7 +49,7 @@ mod_study_lead_ui <- function(id){
             solidHeader = TRUE,
             width = 12,
             collapsible = FALSE,
-            plotly::plotlyOutput(ns('upload_status'))
+            plotly::plotlyOutput(ns('file_upload_timeline'))
           ),
           shinydashboard::box(
             title = "Annotation Activity", 
@@ -63,7 +63,7 @@ mod_study_lead_ui <- function(id){
               #                    choices = c("year", "month"),
               #                    selected = "year", 
               #                    multiple = F),
-            plotly::plotlyOutput(ns('annotation_status'))
+            plotly::plotlyOutput(ns('annotation_activity'))
           )
           
         )
@@ -108,7 +108,7 @@ mod_study_lead_server <- function(
       purrr::reduce(dplyr::inner_join, by = param_list$join_column) 
   })
   
-  output$upload_status <- plotly::renderPlotly({
+  output$file_upload_timeline <- plotly::renderPlotly({
     
     shiny::req(merged_table(), data_config)
     
@@ -117,27 +117,17 @@ mod_study_lead_server <- function(
       "modules",
       "study_lead",
       "outputs",
-      "upload_status"
+      "file_upload_timeline"
     )
     
     data <- merged_table() %>% 
-      concatenate_df_list_columns_with_param_list(param_list) %>% 
-      recode_df_with_param_list(param_list) %>% 
-      rename_df_columns_with_param_list(param_list)  
-    
-    .GlobalEnv$x <- data
+      format_plot_data_with_param_list(param_list) 
     
     validate(need(nrow(data) > 0, param_list$empty_table_message))
     
-    create_upload_status_plot(
-      data, 
-      x = purrr::pluck(param_list, "columns", "x", "display_name"),
-      fill = purrr::pluck(param_list, "columns", "fill", "display_name"),
-      purrr::pluck(param_list, "columns", "facet", "display_name")
-    ) %>% 
-      plotly::ggplotly(
-        tooltip = c("count", "fill")
-      )
+    create_plot_with_param_list(
+      data, param_list, "create_file_upload_timeline_plot"
+    )
   })
   
   output$study_lead_ui <- shiny::renderUI({
@@ -152,8 +142,7 @@ mod_study_lead_server <- function(
       "study_lead_ui"
     )
     
-    choices <- group_object() %>% 
-      purrr::pluck(param_list$table) %>% 
+    choices <- merged_table() %>% 
       dplyr::pull(param_list$column) %>% 
       unlist(.) %>% 
       unique() %>% 
@@ -166,7 +155,7 @@ mod_study_lead_server <- function(
     )
   })
   
-  output$annotation_status <- plotly::renderPlotly({
+  output$annotation_activity <- plotly::renderPlotly({
     
     shiny::req(merged_table(), data_config, input$studylead)
     
@@ -175,7 +164,7 @@ mod_study_lead_server <- function(
       "modules",
       "study_lead",
       "outputs",
-      "annotation_status"
+      "annotation_activity"
     )
     
     data <- merged_table() %>% 
@@ -183,21 +172,13 @@ mod_study_lead_server <- function(
         .data$studyLeads, 
         ~input$studylead %in% .x
       )) %>% 
-      concatenate_df_list_columns_with_param_list(param_list) %>% 
-      recode_df_with_param_list(param_list) %>% 
-      rename_df_columns_with_param_list(param_list)  
+      format_plot_data_with_param_list(param_list) 
 
     validate(need(nrow(data) > 0, param_list$empty_table_message))
     
-    create_annotation_status_plot(
-      data, 
-      x = purrr::pluck(param_list, "columns", "x", "display_name"),
-      fill = purrr::pluck(param_list, "columns", "fill", "display_name"),
-      purrr::pluck(param_list, "columns", "facet", "display_name") 
-    ) %>% 
-      plotly::ggplotly(
-        tooltip = c("count", "fill")
-      )
+    create_plot_with_param_list(
+      data, param_list, "create_annotation_activity_plot"
+    )
   })
 }
 
