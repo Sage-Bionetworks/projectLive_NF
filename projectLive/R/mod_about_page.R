@@ -109,7 +109,7 @@ mod_about_page_server <- function(input, output, session, syn, data_config){
     shinydashboard::infoBox(
       " ",
       print("projectLive: Track the progress and impact of our funding partners in real time"),
-      icon = icon("university", "fa-1x"),
+      icon = shiny::icon("university", "fa-1x"),
       color = "light-blue", #Valid colors are: red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, orange, fuchsia, purple, maroon, black.
       fill = TRUE
     )
@@ -118,56 +118,75 @@ mod_about_page_server <- function(input, output, session, syn, data_config){
   selected_group <- shiny::reactive(input$selected_group)
   
   files_table <- shiny::reactive({
-    shiny::req(syn, data_config, selected_group())
+    shiny::req(syn, data_config)
     tbl <-
       read_rds_file_from_synapse(
         syn,
         purrr::pluck(data_config, "data_files", "files", "synapse_id")
       ) %>% 
-      dplyr::filter(selected_group() == .data$fundingAgency) %>% 
       dplyr::mutate(
         "year" = synapse_dates_to_year(.data$createdOn),
         "month" = synapse_dates_to_month(.data$createdOn)
       ) 
   })
   
+  filtered_files_table <- shiny::reactive({
+    shiny::req(files_table(), selected_group())
+    dplyr::filter(files_table(), selected_group() == .data$fundingAgency) 
+  })
+  
   publications_table <- shiny::reactive({
-    shiny::req(syn, data_config, selected_group())
-    tbl <-
-      read_rds_file_from_synapse(
-        syn,
-        purrr::pluck(data_config, "data_files", "publications", "synapse_id")
-      ) %>% 
-      dplyr::filter(selected_group() %in% .data$fundingAgency) 
+    shiny::req(syn, data_config)
+    read_rds_file_from_synapse(
+      syn,
+      purrr::pluck(data_config, "data_files", "publications", "synapse_id")
+    ) 
+  })
+  
+  filtered_publications_table <- shiny::reactive({
+    shiny::req(publications_table(), selected_group())
+    dplyr::filter(
+      publications_table(),
+      purrr::map_lgl(.data$fundingAgency, ~selected_group() %in% .x)
+    )
   })
   
   studies_table <- shiny::reactive({
-    shiny::req(syn, data_config, selected_group())
-    tbl <-
-      read_rds_file_from_synapse(
-        syn,
-        purrr::pluck(data_config, "data_files", "studies", "synapse_id")
-      ) %>% 
-      dplyr::filter(selected_group() %in% .data$fundingAgency) 
+    shiny::req(syn, data_config)
+    read_rds_file_from_synapse(
+      syn,
+      purrr::pluck(data_config, "data_files", "studies", "synapse_id")
+    ) 
+  })
+  
+  filtered_studies_table <- shiny::reactive({
+    shiny::req(studies_table(), selected_group())
+    tbl <- dplyr::filter( 
+      studies_table(),
+      purrr::map_lgl(.data$fundingAgency, ~selected_group() %in% .x)
+    ) 
   })
   
   tools_table <- shiny::reactive({
-    shiny::req(syn, data_config, selected_group())
-    tbl <- 
-      read_rds_file_from_synapse(
-        syn,
-        purrr::pluck(data_config, "data_files", "tools", "synapse_id")
-      ) %>%
-      dplyr::filter(selected_group() == .data$fundingAgency) 
+    shiny::req(syn, data_config)
+    read_rds_file_from_synapse(
+      syn,
+      purrr::pluck(data_config, "data_files", "tools", "synapse_id")
+    ) 
+  })
+  
+  filtered_tools_table <- shiny::reactive({
+    shiny::req(tools_table(), selected_group()) 
+    dplyr::filter(tools_table(), selected_group() == .data$fundingAgency) 
   })
   
   group_object <- shiny::reactive({
     list(
       "selected_group"     = selected_group(),
-      "files_table"        = files_table(),
-      "publications_table" = publications_table(),
-      "studies_table"      = studies_table(),
-      "tools_table"        = tools_table()
+      "files_table"        = filtered_files_table(),
+      "publications_table" = filtered_publications_table(),
+      "studies_table"      = filtered_studies_table(),
+      "tools_table"        = filtered_tools_table()
     )
   })
   

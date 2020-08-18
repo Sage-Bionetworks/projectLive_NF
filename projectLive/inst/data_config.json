@@ -24,8 +24,8 @@
         "overview_boxes": {
           "box1": {
             "title": "Studies",
-            "table": "files_table",
-            "columns": ["projectId"],
+            "table": "studies_table",
+            "columns": ["studyId"],
             "icon": "university"
           },
           "box2": {
