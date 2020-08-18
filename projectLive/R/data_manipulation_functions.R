@@ -1,3 +1,10 @@
+format_plot_data_with_param_list <- function(data, param_list){
+  data %>% 
+    concatenate_df_list_columns_with_param_list(param_list) %>%    
+    recode_df_with_param_list(param_list) %>% 
+    rename_df_columns_with_param_list(param_list)
+}
+
 create_data_focus_tables <- function(data, x_column, fill_columns){
   purrr::map(fill_columns, ~ dplyr::select(data, x_column, .x)) %>% 
     purrr::map(tidyr::drop_na) %>% 

@@ -155,9 +155,7 @@ mod_study_summary_server <- function(
       dplyr::group_by_at(unlist(param_list$group_columns))%>% 
       dplyr::summarise_at(unlist(param_list$count_columns), dplyr::n_distinct) %>% 
       dplyr::ungroup() %>% 
-      concatenate_df_list_columns_with_param_list(param_list) %>% 
-      recode_df_with_param_list(param_list) %>% 
-      rename_df_columns_with_param_list(param_list) 
+      format_plot_data_with_param_list(param_list)
   })
   
   ##start making outputs
@@ -234,9 +232,7 @@ mod_study_summary_server <- function(
       ) 
     
     data_list <- filtered_merged_table() %>% 
-      concatenate_df_list_columns_with_param_list(param_list) %>% 
-      recode_df_with_param_list(param_list) %>% 
-      rename_df_columns_with_param_list(param_list) %>% 
+      format_plot_data_with_param_list(param_list) %>% 
       create_data_focus_tables(param_list$plot$x, input$data_focus_columns)
     
     validate(need(length(data_list) > 0 , param_list$empty_table_message))
@@ -256,22 +252,13 @@ mod_study_summary_server <- function(
       ) 
     
     data <- filtered_merged_table() %>%
-      concatenate_df_list_columns_with_param_list(param_list) %>% 
-      recode_df_with_param_list(param_list) %>% 
-      rename_df_columns_with_param_list(param_list)
+      format_plot_data_with_param_list(param_list)
     
     validate(need(nrow(data) > 0 , param_list$empty_table_message))
     
-    create_study_timeline_plot(
-      data, 
-      x = param_list$plot$x,
-      fill = param_list$plot$fill,
-      param_list$plot$facet
-    ) %>%
-      plotly::ggplotly(
-        tooltip = param_list$tooltips
-      )
-  
+    create_plot_with_param_list(
+      data, param_list, "create_study_timeline_plot"
+    )
   })
   
   output$study_details <- shiny::renderText({

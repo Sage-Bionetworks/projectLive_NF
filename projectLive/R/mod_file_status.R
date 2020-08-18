@@ -105,18 +105,13 @@ mod_file_status_server <- function(
     
     data <- group_object() %>% 
       purrr::pluck(param_list$table) %>% 
-      concatenate_df_list_columns_with_param_list(param_list) %>% 
-      recode_df_with_param_list(param_list) %>% 
-      rename_df_columns_with_param_list(param_list) 
+      format_plot_data_with_param_list(param_list)
     
-    create_publication_status_plot(
-      data, 
-      x     = purrr::pluck(param_list, "columns", "x", "display_name"),
-      fill  = purrr::pluck(param_list, "columns", "fill", "display_name")
-    ) %>% 
-      plotly::ggplotly(
-        tooltip = c("count", "fill")
-      )
+    create_plot_with_param_list(
+      data,
+      param_list,
+      "create_publication_status_plot"
+    )
   })
   
   output$publication_disease <- plotly::renderPlotly({
@@ -133,18 +128,13 @@ mod_file_status_server <- function(
     
     data <- group_object() %>% 
       purrr::pluck(param_list$table) %>% 
-      concatenate_df_list_columns_with_param_list(param_list) %>% 
-      recode_df_with_param_list(param_list) %>% 
-      rename_df_columns_with_param_list(param_list) 
+      format_plot_data_with_param_list(param_list)
     
-    create_publication_disease_plot(
-      data, 
-      x     = purrr::pluck(param_list, "columns", "x", "display_name"),
-      fill  = purrr::pluck(param_list, "columns", "fill", "display_name")
-    ) %>% 
-      plotly::ggplotly(
-        tooltip = c("count", "fill")
-      )
+    create_plot_with_param_list(
+      data,
+      param_list,
+      "create_publication_disease_plot"
+    )
   })
   
 }

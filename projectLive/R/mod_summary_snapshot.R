@@ -63,7 +63,7 @@ mod_summary_snapshot_ui <- function(id){
             solidHeader = TRUE,
             width = 12,
             collapsible = FALSE,
-            plotly::plotlyOutput(ns('study_per_consortium'))
+            plotly::plotlyOutput(ns("consortium_activity"))
           ),
           shinydashboard::box(
             title = "Resources Generated", 
@@ -71,7 +71,7 @@ mod_summary_snapshot_ui <- function(id){
             solidHeader = TRUE,
             width = 12,
             collapsible = FALSE,
-            plotly::plotlyOutput(ns('files_per_study'))
+            plotly::plotlyOutput(ns("resources_generated"))
           )
         )
       )
@@ -155,65 +155,50 @@ mod_summary_snapshot_server <- function(
     create_info_box(param_list, group_object())
   })
   
-  output$study_per_consortium <- plotly::renderPlotly({
+  output$consortium_activity <- plotly::renderPlotly({
     shiny::req(data_config, group_object())
     param_list <- purrr::pluck(
       data_config,
       "modules",
       "summary_snapshot",
       "outputs",
-      "study_per_consortium"
+      "consortium_activity"
     )
     
-    data <- group_object()[[param_list$table]] %>% 
-      concatenate_df_list_columns_with_param_list(param_list) %>%    
-      recode_df_with_param_list(param_list) %>% 
-      rename_df_columns_with_param_list(param_list)
+    data <- group_object() %>% 
+      purrr::pluck(param_list$table) %>% 
+      format_plot_data_with_param_list(param_list)
     
-    validate(need(
-      nrow(data) > 0 , 
-      "The investigator/investigators has/have not uploaded any files yet. Please check back later."
-    ))
+    shiny::validate(shiny::need(nrow(data) > 0, param_list$empty_table_message))
     
-    create_study_per_consortium_plot(
-      data  = data, 
-      x     = param_list$columns$x$display_name,
-      fill  = param_list$columns$fill$display_name,
-      param_list$columns$facet$display_name
-    ) %>% 
-      plotly::ggplotly(
-        tooltip = c("count", "fill")
-      )
+    create_plot_with_param_list(
+      data,
+      param_list,
+      "create_consortium_activity_plot"
+    )
   })
   
   
-  output$files_per_study <- plotly::renderPlotly({
+  output$resources_generated <- plotly::renderPlotly({
     shiny::req(data_config, group_object())
     param_list <- purrr::pluck(
       data_config,
       "modules",
       "summary_snapshot",
       "outputs",
-      "files_per_study"
+      "resources_generated"
     )
     
-    data <- group_object()[[param_list$table]] %>% 
-      concatenate_df_list_columns_with_param_list(param_list) %>%    
-      recode_df_with_param_list(param_list) %>% 
-      rename_df_columns_with_param_list(param_list)
+    data <- group_object() %>% 
+      purrr::pluck(param_list$table) %>% 
+      format_plot_data_with_param_list(param_list)
+      
+    shiny::validate(shiny::need(nrow(data) > 0, param_list$empty_table_message))
     
-    validate(need(
-      nrow(data) > 0, 
-      "The investigator/investigators has/have not uploaded any files yet. Please check back later."
-    ))
-    create_files_per_study_plot(
-      data  = data,
-      x     = param_list$columns$x$display_name,
-      fill  = param_list$columns$fill$display_name,
-      param_list$columns$facet$display_name
-    ) %>%
-      plotly::ggplotly(
-        tooltip = c("count", "fill")
-      )
+    create_plot_with_param_list(
+      data,
+      param_list,
+      "create_resources_generated_plot"
+    )
   })
 }

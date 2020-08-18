@@ -1,4 +1,10 @@
-create_study_per_consortium_plot <- function(data, x, fill, ...){
+create_plot_with_param_list <- function(data, param_list, plot_func){
+  fig <-
+    rlang::exec(plot_func, !!!param_list$plot, data = data) %>%
+    plotly::ggplotly(tooltip = c(param_list$tooltips))
+}
+
+create_consortium_activity_plot <- function(data, x, fill, facet){
   
   data %>% 
     ggplot2::ggplot() +
@@ -28,10 +34,10 @@ create_study_per_consortium_plot <- function(data, x, fill, ...){
       legend.position = "right",
       panel.grid.major.y = ggplot2::element_blank(),
       panel.background = ggplot2::element_rect(fill = "grey95")) +
-    ggplot2::facet_grid(cols = ggplot2::vars(!!!rlang::syms(unlist(...))))
+    ggplot2::facet_grid(cols = ggplot2::vars(!!!rlang::syms(unlist(facet))))
 }
 
-create_files_per_study_plot <- function(data, x, fill, ...){
+create_resources_generated_plot <- function(data, x, fill, facet){
   
   data %>% 
     ggplot2::ggplot() +
@@ -52,15 +58,15 @@ create_files_per_study_plot <- function(data, x, fill, ...){
     ggplot2::labs(title = "", y = "Number of studies per Consortium") +
     ggplot2::theme_bw() +
     ggplot2::theme(
-      legend.text = ggplot2::element_text(size=8),
+      legend.text = ggplot2::element_text(size = 8),
       axis.text.x  = ggplot2::element_blank(), 
-      axis.text.y = ggplot2::element_text(size=10),
-      text = ggplot2::element_text(size=10),
+      axis.text.y = ggplot2::element_text(size = 10),
+      text = ggplot2::element_text(size = 10),
       strip.text.x = ggplot2::element_text(size = 10),
       legend.position = "right",
       panel.grid.major.y = ggplot2::element_blank(),
       panel.background = ggplot2::element_rect(fill = "grey95")) +
-    ggplot2::facet_grid(cols = ggplot2::vars(!!!rlang::syms(unlist(...))))
+    ggplot2::facet_grid(cols = ggplot2::vars(!!!rlang::syms(unlist(facet))))
 }
 
 
@@ -125,8 +131,7 @@ create_publication_disease_plot <- function(data, x, fill){
     ) 
 }
 
-create_upload_status_plot <- function(data, x, fill, ...){
-  
+create_file_upload_timeline_plot <- function(data, x, fill, facet){
   data %>% 
     ggplot2::ggplot() +
     ggplot2::geom_bar(
@@ -154,12 +159,12 @@ create_upload_status_plot <- function(data, x, fill, ...){
       panel.grid.major.y = ggplot2::element_blank(),
       panel.background = ggplot2::element_rect(fill = "grey95")) +
     ggplot2::facet_grid(
-      cols = ggplot2::vars(!!!rlang::syms(unlist(...))),
+      cols = ggplot2::vars(!!!rlang::syms(unlist(facet))),
       scales = "free"
     )
 }
 
-create_annotation_status_plot <- function(data, x, fill, ...){
+create_annotation_activity_plot <- function(data, x, fill, facet){
   
   data %>% 
     ggplot2::ggplot() +
@@ -188,7 +193,7 @@ create_annotation_status_plot <- function(data, x, fill, ...){
       panel.grid.major.y = ggplot2::element_blank(),
       panel.background = ggplot2::element_rect(fill = "grey95")) +
     ggplot2::facet_grid(
-      cols = ggplot2::vars(!!!rlang::syms(unlist(...))),
+      cols = ggplot2::vars(!!!rlang::syms(unlist(facet))),
       scales = "fixed"
     )
 }
@@ -239,7 +244,7 @@ create_data_focus_plot <- function(data, x, fill){
     ) 
 }
 
-create_study_timeline_plot <- function(data, x, fill, ...){
+create_study_timeline_plot <- function(data, x, fill, facet){
   data %>%  
     ggplot2::ggplot() +
     ggplot2::geom_bar(
@@ -266,5 +271,5 @@ create_study_timeline_plot <- function(data, x, fill, ...){
       panel.grid = ggplot2::element_blank(),
       panel.background = ggplot2::element_rect(fill = "grey95")
     ) +
-    ggplot2::facet_grid(cols = ggplot2::vars(!!!rlang::syms(unlist(...))))
+    ggplot2::facet_grid(cols = ggplot2::vars(!!!rlang::syms(unlist(facet))))
 }
