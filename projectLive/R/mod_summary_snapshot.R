@@ -199,13 +199,6 @@ mod_summary_snapshot_server <- function(
       data,
       param_list,
       "create_resources_generated_plot"
-    ) %>% 
-      plotly::layout(legend = list(
-        orientation = "h", 
-        x = 0.4, 
-        y = -0.2,
-        title = list(text = ' Please click on individual studies below to see yearly additions of resources in the plot above ')
-        )
-      )
+    ) 
   })
 }
