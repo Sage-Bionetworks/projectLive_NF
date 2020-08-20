@@ -137,16 +137,17 @@ create_publication_disease_plot <- function(data, x, fill){
     ) 
 }
 
-create_file_upload_timeline_plot <- function(data, x, fill, facet){
+create_file_upload_timeline_plot <- function(data, x, y, fill, facet){
   data %>% 
     ggplot2::ggplot() +
     ggplot2::geom_bar(
       ggplot2::aes(
         x = !!rlang::sym(x),
+        y = !!rlang::sym(y),
         fill = !!rlang::sym(fill),
         color = !!rlang::sym(fill)
       ),
-      stat = "count",
+      stat = "identity",
       alpha = 0.8, 
       position = "stack"
     ) +
@@ -170,17 +171,18 @@ create_file_upload_timeline_plot <- function(data, x, fill, facet){
     )
 }
 
-create_annotation_activity_plot <- function(data, x, fill, facet){
+create_annotation_activity_plot <- function(data, x, y, fill, facet){
   
   data %>% 
     ggplot2::ggplot() +
     ggplot2::geom_bar(
       ggplot2::aes(
         x = !!rlang::sym(x),
+        y = !!rlang::sym(y),
         fill = !!rlang::sym(fill),
         color = !!rlang::sym(fill)
       ),
-      stat = "count",
+      stat = "identity",
       alpha = 0.8, 
       position = "stack"
     ) +

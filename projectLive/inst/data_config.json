@@ -196,15 +196,16 @@
            ],
            "plot": {
              "x": "Study Leads",
+             "y": "Count",
              "fill": "Resource Type",
              "facet": "Year"
            },
-           "tooltips": ["count", "fill"]
+           "tooltips": ["Count", "fill"]
          },
          "annotation_activity": {
            "table": "merged_table",
            "empty_table_message": "The investigators have not uploaded any files yet. Please check back later.",
-           "tooltips": ["count", "fill"],
+           "tooltips": ["Count", "fill"],
            "columns": [
              {
                "name": "studyLeads",
@@ -226,6 +227,7 @@
            ],
            "plot": {
              "x": "Study Leads",
+             "y": "Count",
              "fill": "Assay",
              "facet": "Year"
            }
