@@ -153,7 +153,7 @@ mod_study_summary_server <- function(
         unlist(c(param_list$group_columns, param_list$count_columns))
       ) %>% 
       dplyr::group_by_at(unlist(param_list$group_columns))%>% 
-      dplyr::summarise_at(unlist(param_list$count_columns), dplyr::n_distinct) %>% 
+      dplyr::summarise_at(unlist(param_list$count_columns), dplyr::n_distinct, na.rm = T) %>% 
       dplyr::ungroup() %>% 
       format_plot_data_with_param_list(param_list) %>% 
       dplyr::arrange(`Name`)
