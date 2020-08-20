@@ -83,10 +83,32 @@ mod_file_status_server <- function(input, output, session, funding_partner){
 
   output$funding_agency <- shiny::renderText({
     
+<<<<<<< HEAD
+    shiny::req(data_config, group_object())
+    
+    param_list <- purrr::pluck(
+      data_config,
+      "modules",
+      "file_status",
+      "outputs",
+      "publication_status"
+    )
+    
+    data <- group_object() %>% 
+      purrr::pluck(param_list$table) %>% 
+      format_plot_data_with_param_list(param_list)
+    
+    create_plot_with_param_list(
+      data,
+      param_list,
+      "create_publication_status_plot"
+    )
+=======
       print(glue::glue("You are now viewing studies funded by {funding_partner()}. 
                        Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot."))
 
     
+>>>>>>> master
   })
   
   output$pub_status <- plotly::renderPlotly({
@@ -119,6 +141,17 @@ mod_file_status_server <- function(input, output, session, funding_partner){
   
   output$pub_disease <- plotly::renderPlotly({
     
+<<<<<<< HEAD
+    data <- group_object() %>% 
+      purrr::pluck(param_list$table) %>% 
+      format_plot_data_with_param_list(param_list)
+    
+    create_plot_with_param_list(
+      data,
+      param_list,
+      "create_publication_disease_plot"
+    )
+=======
     data <- plotdata() %>% 
       dplyr::select(year, manifestation) %>% 
       dplyr::mutate(manifestation = purrr::map_chr(
@@ -142,6 +175,7 @@ mod_file_status_server <- function(input, output, session, funding_partner){
             panel.grid = element_blank(),
             panel.background = element_rect(fill = "grey95"))
     
+>>>>>>> master
   })
   
 }
