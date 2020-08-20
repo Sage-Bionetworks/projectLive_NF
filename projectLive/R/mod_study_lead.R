@@ -105,7 +105,7 @@ mod_study_lead_server <- function(
     
     group_object() %>% 
       .[unlist(param_list$tables)] %>% 
-      purrr::reduce(dplyr::inner_join, by = param_list$join_column) 
+      purrr::reduce(dplyr::left_join, by = param_list$join_column)
   })
   
   output$file_upload_timeline <- plotly::renderPlotly({
@@ -121,7 +121,11 @@ mod_study_lead_server <- function(
     )
     
     data <- merged_table() %>% 
-      format_plot_data_with_param_list(param_list) 
+      format_plot_data_with_param_list(param_list) %>% 
+      dplyr::mutate("Study Leads" = forcats::as_factor(`Study Leads`)) %>% 
+      tidyr::drop_na() %>% 
+      dplyr::count(`Study Leads`, `Resource Type`, `Year`, name = "Count") %>% 
+      tidyr::complete(`Study Leads`, `Resource Type`, `Year`, fill = list("Count" = 0))
     
     validate(need(nrow(data) > 0, param_list$empty_table_message))
     
@@ -172,7 +176,11 @@ mod_study_lead_server <- function(
         .data$studyLeads, 
         ~input$studylead %in% .x
       )) %>% 
-      format_plot_data_with_param_list(param_list) 
+      format_plot_data_with_param_list(param_list) %>% 
+      dplyr::mutate("Study Leads" = forcats::as_factor(`Study Leads`)) %>% 
+      tidyr::drop_na() %>% 
+      dplyr::count(`Study Leads`, `Assay`, `Year`, name = "Count") %>% 
+      tidyr::complete(`Study Leads`, `Assay`, `Year`, fill = list("Count" = 0))
 
     validate(need(nrow(data) > 0, param_list$empty_table_message))
     
