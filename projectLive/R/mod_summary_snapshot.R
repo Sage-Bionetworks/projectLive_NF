@@ -204,8 +204,11 @@ mod_summary_snapshot_server <- function(
     plotly::layout(autosize = T, 
                      height = 700, 
                      legend = list(orientation = "v", 
-                                   x = 0.3, 
+                                   x = 0.25, 
                                    y = -1.5, 
-                                   title=list(text=' Please double-click on individual studies below to see yearly additions of resources in the plot above \n')))
+                                   title=list(text='\n Double-click on individual studies below to see yearly additions of resources in the plot above \n'),
+                                   bgcolor = "#E9EAEC",
+                                   bordercolor = "#676E79",
+                                   borderwidth = 1))
   })
 }
