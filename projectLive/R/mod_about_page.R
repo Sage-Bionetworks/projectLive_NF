@@ -55,8 +55,8 @@ mod_about_page_ui <- function(id){
               width = 12,
               solidHeader = T,
               status = "primary",
-              shiny::uiOutput(ns("group_selection_ui")),
-              shiny::textOutput(ns('group'))
+              shiny::uiOutput(ns("agency_selection_ui")),
+              shiny::textOutput(ns('funding_agency'))
               #DT::dataTableOutput(ns('study_table'))
           )
   
@@ -69,38 +69,85 @@ mod_about_page_ui <- function(id){
 #' @export
 #' @keywords internal
     
-mod_about_page_server <- function(input, output, session, syn, data_config){
-  
+mod_about_page_server <- function(input, output, session){
   ns <- session$ns
   
   current_user_synapse_id <- shiny::reactive({
     # code to get the synapse id of the current user here
     # This user has permisions to CTF and NTAP
-    return(3389310)
+    return(273966)
   })
   
-  groups_allowed <- shiny::reactive({
-    req(syn, data_config, current_user_synapse_id())
-    get_allowed_groups_from_synapse_user_id(
-      syn, data_config, current_user_synapse_id()
-    ) 
+  agencies_allowed <- shiny::reactive({
+    
+    require(magrittr)
+    # use your own condaenv here!!!!!
+    # reticulate::use_condaenv(
+    #   condaenv = "py37b",
+    #   required = TRUE,
+    #   conda = "/home/aelamb/anaconda3/condabin/conda"
+    # )
+    
+    synapseclient <- reticulate::import("synapseclient")
+    syn <- synapseclient$Synapse()
+    syn$login()
+    
+    team_id_list <- c(
+      "NF-OSI" = 3378999L,
+      "CTF" = 3359657L,
+      "GFF" = 3406072L,
+      "NTAP" = 3331266L,
+      "test_team" = 3413244L
+    )
+    
+    team_permission_list <- list(
+      "NF-OSI" = c("CTF", "GFF", "NTAP"),
+      "CTF" = "CTF",
+      "GFF" = "GFF",
+      "NTAP" = "NTAP",
+      "test_team" = "NTAP"
+    )
+    
+    get_team_members <- function(team_id){
+      team_id %>%
+        syn$getTeamMembers(.) %>% 
+        reticulate::iterate(.) %>% 
+        purrr::map(., purrr::pluck("member")) %>% 
+        purrr::map_chr(., purrr::pluck("ownerId")) %>%
+        as.integer()
+    }
+  
+    team_member_list <- purrr::map(
+      team_id_list,
+      get_team_members
+    )
+    
+    teams_user_is_in <-
+      purrr::map_lgl(team_member_list, ~ (current_user_synapse_id() %in% .x)) %>% 
+      purrr::keep(., .) %>% 
+      names()
+    
+    if(length(teams_user_is_in) == 0) return(NULL)
+    
+    allowed_agencies <- team_permission_list %>% 
+      purrr::keep(., . %in% teams_user_is_in) %>% 
+      unlist() %>% 
+      unname() %>% 
+      unique()
   })
   
-  output$group_selection_ui <- shiny::renderUI({
-    shiny::req(groups_allowed())
+  output$agency_selection_ui <- shiny::renderUI({
     shiny::selectizeInput(
-      ns("selected_group"), 
+      ns("funder"), 
       label = "", 
-      choices = groups_allowed(),
+      choices = agencies_allowed(),
       multiple = F
     )
   })
   
-  output$group <- shiny::renderText({
-    print(glue::glue(
-      "You are now viewing studies funded by {input$selected_group}. 
-    Navigate to the tabs at the top of the page to get more information about the funded investigators and the various resources that they have generated."
-    ))
+  output$funding_agency <- shiny::renderText({
+    print(glue::glue("You are now viewing studies funded by {input$funder}. 
+                     Navigate to the tabs at the top of the page to get more information about the funded investigators and the various resources that they have generated."))
   })
   
  
@@ -115,6 +162,7 @@ mod_about_page_server <- function(input, output, session, syn, data_config){
     )
   })
   
+<<<<<<< HEAD
   selected_group <- shiny::reactive(input$selected_group)
   
   files_table <- shiny::reactive({
@@ -189,8 +237,11 @@ mod_about_page_server <- function(input, output, session, syn, data_config){
       "tools_table"        = filtered_tools_table()
     )
   })
+=======
+>>>>>>> master
   
-  return(group_object)
+  funding_partner <- reactive({ input$funder })
+  return(funding_partner)
 }
     
 ## To be copied in the UI
