@@ -5,6 +5,5 @@ pubs <- get_synapse_tbl(syn, "syn16857542")
 saveRDS(pubs, "pubs.RDS")
 store_file_in_synapse(
   "pubs.RDS",
-  #"syn22281727",
-  "syn22282669"
+  "syn22281727"
 )
