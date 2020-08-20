@@ -7,7 +7,7 @@
 \usage{
 mod_about_page_ui(id)
 
-mod_about_page_server(input, output, session)
+mod_about_page_server(input, output, session, syn, data_config)
 }
 \arguments{
 \item{id}{shiny id}
