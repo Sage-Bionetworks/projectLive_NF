@@ -199,16 +199,22 @@ mod_summary_snapshot_server <- function(
     create_plot_with_param_list(
       data,
       param_list,
-      "create_resources_generated_plot"
+      "create_resources_generated_plot",
+      height = 700
     ) %>%
-    plotly::layout(autosize = T, 
-                     height = 700, 
-                     legend = list(orientation = "v", 
-                                   x = 0.25, 
-                                   y = -1.5, 
-                                   title=list(text='\n Double-click on individual studies below to see yearly additions of resources in the plot above \n'),
-                                   bgcolor = "#E9EAEC",
-                                   bordercolor = "#676E79",
-                                   borderwidth = 1))
+    plotly::layout(
+      autosize = T, 
+      legend = list(
+        orientation = "v", 
+        x = 0.25, 
+        y = -1.5, 
+        title = list(
+          text = '\n Double-click on individual studies below to see yearly additions of resources in the plot above \n'
+        ),
+        bgcolor = "#E9EAEC",
+        bordercolor = "#676E79",
+        borderwidth = 1
+      )
+    )
   })
 }
