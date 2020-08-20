@@ -7,7 +7,7 @@
 \usage{
 mod_summary_snapshot_ui(id)
 
-mod_summary_snapshot_server(input, output, session, funding_partner)
+mod_summary_snapshot_server(input, output, session, group_object, data_config)
 }
 \arguments{
 \item{id}{shiny id}
