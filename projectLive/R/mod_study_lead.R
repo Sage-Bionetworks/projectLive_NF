@@ -137,9 +137,9 @@ mod_study_lead_server <- function(
     validate(need(nrow(data) > 0, param_list$empty_table_message))
     
     create_plot_with_param_list(
-      data, param_list, "create_file_upload_timeline_plot"
+      data, param_list, "create_file_upload_timeline_plot", height = 700
     ) %>%
-    plotly::layout(autosize = T, height = 700)
+    plotly::layout(autosize = T)
   })
   
   output$study_lead_ui <- shiny::renderUI({

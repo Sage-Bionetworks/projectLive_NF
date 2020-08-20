@@ -1,7 +1,10 @@
-create_plot_with_param_list <- function(data, param_list, plot_func){
+create_plot_with_param_list <- function(data, param_list, plot_func, ...){
   fig <-
     rlang::exec(plot_func, !!!param_list$plot, data = data) %>%
-    plotly::ggplotly(tooltip = c(param_list$tooltips))
+    plotly::ggplotly(
+      tooltip = c(param_list$tooltips),
+      ...
+    )
 }
 
 create_consortium_activity_plot <- function(data, x, fill, facet){
