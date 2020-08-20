@@ -62,6 +62,33 @@ mod_study_summary_ui <- function(id){
               collapsible = FALSE,
               shinydashboard::infoBoxOutput(ns('study'), width = 12)
           ),
+<<<<<<< HEAD
+          shinydashboard::box(
+            title = "Data Focus",
+            status = "primary",
+            solidHeader = TRUE,
+            width = 12,
+            collapsible = FALSE,
+            #shinydashboard::infoBoxOutput(ns('study'), width = 12),
+            #shiny::textOutput(ns('study')),
+            shiny::uiOutput(ns("data_focus_selection_ui")),
+            plotly::plotlyOutput(ns('data_focus_plot'))
+          ),
+          shinydashboard::box(
+            title = "Study Timeline",
+            status = "primary",
+            solidHeader = TRUE,
+            width = 12,
+            collapsible = FALSE,
+            # shiny::selectizeInput(ns('variable'),
+            #                       label = "Choose to view", 
+            #                       choices = c("resourceType", "tumorType", "assay"),
+            #                       selected = "resourceType", 
+            #                       multiple = F),
+            #shinydashboard::infoBoxOutput(ns('study'), width = 12),
+            #shiny::textOutput(ns('study')),
+            plotly::plotlyOutput(ns('study_timeline_plot'))
+=======
           
           box(title = "Data Focus",
               status = "primary",
@@ -92,6 +119,7 @@ mod_study_summary_ui <- function(id){
               #shinydashboard::infoBoxOutput(ns('study'), width = 12),
               #shiny::textOutput(ns('study')),
               plotly::plotlyOutput(ns('study_timeline'))
+>>>>>>> master
           ),
 
           box(title = "Study Summary",
@@ -115,6 +143,55 @@ mod_study_summary_ui <- function(id){
 mod_study_summary_server <- function(input, output, session, funding_partner){
   ns <- session$ns
   
+<<<<<<< HEAD
+  merged_table <- shiny::reactive({
+    
+    shiny::req(group_object(), data_config)
+    
+    param_list <- purrr::pluck(
+      data_config,
+      "modules",
+      "study_summary",
+      "outputs",
+      "merged_table"
+    )
+    
+    table1 <- group_object()[[param_list$table1]] %>% 
+      dplyr::select_at(unlist(param_list$table1_cols))
+    
+    table2 <- group_object()[[param_list$table2]] %>% 
+      dplyr::select_at(unlist(param_list$table2_cols))
+    
+    table3 <- group_object()[[param_list$table3]] %>% 
+      dplyr::select_at(unlist(param_list$table3_cols))
+    
+    table1 %>%
+      dplyr::left_join(table2, by = param_list$join_column1) %>% 
+      dplyr::left_join(table3, by = param_list$join_column2) 
+  })
+  
+  study_table <- shiny::reactive({
+    
+    shiny::req(group_object(), data_config)
+    
+    param_list <- purrr::pluck(
+      data_config,
+      "modules",
+      "study_summary",
+      "outputs",
+      "study_table"
+    ) 
+    
+    merged_table() %>% 
+      dplyr::select_at(
+        unlist(c(param_list$group_columns, param_list$count_columns))
+      ) %>% 
+      dplyr::group_by_at(unlist(param_list$group_columns))%>% 
+      dplyr::summarise_at(unlist(param_list$count_columns), dplyr::n_distinct, na.rm = T) %>% 
+      dplyr::ungroup() %>% 
+      format_plot_data_with_param_list(param_list) %>% 
+      dplyr::arrange(`Name`)
+=======
   # filter the data
   plotdata1 <- reactive({
     projectLive::studies %>% 
@@ -124,6 +201,7 @@ mod_study_summary_server <- function(input, output, session, funding_partner){
   plotdata2 <- reactive({
     projectLive::files %>% 
       dplyr::filter(fundingAgency == funding_partner())
+>>>>>>> master
   })
   
   plotdata3 <- reactive({
@@ -159,13 +237,109 @@ mod_study_summary_server <- function(input, output, session, funding_partner){
       dplyr::distinct()
   })
   
+<<<<<<< HEAD
+  filtered_merged_table <- shiny::reactive({
+    shiny::req(merged_table(), selected_study_name())
+    dplyr::filter(merged_table(), .data$studyName == selected_study_name()) 
+  })
+  
+  output$data_focus_selection_ui <- shiny::renderUI({
+    shiny::req(data_config)
+    choices <- data_config %>% 
+      purrr::pluck(
+        "modules", 
+        "study_summary", 
+        "outputs", 
+        "data_focus", 
+        "plot",
+        "fill"
+      )
+    shiny::selectizeInput(
+      ns('data_focus_columns'),
+      label = "Choose to view",
+      choices = choices,
+      selected = choices,
+      multiple = T
+    )
+=======
   ##start making outputs
   output$funding_agency <- shiny::renderText({
     print(glue::glue("You are now viewing studies funded by {funding_partner()}. Please select a study from the table below to view the details."))
+>>>>>>> master
   })
   
   output$study_table <- DT::renderDataTable({
     
+<<<<<<< HEAD
+    shiny::req(
+      filtered_merged_table(), 
+      input$data_focus_columns,
+      data_config
+    )
+    
+    param_list <- data_config %>% 
+      purrr::pluck(
+        "modules", 
+        "study_summary", 
+        "outputs", 
+        "data_focus"
+      ) 
+    
+    data_list <- filtered_merged_table() %>% 
+      format_plot_data_with_param_list(param_list) %>% 
+      create_data_focus_tables(param_list$plot$x, input$data_focus_columns)
+    
+    validate(need(length(data_list) > 0 , param_list$empty_table_message))
+    
+    create_data_focus_plots(data_list, param_list)
+  })
+  
+  output$study_timeline_plot <- plotly::renderPlotly({
+    shiny::req(filtered_merged_table(), data_config)
+    
+    param_list <- data_config %>% 
+      purrr::pluck(
+        "modules", 
+        "study_summary", 
+        "outputs", 
+        "study_timeline"
+      ) 
+
+    data <- filtered_merged_table() %>%
+      format_plot_data_with_param_list(param_list) %>% 
+      tidyr::drop_na()
+    
+    validate(need(nrow(data) > 0 , param_list$empty_table_message))
+    
+    create_plot_with_param_list(
+      data, param_list, "create_study_timeline_plot"
+    )
+  })
+  
+  output$study_details <- shiny::renderText({
+    
+    shiny::req(filtered_merged_table(), selected_study_name())
+    
+    filtered_merged_table() %>%
+      dplyr::select(
+        "projectId", "studyStatus", "dataStatus", "summary", "diseaseFocus"
+      ) %>%
+      dplyr::distinct() %>% 
+      dplyr::mutate(
+        "diseaseFocus" = purrr::map_chr(.data$diseaseFocus, stringr::str_c, collapse = " | ")
+      ) %>% 
+      tidyr::pivot_longer(
+        cols = c("projectId", "studyStatus", "dataStatus", "summary", "diseaseFocus")
+      ) %>%
+      dplyr::mutate(
+        "name" = stringr::str_to_title(.data$name),
+        "name" = stringr::str_c("<b>", .data$name, "</b>")
+      ) %>% 
+      knitr::kable(
+        "html", escape = FALSE, col.names = NULL, align = c('r', 'l')
+      ) %>%
+      kableExtra::kable_styling("striped", full_width = T)
+=======
     base::as.data.frame(table())
       
   }, server = TRUE, selection = 'single')
@@ -367,6 +541,7 @@ mod_study_summary_server <- function(input, output, session, funding_partner){
         kableExtra::kable_styling("striped", full_width = T)
     })
       
+>>>>>>> master
   })
 
   

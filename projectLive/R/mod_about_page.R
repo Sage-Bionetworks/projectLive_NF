@@ -101,6 +101,7 @@ mod_about_page_server <- function(input, output, session, syn){
   })
   
   output$funding_agency <- shiny::renderText({
+
     #print(sprintf("Welcome, %s", syn$getUserProfile()$userName))
     print(glue::glue("You are now viewing studies moderated by the {input$funder}. 
                      Navigate to the tabs at the top of the page to get more information about the participating investigators and the various resources that they have generated."))

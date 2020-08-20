@@ -37,6 +37,47 @@ mod_summary_snapshot_ui <- function(id, funding_partner){
           # </script>
           # "),
           #includeScript("www/google_analytics.js")),
+<<<<<<< HEAD
+          
+          shinydashboard::box(
+            title = "Funding Partner",
+            width = 12,
+            solidHeader = T,
+            status = "primary",
+            shiny::textOutput(ns('funding_agency'))
+          ),
+          shinydashboard::box(
+            title = "Overview",
+            status = "primary",
+            solidHeader = TRUE,
+            width = 12,
+            collapsible = FALSE,
+            shiny::fluidRow(
+              shinydashboard::infoBoxOutput(ns('box1'), width = 3),
+              shinydashboard::infoBoxOutput(ns('box2'), width = 3),
+              shinydashboard::infoBoxOutput(ns('box3'), width = 3),
+              shinydashboard::infoBoxOutput(ns('box4'), width = 3)
+            )
+          ),
+          shinydashboard::box(
+            title = "Consortium Activity", 
+            status = "primary", 
+            solidHeader = TRUE,
+            width = 12,
+            collapsible = FALSE,
+            plotly::plotlyOutput(ns("consortium_activity"))
+          ),
+          shinydashboard::box(
+            title = "Resources Generated", 
+            status = "primary", 
+            solidHeader = TRUE,
+            width = 12,
+            height = 800,
+            collapsible = FALSE,
+            plotly::plotlyOutput(ns("resources_generated"))
+          )
+        )
+=======
   
         box(title = "Funding Partner",
               width = 12,
@@ -75,6 +116,7 @@ mod_summary_snapshot_ui <- function(id, funding_partner){
           width = 12,
           collapsible = FALSE,
           plotly::plotlyOutput(ns('files_per_study'))
+>>>>>>> master
       )
       
     )
@@ -158,6 +200,68 @@ mod_summary_snapshot_server <- function(input, output, session, funding_partner)
     )
   })
   
+<<<<<<< HEAD
+  output$consortium_activity <- plotly::renderPlotly({
+    shiny::req(data_config, group_object())
+    param_list <- purrr::pluck(
+      data_config,
+      "modules",
+      "summary_snapshot",
+      "outputs",
+      "consortium_activity"
+    )
+    
+    data <- group_object() %>% 
+      purrr::pluck(param_list$table) %>% 
+      format_plot_data_with_param_list(param_list)
+    
+    shiny::validate(shiny::need(nrow(data) > 0, param_list$empty_table_message))
+    
+    create_plot_with_param_list(
+      data,
+      param_list,
+      "create_consortium_activity_plot"
+    )
+  })
+  
+  
+  output$resources_generated <- plotly::renderPlotly({
+    shiny::req(data_config, group_object())
+    param_list <- purrr::pluck(
+      data_config,
+      "modules",
+      "summary_snapshot",
+      "outputs",
+      "resources_generated"
+    )
+    
+    data <- group_object() %>% 
+      purrr::pluck(param_list$table) %>% 
+      format_plot_data_with_param_list(param_list)
+      
+    shiny::validate(shiny::need(nrow(data) > 0, param_list$empty_table_message))
+    
+    create_plot_with_param_list(
+      data,
+      param_list,
+      "create_resources_generated_plot",
+      height = 700
+    ) %>%
+    plotly::layout(
+      autosize = T, 
+      legend = list(
+        orientation = "v", 
+        x = 0.25, 
+        y = -1.5, 
+        title = list(
+          text = '\n Double-click on individual studies below to see yearly additions of resources in the plot above \n'
+        ),
+        bgcolor = "#E9EAEC",
+        bordercolor = "#676E79",
+        borderwidth = 1
+      )
+    )
+=======
   output$study_per_consortium <- plotly::renderPlotly({
     
     data <- plotdata() %>%
@@ -229,6 +333,7 @@ mod_summary_snapshot_server <- function(input, output, session, funding_partner)
             panel.background = element_rect(fill = "grey95")) +
       facet_grid(. ~ year, scales="free")
     
+>>>>>>> master
   })
   
 }
