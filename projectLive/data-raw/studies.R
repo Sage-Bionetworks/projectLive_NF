@@ -5,7 +5,6 @@ studies <- get_synapse_tbl(syn, "syn16787123")
 saveRDS(studies, "studies.RDS")
 store_file_in_synapse(
   "studies.RDS",
-  #"syn22281727",
-  "syn22282669"
+  "syn22281727"
 )
 
