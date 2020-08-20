@@ -48,6 +48,7 @@ mod_study_lead_ui <- function(id){
             status = "primary", 
             solidHeader = TRUE,
             width = 12,
+            height = 800,
             collapsible = FALSE,
             plotly::plotlyOutput(ns('file_upload_timeline'))
           ),
@@ -137,7 +138,8 @@ mod_study_lead_server <- function(
     
     create_plot_with_param_list(
       data, param_list, "create_file_upload_timeline_plot"
-    )
+    ) %>%
+    plotly::layout(autosize = T, height = 700)
   })
   
   output$study_lead_ui <- shiny::renderUI({
