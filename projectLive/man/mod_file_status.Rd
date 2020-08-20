@@ -7,7 +7,7 @@
 \usage{
 mod_file_status_ui(id)
 
-mod_file_status_server(input, output, session)
+mod_file_status_server(input, output, session, group_object, data_config)
 }
 \arguments{
 \item{id}{shiny id}
