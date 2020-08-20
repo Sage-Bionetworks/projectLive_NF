@@ -75,8 +75,19 @@ mod_about_page_server <- function(input, output, session, syn, data_config){
   
   current_user_synapse_id <- shiny::reactive({
     # code to get the synapse id of the current user here
-    # This user has permisions to CTF and NTAP
-    return(3389310)
+    user <- syn$getUserProfile()[['ownerId']]
+    return(user)
+  })
+  
+  output$about <- shinydashboard::renderInfoBox({
+    
+    shinydashboard::infoBox(
+      " ",
+      print("projectLive: Track the progress and impact of our funding partners in real time"),
+      icon = shiny::icon("university", "fa-1x"),
+      color = "light-blue", #Valid colors are: red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, orange, fuchsia, purple, maroon, black.
+      fill = TRUE
+    )
   })
   
   groups_allowed <- shiny::reactive({
@@ -98,22 +109,11 @@ mod_about_page_server <- function(input, output, session, syn, data_config){
   
   output$group <- shiny::renderText({
     print(glue::glue(
-      "You are now viewing studies funded by {input$selected_group}. 
-    Navigate to the tabs at the top of the page to get more information about the funded investigators and the various resources that they have generated."
+      "You are now viewing studies moderated by {input$selected_group}. 
+    Navigate to the tabs at the top of the page to get more information about the participating investigators and the various resources that they have generated."
     ))
   })
   
- 
-  output$about <- shinydashboard::renderInfoBox({
-
-    shinydashboard::infoBox(
-      " ",
-      print("projectLive: Track the progress and impact of our funding partners in real time"),
-      icon = shiny::icon("university", "fa-1x"),
-      color = "light-blue", #Valid colors are: red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, orange, fuchsia, purple, maroon, black.
-      fill = TRUE
-    )
-  })
   
   selected_group <- shiny::reactive(input$selected_group)
   
