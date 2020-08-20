@@ -70,6 +70,7 @@ mod_summary_snapshot_ui <- function(id){
             status = "primary", 
             solidHeader = TRUE,
             width = 12,
+            height = 800,
             collapsible = FALSE,
             plotly::plotlyOutput(ns("resources_generated"))
           )
@@ -199,6 +200,12 @@ mod_summary_snapshot_server <- function(
       data,
       param_list,
       "create_resources_generated_plot"
-    ) 
+    ) %>%
+    plotly::layout(autosize = T, 
+                     height = 700, 
+                     legend = list(orientation = "v", 
+                                   x = 0.3, 
+                                   y = -1.5, 
+                                   title=list(text=' Please double-click on individual studies below to see yearly additions of resources in the plot above \n')))
   })
 }
