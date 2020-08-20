@@ -281,6 +281,7 @@ mod_study_lead_server <- function(input, output, session, funding_partner){
   
   output$upload_status <- plotly::renderPlotly({
     
+
     data1 <- dplyr::select(plotdata1(), "studyLeads", "studyName")
     data <- plotdata2() %>% 
       dplyr::inner_join(data1, by = "studyName") %>% 

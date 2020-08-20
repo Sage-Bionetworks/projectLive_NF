@@ -22,42 +22,16 @@ mod_about_page_ui <- function(id){
       
       dashboardBody(
         fluidPage(
-          #add analytics
-          #         tags$head(includeScript("<!-- Global site tag (gtag.js) - Google Analytics -->
-          # <script async src=\"https://www.googletagmanager.com/gtag/js?id=UA-160814003-1\"></script>
-          # <script>
-          #   window.dataLayer = window.dataLayer || [];
-          #   function gtag(){dataLayer.push(arguments);}
-          #   gtag('js', new Date());
-          # 
-          #   gtag('config', 'UA-160814003-1');
-          # </script>
-          # "),
-          #includeScript("www/google_analytics.js")),
           
-          # box(title = "About",
-          #     width = 12,
-          #     solidHeader = T,
-          #     status = "primary",
-          #     shiny::htmlOutput(ns('about'))
-          #     #DT::dataTableOutput(ns('study_table'))
-          # ),
-          
-          # box(title = "About",
-          #     status = "primary",
-          #     solidHeader = F,
-          #     width = 12,
-          #     collapsible = FALSE,
-              shinydashboard::infoBoxOutput(ns('about'), width = 12),
-          #),
+          shinydashboard::infoBoxOutput(ns('about'), width = 12),
           
           box(title = "Funding Partner",
               width = 12,
               solidHeader = T,
               status = "primary",
+              shiny::textOutput(ns('welcome')),
               shiny::uiOutput(ns("agency_selection_ui")),
               shiny::textOutput(ns('funding_agency'))
-              #DT::dataTableOutput(ns('study_table'))
           )
   
 ))))
@@ -68,72 +42,53 @@ mod_about_page_ui <- function(id){
 #' @rdname mod_about_page
 #' @export
 #' @keywords internal
-    
-mod_about_page_server <- function(input, output, session){
+
+
+mod_about_page_server <- function(input, output, session, syn){
   ns <- session$ns
+  
+  output$about <- shinydashboard::renderInfoBox({
+    
+    shinydashboard::infoBox(
+      " ",
+      print("projectLive: Track the progress and impact of our funding partners in real time"),
+      icon = icon("university", "fa-1x"),
+      color = "light-blue", #Valid colors are: red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, orange, fuchsia, purple, maroon, black.
+      fill = TRUE
+      )
+  })
+   
+  output$welcome <- shiny::renderText({
+    print(glue::glue("Welcome {syn$getUserProfile()$displayName} !"))
+  })
+  
   
   current_user_synapse_id <- shiny::reactive({
     # code to get the synapse id of the current user here
-    # This user has permisions to CTF and NTAP
-    return(273966)
+    user <- syn$getUserProfile()[['ownerId']]
+    return(user)
   })
   
-  agencies_allowed <- shiny::reactive({
+  agencies_allowed <- shiny::reactive({    
+    # The following code chunk ensures that only members of specific teams can access the files below. 
+    # Individual users will not be able to access the tables/files through this code even if they have access to the entity on synapse
+    entity <- "syn22281727"
     
-    require(magrittr)
-    # use your own condaenv here!!!!!
-    # reticulate::use_condaenv(
-    #   condaenv = "py37b",
-    #   required = TRUE,
-    #   conda = "/home/aelamb/anaconda3/condabin/conda"
-    # )
+    # the teams that user belongs to
+    user_teams <- syn$restGET(
+      glue::glue("/user/{syn$getUserProfile()[['ownerId']]}/team?limit=10000"))$results 
+    all_teams <- purrr::map_chr(user_teams, function(x) x$id)
+    all_team_names <- purrr::map_chr(user_teams, function(x) x$name)
     
-    synapseclient <- reticulate::import("synapseclient")
-    syn <- synapseclient$Synapse()
-    syn$login()
+    # the teams allowed to view the dashboard
+    dashboard_teams <- syn$restGET(glue::glue("/entity/{entity}/acl"))
+    allowed_teams <- purrr::map_chr(dashboard_teams$resourceAccess, function(x) x$principalId)
+                                    
+    #dashboard_team_names <- syn$tableQuery("SELECT * FROM syn22279138")$asDataFrame()
     
-    team_id_list <- c(
-      "NF-OSI" = 3378999L,
-      "CTF" = 3359657L,
-      "GFF" = 3406072L,
-      "NTAP" = 3331266L,
-      "test_team" = 3413244L
-    )
-    
-    team_permission_list <- list(
-      "NF-OSI" = c("CTF", "GFF", "NTAP"),
-      "CTF" = "CTF",
-      "GFF" = "GFF",
-      "NTAP" = "NTAP",
-      "test_team" = "NTAP"
-    )
-    
-    get_team_members <- function(team_id){
-      team_id %>%
-        syn$getTeamMembers(.) %>% 
-        reticulate::iterate(.) %>% 
-        purrr::map(., purrr::pluck("member")) %>% 
-        purrr::map_chr(., purrr::pluck("ownerId")) %>%
-        as.integer()
-    }
-  
-    team_member_list <- purrr::map(
-      team_id_list,
-      get_team_members
-    )
-    
-    teams_user_is_in <-
-      purrr::map_lgl(team_member_list, ~ (current_user_synapse_id() %in% .x)) %>% 
-      purrr::keep(., .) %>% 
-      names()
-    
-    if(length(teams_user_is_in) == 0) return(NULL)
-    
-    allowed_agencies <- team_permission_list %>% 
-      purrr::keep(., . %in% teams_user_is_in) %>% 
-      unlist() %>% 
-      unname() %>% 
-      unique()
+    #final allowed agencies:
+     all_team_names[all_teams %in% allowed_teams] 
+
   })
   
   output$agency_selection_ui <- shiny::renderUI({
@@ -146,103 +101,19 @@ mod_about_page_server <- function(input, output, session){
   })
   
   output$funding_agency <- shiny::renderText({
-    print(glue::glue("You are now viewing studies funded by {input$funder}. 
-                     Navigate to the tabs at the top of the page to get more information about the funded investigators and the various resources that they have generated."))
-  })
-  
- 
-  output$about <- shinydashboard::renderInfoBox({
 
-    shinydashboard::infoBox(
-      " ",
-      print("projectLive: Track the progress and impact of our funding partners in real time"),
-      icon = shiny::icon("university", "fa-1x"),
-      color = "light-blue", #Valid colors are: red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, orange, fuchsia, purple, maroon, black.
-      fill = TRUE
-    )
+    #print(sprintf("Welcome, %s", syn$getUserProfile()$userName))
+    print(glue::glue("You are now viewing studies moderated by the {input$funder}. 
+                     Navigate to the tabs at the top of the page to get more information about the participating investigators and the various resources that they have generated."))
   })
   
-<<<<<<< HEAD
-  selected_group <- shiny::reactive(input$selected_group)
-  
-  files_table <- shiny::reactive({
-    shiny::req(syn, data_config)
-    tbl <-
-      read_rds_file_from_synapse(
-        syn,
-        purrr::pluck(data_config, "data_files", "files", "synapse_id")
-      ) %>% 
-      dplyr::mutate(
-        "year" = synapse_dates_to_year(.data$createdOn),
-        "month" = synapse_dates_to_month(.data$createdOn)
-      ) 
-  })
-  
-  filtered_files_table <- shiny::reactive({
-    shiny::req(files_table(), selected_group())
-    dplyr::filter(files_table(), selected_group() == .data$fundingAgency) 
-  })
-  
-  publications_table <- shiny::reactive({
-    shiny::req(syn, data_config)
-    read_rds_file_from_synapse(
-      syn,
-      purrr::pluck(data_config, "data_files", "publications", "synapse_id")
-    ) 
-  })
-  
-  filtered_publications_table <- shiny::reactive({
-    shiny::req(publications_table(), selected_group())
-    dplyr::filter(
-      publications_table(),
-      purrr::map_lgl(.data$fundingAgency, ~selected_group() %in% .x)
-    )
-  })
-  
-  studies_table <- shiny::reactive({
-    shiny::req(syn, data_config)
-    read_rds_file_from_synapse(
-      syn,
-      purrr::pluck(data_config, "data_files", "studies", "synapse_id")
-    ) 
-  })
-  
-  filtered_studies_table <- shiny::reactive({
-    shiny::req(studies_table(), selected_group())
-    tbl <- dplyr::filter( 
-      studies_table(),
-      purrr::map_lgl(.data$fundingAgency, ~selected_group() %in% .x)
-    ) 
-  })
-  
-  tools_table <- shiny::reactive({
-    shiny::req(syn, data_config)
-    read_rds_file_from_synapse(
-      syn,
-      purrr::pluck(data_config, "data_files", "tools", "synapse_id")
-    ) 
-  })
-  
-  filtered_tools_table <- shiny::reactive({
-    shiny::req(tools_table(), selected_group()) 
-    dplyr::filter(tools_table(), selected_group() == .data$fundingAgency) 
-  })
-  
-  group_object <- shiny::reactive({
-    list(
-      "selected_group"     = selected_group(),
-      "files_table"        = filtered_files_table(),
-      "publications_table" = filtered_publications_table(),
-      "studies_table"      = filtered_studies_table(),
-      "tools_table"        = filtered_tools_table()
-    )
-  })
-=======
->>>>>>> master
   
   funding_partner <- reactive({ input$funder })
   return(funding_partner)
+ 
 }
+
+
     
 ## To be copied in the UI
 # mod_about_page_ui("about_page_ui_1")
