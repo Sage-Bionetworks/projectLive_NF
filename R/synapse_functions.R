@@ -30,7 +30,7 @@ create_team_table_from_synapse <- function(syn, data_config){
 }
 
 get_allowed_groups_from_synapse_user_id <- function(syn, data_config, user_id){
-  # The following code chunk ensures that only members of specific teams can access the files below. 
+  # The following code chunk ensures that only members of specific teams can access the content of the app. 
   # Individual users will not be able to access the tables/files through this code even if they have access to the entity on synapse
   dashboard_entity <- "syn22281727"
   
