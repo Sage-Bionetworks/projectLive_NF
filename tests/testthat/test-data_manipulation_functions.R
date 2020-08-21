@@ -1,3 +1,58 @@
+test_that("format_plot_data_with_param_list", {
+  param_list <- list(
+    "columns" = list(
+      list(
+        "name" = "consortium",
+        "display_name" = "Consortium",
+        "na_replace" = "Not Applicable",
+        "type" = "character"
+      ),
+      list(
+        "name" = "year",
+        "display_name" = "Year",
+        "type" = "integer"
+      )
+    )
+  )
+  data <- dplyr::tribble(
+    ~consortium, ~year, ~month,
+    NA,          2000L, NA,
+    "c1",        20001, "January"
+  )
+  expected_result <- dplyr::tribble(
+    ~Consortium,      ~Year,
+    "Not Applicable", 2000L,
+    "c1",             20001
+  )
+  expect_equal(
+    expected_result, 
+    format_plot_data_with_param_list(data, param_list)
+  )
+})
+
+test_that("create_data_focus_tables", {
+  data <- dplyr::tribble(
+    ~Study,  ~Assay, ~Resource, ~Year,
+    "s1",    "a1",   "r1",      2001L,
+    "s2",    "a2",   NA,        2002L
+  )
+  expected_results <- list(
+    "Assay" = dplyr::tribble(
+      ~Study,  ~Assay,
+      "s1",    "a1",
+      "s2",    "a2"
+    ),
+    "Resource" = dplyr::tribble(
+      ~Study,  ~Resource,
+      "s1",    "r1"
+    )
+  )
+  expect_equal(
+    expected_results, 
+    create_data_focus_tables(data, "Study", c("Assay", "Resource"))
+  )
+})
+
 test_that("concatenate_list_columns", {
   tbl1 <- dplyr::tibble(
     "cola" = list(c("a", "b"), "a", c("a", "c")),
