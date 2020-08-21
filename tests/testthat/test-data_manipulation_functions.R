@@ -131,61 +131,6 @@ test_that("recode_column_values", {
   )
 })
 
-# test_that("recode_column_values_with_param_list", {
-#   tbl1 <- dplyr::tibble("col1" = c("a", "a", "b"), "col2" = c("c", "d", NA))
-#   param_list1 <- list(
-#     "name" = "col1",
-#     "replace_values" = list(
-#       "a" = "x",
-#       "b" = "y",
-#       "c" = "z"
-#     )
-#   )
-#   param_list2 <- list(
-#     "name" = "col2",
-#     "replace_values" = list(
-#       "a" = "x",
-#       "b" = "y",
-#       "c" = "z"
-#     ),
-#     "na_replace" = "M",
-#     "default_replace" = "O"
-#   )
-#   param_list3 <- list(
-#     "name" = "col2",
-#     "na_replace" = "M",
-#     "default_replace" = "O"
-#   )
-#   param_list4 <- list(
-#     "name" = "col2",
-#     "na_replace" = "M"
-#   )
-#   param_list5 <- list(
-#     "name" = "col2"
-#   )
-#   res1 <- recode_column_values_with_param_list(tbl1, param_list1)
-#   res2 <- recode_column_values_with_param_list(tbl1, param_list2)
-#   res3 <- recode_column_values_with_param_list(tbl1, param_list3)
-#   res4 <- recode_column_values_with_param_list(tbl1, param_list4)
-#   res5 <- recode_column_values_with_param_list(tbl1, param_list5)
-#   expect_equal(
-#     res1,
-#     dplyr::tibble("col1" = c("x", "x", "y"), "col2" = c("c", "d", NA))
-#   )
-#   expect_equal(
-#     res2,
-#     dplyr::tibble("col1" = c("a", "a", "b"), "col2" = c("z", "O", "M"))
-#   )
-#   expect_equal(
-#     res3,
-#     dplyr::tibble("col1" = c("a", "a", "b"), "col2" = c("O", "O", "M"))
-#   )
-#   expect_equal(
-#     res4,
-#     dplyr::tibble("col1" = c("a", "a", "b"), "col2" = c("c", "d", "M"))
-#   )
-#   expect_equal(res5, tbl1)
-# })
 
 test_that("recode_df_with_param_list", {
   tbl1 <- dplyr::tibble(
@@ -227,8 +172,6 @@ test_that("recode_df_with_param_list", {
     )
   )
 })
-
-
 
 test_that("add_distinct_values_from_columns", {
   tbl <- dplyr::tibble(
