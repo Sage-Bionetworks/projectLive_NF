@@ -25,7 +25,7 @@ app_server <- function(input, output,session) {
   
   require(magrittr)
   require(rlang)
-  syn <- create_synapse_login()
+  # syn <- create_synapse_login()
   data_config <- jsonlite::read_json("inst/data_config.json")
   
   # List the first level callModules here
