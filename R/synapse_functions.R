@@ -1,15 +1,3 @@
-create_synapse_login <- function(){
-  # reticulate::use_condaenv(
-  #   condaenv = "py37b",
-  #   required = TRUE,
-  #   conda = "/home/aelamb/anaconda3/condabin/conda"
-  # )
-  synapseclient <- reticulate::import("synapseclient")
-  syn <- synapseclient$Synapse()
-  syn$login()
-  return(syn)
-}
-
 create_team_table_from_synapse <- function(syn, data_config){
   synapse_id <- purrr::pluck(data_config, "team_table", "synapse_id")
   team_col <- purrr::pluck(data_config, "team_table", "team_column")

@@ -4,5 +4,6 @@
 synapse <- NULL
 
 .onLoad <- function(libname, pkgname) {
+  if("use_conda_env.R" %in% list.files("R")) source("R/use_conda_env.R")
   synapseclient <<- reticulate::import("synapseclient", delay_load = TRUE)
 }
