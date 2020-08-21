@@ -78,10 +78,8 @@ create_resources_generated_plot <- function(data, x, fill, facet){
     ggplot2::facet_grid(cols = ggplot2::vars(!!!rlang::syms(unlist(facet))))
 }
 
-
-
 create_publication_status_plot <- function(data, x, fill){
-
+  
   data %>% 
     ggplot2::ggplot() +
     ggplot2::geom_histogram(
