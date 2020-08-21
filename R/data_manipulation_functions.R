@@ -280,15 +280,12 @@ recode_df_with_param_list <- function(tbl, param_list){
   return(tbl)
 }
 
-#' Title
+#' Get Number Of Distinct Values From Column
+#' This function returns the number of distinct values, including NA's in
+#' a column
 #'
-#' @param tbl 
-#' @param column 
-#'
-#' @return
-#' @export
-#'
-#' @examples
+#' @param tbl A Tibble
+#' @param column A string that is the name of a column in the tibble
 #' @importFrom magrittr %>% 
 get_distinct_value_from_column <- function(tbl, column){
   tbl %>% 
@@ -296,15 +293,12 @@ get_distinct_value_from_column <- function(tbl, column){
     dplyr::n_distinct()
 }
 
-#' Title
+#' Add Distinct Values From Columns
+#' This function find sthe number of distinct values from one or more columns
+#' and returns the sum of those.
 #'
-#' @param tbl 
-#' @param columns 
-#'
-#' @return
-#' @export
-#'
-#' @examples
+#' @param tbl A tibble
+#' @param columns a list of strings that are names of columns in the tibble
 #' @importFrom magrittr %>% 
 add_distinct_values_from_columns <- function(tbl, columns){
   result <-  
@@ -312,33 +306,50 @@ add_distinct_values_from_columns <- function(tbl, columns){
     sum()
 }
 
-#' @param column 
-#'
-#' @param count_column 
-#' @param data 
-#'
+#' Create Plot Dataframe From Count Dataframe
+#' This function creates a summary of the name and value column.
+#' 
+#' The name column is filtered for only values that equal the column_value.
+#' 
+#' The name and value column are pivoted so that a new column is created that
+#' has the name of the column value. The number of rows will equal the number
+#' of unique value in the value column, where the name column is equal to
+#' the column_value
+#' 
+#' Finally the counts column is renamed the using the count_column
+#' 
+#' 
+#' @param column_value A value that exists in the "name" column of the data
+#' @param count_column A string that is the new column name
+#' @param data A tibble
 #' @importFrom magrittr %>% 
 #' @importFrom rlang := .data
+#' @examples
+#'  data <- dplyr::tribble(
+#'  ~studyName, ~name,          ~value,                   ~count,
+#'  "s1",       "assay",        "immunohistochemistry",   395L,
+#'  "s1",       "resourceType", "experimentalData",       416L,
+#'  "s1",       "resourceType", "report",                 12L,
+#'  "s1",       "species",      "Human",                  421L,
+#'  "s1",       "tumorType",    "Cutaneous Neurofibroma", 387L
+#' )
+#' create_plot_df_from_count_df("assay", "Assays", data)
 create_plot_df_from_count_df <- function(column, count_column, data){
   data %>%
     dplyr::filter(.data$name == column) %>% 
     tidyr::pivot_wider() %>% 
-    dplyr::rename(!! rlang::ensym(count_column) := "count")
+    dplyr::rename(!!rlang::ensym(count_column) := "count")
 }
 
-#' Title
-#'
-#' @param columns 
-#' @param count_columns 
-#' @param data 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-create_plot_dfs_from_count_df <- function(columns, count_columns, data){
+#' Create Plot Dataframes From Count Dataframe
+#' See create_plot_df_from_count_df for outputs
+#' @param column_values A list of values that exists in the "name" column 
+#' of the data
+#' @param count_columns A list of strings that will the new column names
+#' @param data A tibble
+create_plot_dfs_from_count_df <- function(column_values, count_columns, data){
   purrr::map2(
-    columns,
+    column_values,
     count_columns,
     create_plot_df_from_count_df,
     data
