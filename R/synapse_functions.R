@@ -29,27 +29,31 @@ create_team_table_from_synapse <- function(syn, data_config){
     dplyr::select("teams" = "t", "groups" = "g")
 }
 
-get_team_members_from_synapse <- function(syn, team_id){
-  team_id %>%
-    syn$getTeamMembers(.) %>% 
-    reticulate::iterate(.) %>% 
-    purrr::map(., purrr::pluck("member")) %>% 
-    purrr::map_chr(., purrr::pluck("ownerId")) %>%
-    as.integer()
-}
-
 get_allowed_groups_from_synapse_user_id <- function(syn, data_config, user_id){
+  # The following code chunk ensures that only members of specific teams can access the content of the app. 
+  # Individual users will not be able to access the tables/files through this code even if they have access to the entity on synapse
+  dashboard_entity <- "syn22281727"
+  
+  # the teams that user belongs to
+  user_teams <- syn$restGET(
+    glue::glue("/user/{syn$getUserProfile()[['ownerId']]}/team?limit=10000"))$results 
+  all_teams <- purrr::map_chr(user_teams, function(x) x$id)
+
+  # the teams allowed to view the dashboard
+  dashboard_teams <- syn$restGET(glue::glue("/entity/{dashboard_entity}/acl"))
+  allowed_teams <- purrr::map_chr(dashboard_teams$resourceAccess, function(x) x$principalId)
+  
+  #final allowed agencies:
+  all_teams[all_teams %in% allowed_teams]
+  
   team_table <- 
     create_team_table_from_synapse(syn, data_config) %>% 
-    dplyr::mutate("users" = purrr::map(
-      .data$teams,
-      ~get_team_members_from_synapse(syn, .x)
-    )) %>% 
-    dplyr::filter(purrr::map_lgl(.data$users, ~user_id %in% .x)) %>% 
-    dplyr::pull(.data$groups) %>% 
+    filter(teams %in% all_teams[all_teams %in% allowed_teams]) %>% 
+    select(groups) %>% 
     unlist() %>% 
     unique() %>% 
     sort()
+  
 }
 
 get_synapse_tbl <- function(syn, table_id){
