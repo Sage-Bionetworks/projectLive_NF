@@ -1,3 +1,36 @@
+#' Create Plot With Param List
+#' This function calla ploting function using a parameter list, and a tibble
+#'
+#' @param data A tibble
+#' @param param_list A named list. The list must have the fields "plot" and 
+#' tooltips". The "plot" field must be named list of the arguemnts of the 
+#' plot_func. The "tooltips" field must be a list of strings that are either
+#' names of columns in the data, or names of aesthetics in the plot_func
+#' @param plot_func A string that is the name of a plot function
+#' @param ... Arguments to plotly::ggplotly
+#' @importFrom magrittr %>% 
+#' @importFrom rlang !!!
+#' @examples
+#' 
+#' data <- dplyr::tibble(
+#'  "Study Leads" = c("s1", "s2", "s3"),
+#'  "Resource Type" = c("r1", "r2", "r3"),
+#'  "Year" = c(2000L, 2001L, 2002L),
+#'  "Month" = factor("Jul", "Jul", "Jun"),
+#'  "Count" = c(10, 30, 40)
+#' )
+#' param_list <- list(
+#'   "plot" = list(
+#'     "x" = "Study Leads",
+#'     "y" = "Count",
+#'     "fill" = "Resource Type",
+#'     "facet" = list("Year", "Month")
+#'   ),
+#'   "tooltips" = list("count", "fill")
+#' )
+#' create_plot_with_param_list(
+#' data, param_list, "create_file_upload_timeline_plot"
+# ')
 create_plot_with_param_list <- function(data, param_list, plot_func, ...){
   fig <-
     rlang::exec(plot_func, !!!param_list$plot, data = data) %>%
@@ -7,6 +40,15 @@ create_plot_with_param_list <- function(data, param_list, plot_func, ...){
     )
 }
 
+#' Create Consortium Activity Plot
+#'
+#' @param data A Tibble
+#' @param x A string that is the name of a column in the data
+#' @param fill A string that is the name of a column in the data
+#' @param facet A list of string that are names of columns in the data
+#'
+#' @importFrom magrittr %>% 
+#' @importFrom rlang !!! !!
 create_consortium_activity_plot <- function(data, x, fill, facet){
   
   data %>% 
@@ -43,6 +85,15 @@ create_consortium_activity_plot <- function(data, x, fill, facet){
     ggplot2::facet_grid(cols = ggplot2::vars(!!!rlang::syms(unlist(facet))))
 }
 
+#' Create Resources Generated Plot
+#'
+#' @param data A Tibble
+#' @param x A string that is the name of a column in the data
+#' @param fill A string that is the name of a column in the data
+#' @param facet A list of string that are names of columns in the data
+#'
+#' @importFrom magrittr %>% 
+#' @importFrom rlang !!! !!
 create_resources_generated_plot <- function(data, x, fill, facet){
   
   data %>% 
@@ -78,6 +129,14 @@ create_resources_generated_plot <- function(data, x, fill, facet){
     ggplot2::facet_grid(cols = ggplot2::vars(!!!rlang::syms(unlist(facet))))
 }
 
+#' Create Publication Status Plot
+#'
+#' @param data A Tibble
+#' @param x A string that is the name of a column in the data
+#' @param fill A string that is the name of a column in the data
+#'
+#' @importFrom magrittr %>% 
+#' @importFrom rlang !!
 create_publication_status_plot <- function(data, x, fill){
   
   data %>% 
@@ -108,6 +167,14 @@ create_publication_status_plot <- function(data, x, fill){
     ) 
 }
 
+#' Create Publication Disease Plot
+#'
+#' @param data A Tibble
+#' @param x A string that is the name of a column in the data
+#' @param fill A string that is the name of a column in the data
+#'
+#' @importFrom magrittr %>% 
+#' @importFrom rlang !!
 create_publication_disease_plot <- function(data, x, fill){
   
   data %>% 
@@ -138,6 +205,16 @@ create_publication_disease_plot <- function(data, x, fill){
     ) 
 }
 
+#' Create File Upload Timeline Plot
+#'
+#' @param data A Tibble
+#' @param x A string that is the name of a column in the data
+#' @param y A string that is the name of a column in the data
+#' @param fill A string that is the name of a column in the data
+#' @param facet A list of string that are names of columns in the data
+#'
+#' @importFrom magrittr %>% 
+#' @importFrom rlang !!! !!
 create_file_upload_timeline_plot <- function(data, x, y, fill, facet){
   data %>% 
     ggplot2::ggplot() +
@@ -172,6 +249,16 @@ create_file_upload_timeline_plot <- function(data, x, y, fill, facet){
     )
 }
 
+#' Create Annotation Activity Plot
+#'
+#' @param data A Tibble
+#' @param x A string that is the name of a column in the data
+#' @param y A string that is the name of a column in the data
+#' @param fill A string that is the name of a column in the data
+#' @param facet A list of string that are names of columns in the data
+#'
+#' @importFrom magrittr %>% 
+#' @importFrom rlang !!! !!
 create_annotation_activity_plot <- function(data, x, y, fill, facet){
   
   data %>% 
@@ -207,6 +294,41 @@ create_annotation_activity_plot <- function(data, x, y, fill, facet){
     )
 }
 
+#' Create Data Focus Plots
+#'
+#' @param data_list A list of tibbles
+#' @param param_list A named list that has the "plot" name. The "plot" value
+#' must be a named list with the "x" name, which is a name in each tibble in the
+#' data list, and a "fill" name with is a list of columns, ewual to the length
+#' of the data list.
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' data_list <- list(
+#'  "Assays" = dplyr::tribble(
+#'   ~Study, ~Assays,
+#'   "s1",   "a1",    
+#'   "s1",   "a2"    
+#' ),
+#'  "Resources" = dplyr::tribble(
+#'   ~Study, ~Resources,
+#'   "s1",   "r1",       
+#'   "s1",   "r1"
+#'  )
+#' )
+#' 
+#' param_list <- list(
+#'   "plot" = list(
+#'     "x" = "Study",
+#'     "fill" = list(
+#'       "Assay",
+#'       "Resources"
+#'     )
+#'   )
+#' )
+# create_data_focus_plots(data_list, param_list)
 create_data_focus_plots <- function(data_list, param_list){
   data_list %>% 
     purrr::imap(
@@ -220,6 +342,14 @@ create_data_focus_plots <- function(data_list, param_list){
     plotly::subplot(titleX = TRUE)
 }
 
+#' Create Data Focus Plot
+#'
+#' @param data A Tibble
+#' @param x A string that is the name of a column in the data
+#' @param fill A string that is the name of a column in the data
+#'
+#' @importFrom magrittr %>% 
+#' @importFrom rlang !!
 create_data_focus_plot <- function(data, x, fill){
   data %>%  
     ggplot2::ggplot() +
@@ -251,6 +381,15 @@ create_data_focus_plot <- function(data, x, fill){
     ) 
 }
 
+#' Create Consortium Activity Plot
+#'
+#' @param data A Tibble
+#' @param x A string that is the name of a column in the data
+#' @param fill A string that is the name of a column in the data
+#' @param facet A list of string that are names of columns in the data
+#'
+#' @importFrom magrittr %>% 
+#' @importFrom rlang !!! !!
 create_study_timeline_plot <- function(data, x, fill, facet){
   data %>%  
     ggplot2::ggplot() +
