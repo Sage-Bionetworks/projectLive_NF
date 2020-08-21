@@ -175,12 +175,14 @@ rename_df_columns_with_param_list <- function(tbl, param_list){
       "name" = safe_pluck_list(., "name")
     ) %>% 
     dplyr::select("display_name", "name") %>% 
-    dplyr::mutate("display_name" = dplyr::if_else(
-      is.na(.data$display_name),
-      stringr::str_to_title(.data$name),
-      .data$display_name
-    )) %>% 
-    tibble::deframe(.)
+    dplyr::mutate(
+      "display_name" = as.character(.data$display_name),
+      "display_name" = dplyr::if_else(
+        is.na(.data$display_name),
+        stringr::str_to_title(.data$name),
+        .data$display_name
+      )) %>% 
+    tibble::deframe(.) 
   
   dplyr::select(tbl, column_select_list) 
 }
