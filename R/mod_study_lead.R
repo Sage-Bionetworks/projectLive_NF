@@ -123,16 +123,7 @@ mod_study_lead_server <- function(
     
     data <- merged_table() %>% 
       format_plot_data_with_param_list(param_list) %>% 
-      dplyr::mutate("Study Leads" = forcats::as_factor(`Study Leads`)) %>% 
-      tidyr::drop_na() %>% 
-      dplyr::count(`Study Leads`, `Resource Type`, `Year`, name = "Count") %>% 
-      tidyr::complete(`Study Leads`, `Resource Type`, `Year`, fill = list("Count" = 0)) %>% 
-      dplyr::mutate("Resource Type" = dplyr::if_else(
-        .data$Count == 0,
-        NA_character_,
-        .data$`Resource Type`
-      )) %>% 
-      dplyr::distinct()
+      create_plot_count_df("Study Leads", c("Study Leads", "Year"))
     
     validate(need(nrow(data) > 0, param_list$empty_table_message))
     
@@ -185,16 +176,7 @@ mod_study_lead_server <- function(
         ~input$studylead %in% .x
       )) %>% 
       format_plot_data_with_param_list(param_list) %>% 
-      dplyr::mutate("Study Leads" = forcats::as_factor(`Study Leads`)) %>% 
-      tidyr::drop_na() %>% 
-      dplyr::count(`Study Leads`, `Assay`, `Year`, name = "Count") %>% 
-      tidyr::complete(`Study Leads`, `Assay`, `Year`, fill = list("Count" = 0)) %>% 
-      dplyr::mutate("Assay" = dplyr::if_else(
-        .data$Count == 0,
-        NA_character_,
-        .data$`Assay`
-      )) %>% 
-      dplyr::distinct()
+      create_plot_count_df("Study Leads", c("Study Leads", "Assay"))
 
     validate(need(nrow(data) > 0, param_list$empty_table_message))
     
