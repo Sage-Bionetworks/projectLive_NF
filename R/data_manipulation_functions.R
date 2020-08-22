@@ -1,3 +1,29 @@
+replace_values_if_col_value_in_list <- function(
+  data, column, lst, columns, replace_value = NA_character_
+){
+  dplyr::mutate(
+    data,
+    dplyr::across(
+      columns, 
+      ~dplyr::if_else(!!sym(column) %in% lst, replace_value, .x)
+    )
+  ) 
+}
+
+create_plot_count_df <- function(data, factor_columns, complete_columns){
+  data %>%  
+    dplyr::mutate(dplyr::across(factor_columns, forcats::as_factor)) %>% 
+    tidyr::drop_na() %>% 
+    dplyr::group_by_all() %>% 
+    dplyr::tally(., name = "Count") %>% 
+    dplyr::ungroup() %>% 
+    tidyr::complete(
+      !!!rlang::syms(complete_columns), 
+      fill = list("Count" = 0L)
+    ) 
+}
+
+
 #' Format Plot Data With Parameter List
 #'
 #' This function runs a tible through the main data cleanup functions befoire 
