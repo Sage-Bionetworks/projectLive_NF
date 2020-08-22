@@ -1,3 +1,58 @@
+test_that("format_plot_data_with_param_list", {
+  param_list <- list(
+    "columns" = list(
+      list(
+        "name" = "consortium",
+        "display_name" = "Consortium",
+        "na_replace" = "Not Applicable",
+        "type" = "character"
+      ),
+      list(
+        "name" = "year",
+        "display_name" = "Year",
+        "type" = "integer"
+      )
+    )
+  )
+  data <- dplyr::tribble(
+    ~consortium, ~year, ~month,
+    NA,          2000L, NA,
+    "c1",        20001, "January"
+  )
+  expected_result <- dplyr::tribble(
+    ~Consortium,      ~Year,
+    "Not Applicable", 2000L,
+    "c1",             20001
+  )
+  expect_equal(
+    expected_result, 
+    format_plot_data_with_param_list(data, param_list)
+  )
+})
+
+test_that("create_data_focus_tables", {
+  data <- dplyr::tribble(
+    ~Study,  ~Assay, ~Resource, ~Year,
+    "s1",    "a1",   "r1",      2001L,
+    "s2",    "a2",   NA,        2002L
+  )
+  expected_results <- list(
+    "Assay" = dplyr::tribble(
+      ~Study,  ~Assay,
+      "s1",    "a1",
+      "s2",    "a2"
+    ),
+    "Resource" = dplyr::tribble(
+      ~Study,  ~Resource,
+      "s1",    "r1"
+    )
+  )
+  expect_equal(
+    expected_results, 
+    create_data_focus_tables(data, "Study", c("Assay", "Resource"))
+  )
+})
+
 test_that("concatenate_list_columns", {
   tbl1 <- dplyr::tibble(
     "cola" = list(c("a", "b"), "a", c("a", "c")),
@@ -38,36 +93,13 @@ test_that("safe_pluck_list", {
 })
 
 
-test_that("rename_df_columns_with_param_list", {
-  tbl1 <- dplyr::tibble("col1" = c(), "col2" = c(), "colNum3" = c())
-  param_list1 <- list(
-    "columns" = list(
-      "col1" = list("name" = "col1", "display_name" = "Column1", "type" = "x"),
-      "col2" = list("name" = "col2", "type" = "x"),
-      "col3" = list("name" = "colNum3", "type" = "x")
-    )
-  )
-  param_list2 <- list(
-    "columns" = list(
-      "col1" = list("name" = "col1", "display_name" = "Column1", "type" = "x"),
-      list("name" = "col2", "type" = "x", "display_name" = "Column2"),
-      list("name" = "colNum3", "type" = "x", "display_name" = "Column3")
-    )
-  )
-  res1 <- rename_df_columns_with_param_list(tbl1, param_list1)
-  res2 <- rename_df_columns_with_param_list(tbl1, param_list2)
-  expect_equal(
-    res1,
-    dplyr::tibble("Column1" = c(), "Col2" = c(), "Colnum3" = c())
-  )
-  expect_equal(
-    res2, 
-    dplyr::tibble("Column1" = c(), "Column2" = c(), "Column3" = c())
-  )
-})
-
 test_that("recode_column_values", {
-  tbl1 <- dplyr::tibble("col1" = c("a", "a", "b"), "col2" = c("c", "d", NA))
+  tbl1 <- dplyr::tribble(
+    ~col1, ~col2,
+    "a",   "c",
+    "a",   "d",
+    "b",   NA
+  )
   lst1 <- list("a" = "x", "b" = "y", "c" = "z")
   col1 <- "col1"
   col2 <- "col2"
@@ -99,61 +131,6 @@ test_that("recode_column_values", {
   )
 })
 
-test_that("recode_column_values_with_param_list", {
-  tbl1 <- dplyr::tibble("col1" = c("a", "a", "b"), "col2" = c("c", "d", NA))
-  param_list1 <- list(
-    "name" = "col1",
-    "replace_values" = list(
-      "a" = "x",
-      "b" = "y",
-      "c" = "z"
-    )
-  )
-  param_list2 <- list(
-    "name" = "col2",
-    "replace_values" = list(
-      "a" = "x",
-      "b" = "y",
-      "c" = "z"
-    ),
-    "na_replace" = "M",
-    "default_replace" = "O"
-  )
-  param_list3 <- list(
-    "name" = "col2",
-    "na_replace" = "M",
-    "default_replace" = "O"
-  )
-  param_list4 <- list(
-    "name" = "col2",
-    "na_replace" = "M"
-  )
-  param_list5 <- list(
-    "name" = "col2"
-  )
-  res1 <- recode_column_values_with_param_list(tbl1, param_list1)
-  res2 <- recode_column_values_with_param_list(tbl1, param_list2)
-  res3 <- recode_column_values_with_param_list(tbl1, param_list3)
-  res4 <- recode_column_values_with_param_list(tbl1, param_list4)
-  res5 <- recode_column_values_with_param_list(tbl1, param_list5)
-  expect_equal(
-    res1,
-    dplyr::tibble("col1" = c("x", "x", "y"), "col2" = c("c", "d", NA))
-  )
-  expect_equal(
-    res2,
-    dplyr::tibble("col1" = c("a", "a", "b"), "col2" = c("z", "O", "M"))
-  )
-  expect_equal(
-    res3,
-    dplyr::tibble("col1" = c("a", "a", "b"), "col2" = c("O", "O", "M"))
-  )
-  expect_equal(
-    res4,
-    dplyr::tibble("col1" = c("a", "a", "b"), "col2" = c("c", "d", "M"))
-  )
-  expect_equal(res5, tbl1)
-})
 
 test_that("recode_df_with_param_list", {
   tbl1 <- dplyr::tibble(
@@ -196,8 +173,6 @@ test_that("recode_df_with_param_list", {
   )
 })
 
-
-
 test_that("add_distinct_values_from_columns", {
   tbl <- dplyr::tibble(
     "col1" = c("a", "a", "b"),
@@ -221,24 +196,6 @@ test_that("get_distinct_value_from_column", {
   expect_equal(get_distinct_value_from_column(df, "col2"), 3)
 })
 
-
-# test_that("build_translation_df_from_list", {
-#   lst <- list(
-#     list("name" = "assay1", "display_name" = "Assay1"),
-#     list("name" = "assay2", "display_name" = "Assay2")
-#   )
-#   result <- build_translation_df_from_list(lst, "name", "display_name")
-#   expect_named(result, c("name", "new_name"))
-# })
-# 
-# test_that("build_translation_df_from_list", {
-#   lst <- list(
-#     list("name" = "assay1", "display_name" = "Assay1"),
-#     list("name" = "assay2", "display_name" = "Assay2")
-#   )
-#   result <- build_translation_df_from_list(lst, "name", "display_name")
-#   expect_named(result, c("name", "new_name"))
-# })
 
 count_df <- dplyr::tribble(
   ~studyName, ~name,          ~value,                   ~count,

@@ -18,7 +18,6 @@ test_that("create_plot_with_param_list", {
   fig <- create_plot_with_param_list(
     data, param_list, "create_file_upload_timeline_plot"
   )
-  print(fig)
   expect_type(fig, "list")
 })
 
@@ -28,65 +27,163 @@ test_that("create_consortium_activity_plot", {
     "Access Type" = c("a1", "a2", "a1", "a1", "a1"),
     "Year" = c(2001L, 2001L, 2001L, 2002L, 2002L)
   )
-  p <- create_consortium_activity_plot(
+  fig <- create_consortium_activity_plot(
     data  = data,
     x     = "Consortium",
     fill  = "Access Type",
     "Year"
+  ) %>% 
+    plotly::ggplotly(tooltip = c("count", "Access Type"))
+  expect_type(fig, "list")
+})
+
+test_that("create_resources_generated_plot",{
+  data <- dplyr::tibble(
+    "Study Name" = c("s1", "s1", "s2", "s3"),
+    "Data Type" = c("d1", "d2", "d2", "d3"),
+    "Year" = c(2000L, 2000L, 2001L, 2002L)
   )
-  p <-  plotly::ggplotly(p, tooltip = c("count", "Access Type"))
-  print(p)
-  expect_type(p, "list")
+  
+  fig <- create_resources_generated_plot(
+    data,
+    x = "Study Name",
+    fill = "Data Type",
+    facet = "Year"
+  ) %>% 
+    plotly::ggplotly(tooltip = c("Count", "fill"))
+  expect_type(fig, "list")
+})
+
+test_that("create_publication_status_plot",{
+  data <- dplyr::tibble(
+    "Study Name" = c("s1", "s1", "s2", "s3"),
+    "Year" = c(2000L, 2000L, 2001L, 2002L)
+  )
+  
+  fig <- create_publication_status_plot(
+    data,
+    x = "Year",
+    fill = "Study Name"
+  ) %>% 
+    plotly::ggplotly(tooltip = c("Count", "fill"))
+  expect_type(fig, "list")
+})
+
+test_that("create_publication_disease_plot",{
+  data <- dplyr::tibble(
+    "Manifestation" = c("m1", "m1", "m2", "m3"),
+    "Year" = c(2000L, 2000L, 2001L, 2002L)
+  )
+  
+  fig <- create_publication_disease_plot(
+    data,
+    x = "Year",
+    fill = "Manifestation"
+  ) %>% 
+    plotly::ggplotly(tooltip = c("Count", "fill"))
+  expect_type(fig, "list")
 })
 
 
 test_that("create_file_upload_timeline_plot", {
-  tbl1 <- dplyr::tibble(
+  data <- dplyr::tibble(
     "Study Leads" = c("s1", "s1", "s2", "s3", "s4"),
     "Resource Type" = c("r1", "r2", "r2", "r3", NA),
     "Year" = c(2000L, 2000L, 2001L, 2002L, 2000L),
     "Count" = c(2,1,2,5,0)
   )
   
-  fig1 <- create_file_upload_timeline_plot(
-    tbl1,
+  fig <- create_file_upload_timeline_plot(
+    data,
     x = "Study Leads",
     y = "Count",
     fill = "Resource Type",
     facet = "Year"
-  ) 
-  print(fig1)
-  plotly::ggplotly(fig1, tooltip = c("Count", "fill"))
-  print(fig1)
-  expect_type(fig1, "list")
-  
-  tbl2 <- dplyr::tibble(
-    "Study Leads" = c("s1", "s2", "s3"),
-    "Resource Type" = c("r1", "r2", "r3"),
-    "Year" = c(2000L, 2001L, 2002L)
   ) %>% 
-    dplyr::mutate("Study Leads" = forcats::as_factor(`Study Leads`)) %>% 
-    tidyr::drop_na() %>% 
-    dplyr::count(`Study Leads`, `Resource Type`, `Year`, name = "Count") %>% 
-    tidyr::complete(`Study Leads`, `Resource Type`, `Year`, fill = list("Count" = 0)) %>% 
-    dplyr::mutate("Resource Type" = dplyr::if_else(
-      .data$Count == 0,
-      NA_character_,
-      .data$`Resource Type`
-    ))
+    plotly::ggplotly(tooltip = c("Count", "fill"))
+  expect_type(fig, "list")
+})
 
-  fig2 <- create_file_upload_timeline_plot(
-    tbl2,
+test_that("create_annotation_activity_plot", {
+  data <- dplyr::tibble(
+    "Study Leads" = c("s1", "s1", "s2", "s3", "s4"),
+    "Assay" = c("a1", "a2", "a2", "a3", NA),
+    "Year" = c(2000L, 2000L, 2001L, 2002L, 2000L),
+    "Count" = c(2,1,2,5,0)
+  )
+  
+  fig <- create_annotation_activity_plot(
+    data,
     x = "Study Leads",
     y = "Count",
-    fill = "Resource Type",
+    fill = "Assay",
     facet = "Year"
-  ) 
-  print(fig2)
-  plotly::ggplotly(fig1, tooltip = c("Count", "fill"))
-  print(fig2)
-  expect_type(fig2, "list")
-
+  ) %>% 
+    plotly::ggplotly(tooltip = c("Count", "fill"))
+  expect_type(fig, "list")
 })
+
+test_that("create_data_focus_plots",{
+  
+  data_list <- list(
+    "Assays" = dplyr::tribble(
+      ~`Study Name`, ~Assays,
+      "s1",          "a1",    
+      "s1",          "a2"    
+    ),
+    "Resources" = dplyr::tribble(
+      ~`Study Name`, ~Resources,
+      "s1",          "r1",       
+      "s1",          "r1"
+    )
+  )
+  
+  param_list <- list(
+    "plot" = list(
+      "x" = "Study Name",
+      "fill" = list(
+        "Assay",
+        "Resources"
+      )
+    )
+  )
+  fig <- create_data_focus_plots(data_list, param_list)
+  expect_type(fig, "list")
+})
+
+test_that("create_data_focus_plot",{
+  data <- dplyr::tibble(
+    "Study Name" = c("s1", "s1", "s1", "s1"),
+    "Assay" = c("a1", "a2", "a1", "a2")
+  ) 
+  
+  fig <- create_data_focus_plot(
+    data,
+    x = "Study Name",
+    fill = "Assay"
+  ) %>% 
+    plotly::ggplotly(tooltip = c("Count", "fill"))
+  expect_type(fig, "list")
+})
+
+test_that("create_study_timeline_plot",{
+  data <- dplyr::tibble(
+    "Study Name" = c("s1", "s1", "s1"),
+    "Resource Type" = c("a1", "a2", "a1"),
+    "Year" = c(2000L, 2001L, 2002L),
+    "Month" = factor("Jul", "Jul", "Jun"),
+  ) 
+  
+  fig <- create_study_timeline_plot(
+    data,
+    x = "Study Name",
+    fill = "Resource Type",
+    facet = list("Year", "Month")
+    
+  ) %>% 
+    plotly::ggplotly(tooltip = c("Count", "fill"))
+  expect_type(fig, "list")
+})
+
 
 
