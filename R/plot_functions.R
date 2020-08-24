@@ -141,13 +141,12 @@ create_publication_status_plot <- function(data, x, fill){
   
   data %>% 
     ggplot2::ggplot() +
-    ggplot2::geom_histogram(
+    ggplot2::geom_bar(
       ggplot2::aes(
         x = !!rlang::sym(x),
         fill = !!rlang::sym(fill),
         color = !!rlang::sym(fill)
       ),
-      binwidth = 0.5,  
       alpha = 0.8,
       position = "stack"
     ) +
@@ -179,13 +178,12 @@ create_publication_disease_plot <- function(data, x, fill){
   
   data %>% 
     ggplot2::ggplot() +
-    ggplot2::geom_histogram(
+    ggplot2::geom_bar(
       ggplot2::aes(
         x = !!rlang::sym(x),
         fill = !!rlang::sym(fill),
         color = !!rlang::sym(fill)
-      ),
-      binwidth = 0.5,  
+      ), 
       alpha = 0.8,
       position = "stack"
     ) +

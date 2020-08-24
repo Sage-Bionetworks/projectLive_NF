@@ -1,8 +1,10 @@
-test_that("add_date_columns", {
-  data1 <- dplyr::tibble("createdOn" = 1.454526e+12)
-  data2 <- dplyr::tibble(other_col = character())
-  expect_named(add_date_columns(data1), c("createdOn", "date", "year", "month"))
-  expect_named(add_date_columns(data2), "other_col")
+test_that("format_date_columns", {
+  data1 <- dplyr::tibble("createdOn" = c(1.454526e+12, 1.454526e+12))
+  data2 <- dplyr::tibble("year" = 2001L, "month" = "January")
+  result1 <- format_date_columns(data1)
+  result2 <- format_date_columns(data2)
+  expect_named(result1, c("createdOn", "date", "year", "month"))
+  expect_named(result2, c("year", "month"))
 })
 
 test_that("filter_list_column",{
@@ -19,12 +21,12 @@ test_that("filter_list_column",{
   )
   result1 <- filter_list_column(data, "x", "a")
   expect_equal(result1, dplyr::tibble("x" = "a", "y" = list("b")))
-  
+
   result2 <- filter_list_column(data, "y", "a")
   expect_equal(
-    result2, 
+    result2,
     dplyr::tibble(
-      "x" = c("b", NA, "d"), 
+      "x" = c("b", NA, "d"),
       "y" = list("a", c("a", "c"), c("a", NA))
     )
   )
@@ -53,7 +55,7 @@ test_that("create_merged_table_with_param_list", {
       "other_col" = c("x", "y")
     )
   )
-  result <- create_merged_table_with_param_list(group_object, param_list) %>% print()
+  result <- create_merged_table_with_param_list(group_object, param_list)
   expected_result <- dplyr::tibble(
     "studyName" = c("s1", "s2"),
     "studyLeads" = c("l1", "l2"),

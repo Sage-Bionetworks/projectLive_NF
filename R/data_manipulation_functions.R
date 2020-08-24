@@ -1,26 +1,35 @@
-#' Add Date Columns
+#' Format Date Columns
 #' This function adds date, year and month columns if the the input has a 
-#' createdOn column from Synapse
+#' createdOn column from Synapse.
+#' If the the input has year or month columns, those are converted to factors.
 #' @param data A tibble
 #' @importFrom magrittr %>% 
 #' @importFrom rlang .data
-add_date_columns <- function(data){
-  if (!"createdOn" %in% colnames(data)) return(data)
-  data %>% 
-    dplyr::mutate(
-      "date" = purrr::map(
-        .data$createdOn, 
-        ~as.POSIXct(.x/1000, origin = "1970-01-01")
-      ),
-      "year" = purrr::map_dbl(
-        .data$date, 
-        ~as.integer(lubridate::year(.x))
-      ),
-      "month" = unlist(purrr::map(
-        .data$date, 
-        ~lubridate::month(.x, label  = TRUE, abbr = TRUE)
-      ))
-    )
+format_date_columns <- function(data){
+  if (!"createdOn" %in% colnames(data)){
+    if ("year" %in% colnames(data)){
+      data <- dplyr::mutate(data, "year" = forcats::as_factor(.data$year))
+    }
+    if ("month" %in% colnames(data)){
+      data <- dplyr::mutate(data, "month" = forcats::as_factor(.data$month))
+    }
+  }
+  else{
+    data <- data %>% 
+      dplyr::mutate(
+        "date" = purrr::map(
+          .data$createdOn, 
+          ~as.POSIXct(.x/1000, origin = "1970-01-01")
+        ),
+        "year" = forcats::as_factor(purrr::map_dbl(
+          .data$date, lubridate::year
+        )),
+        "month" = unlist(purrr::map(
+          .data$date, lubridate::month, label  = TRUE, abbr = TRUE
+        ))
+      )
+  }
+  return(data)
 }
 
 #' Filter List Column

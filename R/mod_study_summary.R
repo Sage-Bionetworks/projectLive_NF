@@ -298,7 +298,7 @@ mod_study_summary_server <- function(
     data <- group_object() %>% 
       purrr::pluck(param_list$table) %>% 
       filter_list_column(param_list$filter_column, selected_study_name()) %>% 
-      format_plot_data_with_param_list(param_list) 
+      format_plot_data_with_param_list(param_list)
     
     validate(need(nrow(data) > 0 , param_list$empty_table_message))
     
