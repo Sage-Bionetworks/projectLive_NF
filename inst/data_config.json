@@ -239,7 +239,12 @@
     "study_summary": {
       "outputs": {
         "merged_table": {
-          "tables": ["studies_table", "files_table", "tools_table"],
+          "tables": [
+            "studies_table",
+            "files_table",
+            "tools_table"
+          ],
+          "filter_column": "studyName",
           "join_column": "studyName",
           "columns": [
             [
@@ -367,6 +372,28 @@
           },
           "tooltips": ["count", "fill"],
           "empty_table_message": "The investigator/investigators has/have not uploaded any files yet. Please check back later."
+        },
+        "publication_status": {
+           "table": "publications_table",
+           "filter_column": "studyName",
+           "columns": [
+             {
+              "name": "year",
+              "display_name": "Year",
+              "type": "integer"
+             },
+             {
+              "name": "studyName",
+              "display_name": "Study Name",
+              "type": "list:character"
+             }
+           ],
+           "plot": {
+             "x": "Year",
+             "fill": "Study Name"
+           },
+           "empty_table_message": "This study has no associated publications.",
+           "tooltips": ["count", "fill"]
         },
         "study_details": {
           "columns": [
