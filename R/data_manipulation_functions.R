@@ -1,3 +1,73 @@
+#' Add Date Columns
+#' This function adds date, year and month columns if the the input has a 
+#' createdOn column from Synapse
+#' @param data A tibble
+#' @importFrom magrittr %>% 
+#' @importFrom rlang .data
+add_date_columns <- function(data){
+  if (!"createdOn" %in% colnames(data)) return(data)
+  data %>% 
+    dplyr::mutate(
+      "date" = purrr::map(
+        .data$createdOn, 
+        ~as.POSIXct(.x/1000, origin = "1970-01-01")
+      ),
+      "year" = purrr::map_dbl(
+        .data$date, 
+        ~as.integer(lubridate::year(.x))
+      ),
+      "month" = unlist(purrr::map(
+        .data$date, 
+        ~lubridate::month(.x, label  = TRUE, abbr = TRUE)
+      ))
+    )
+}
+
+#' Filter List Column
+#' This function filters a list column in the input data. Rows are kept if all
+#' items in the values are in the supplied column.
+#'
+#' @param data A Tibble
+#' @param column A string, that is the name of a column in the data
+#' @param values A list of values
+filter_list_column <- function(data, column, values){
+  dplyr::filter(
+    data,
+    purrr::map_lgl(!!rlang::sym(column), ~all(values %in% .x))
+  )
+}
+
+#' Create Merged Table With Parameter List
+#'
+#' @param group_object A named list with tables
+#' @param param_list A named list. It must have the names "tables", "columns",
+#' and "join_column". The tables value must be names of tables in the group 
+#' object. "join_column" must be a column in all tables. "columns" must be a 
+#' list of lists, one per table. Each list must be a subset of that tables 
+#' column names.
+#' @importFrom magrittr %>% 
+create_merged_table_with_param_list <- function(group_object, param_list){
+  group_object %>% 
+    magrittr::extract(unlist(param_list$tables)) %>% 
+    purrr::map2(
+      purrr::map(param_list$columns, unlist), 
+      dplyr::select
+    ) %>% 
+    purrr::reduce(dplyr::left_join, by = param_list$join_column) 
+}
+
+
+#' Replace Values If Column Values In List
+#' This function replaces values in a list of columns, with a value, if a
+#' given column has a supllied value.
+#'
+#' @param data A Tibble
+#' @param column A string which is a name of a column in the data to check the
+#' values in the lst
+#' @param lst A list of values to check the column against
+#' @param columns A list of strings that are column names.
+#' @param replace_value A value to replace
+#' @importFrom rlang !!
 replace_values_if_col_value_in_list <- function(
   data, column, lst, columns, replace_value = NA_character_
 ){
@@ -10,6 +80,19 @@ replace_values_if_col_value_in_list <- function(
   ) 
 }
 
+#' Create Plot Count Dataframe
+#' This function is used to create counts for histogram style plots if the 
+#' counting has to be done in a way that preserves certain groups that have a
+#' count of 0.
+#'
+#' @param data A tibble
+#' @param factor_columns A list of strings that are columns in the data. This
+#' should be the aesthetic that is intended to be present in the plot even if
+#' it has zero counts such as the x-axis, or possibly a facet.
+#' @param complete_columns A list of strings that are columns in the data. 
+#' This should be all columns except the color/fill columns.
+#' @importFrom magrittr %>% 
+#' @importFrom rlang !!!
 create_plot_count_df <- function(data, factor_columns, complete_columns){
   data %>%  
     dplyr::mutate(dplyr::across(factor_columns, forcats::as_factor)) %>% 

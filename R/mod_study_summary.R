@@ -122,18 +122,8 @@ mod_study_summary_server <- function(
       "merged_table"
     )
     
-    table1 <- group_object()[[param_list$table1]] %>% 
-      dplyr::select_at(unlist(param_list$table1_cols))
+    create_merged_table_with_param_list(group_object(), param_list)
     
-    table2 <- group_object()[[param_list$table2]] %>% 
-      dplyr::select_at(unlist(param_list$table2_cols))
-    
-    table3 <- group_object()[[param_list$table3]] %>% 
-      dplyr::select_at(unlist(param_list$table3_cols))
-    
-    table1 %>%
-      dplyr::left_join(table2, by = param_list$join_column1) %>% 
-      dplyr::left_join(table3, by = param_list$join_column2) 
   })
   
   study_table <- shiny::reactive({
