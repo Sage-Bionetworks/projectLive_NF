@@ -81,6 +81,7 @@ mod_summary_snapshot_ui <- function(id){
             width = 12,
             height = 800,
             collapsible = FALSE,
+            shiny::uiOutput(ns("file_upload_timeline_filter_ui")),
             plotly::plotlyOutput(ns('file_upload_timeline'))
           )
         )
@@ -223,9 +224,9 @@ mod_summary_snapshot_server <- function(
   })
   
   merged_table <- shiny::reactive({
-    
+
     shiny::req(group_object(), data_config)
-    
+
     param_list <- purrr::pluck(
       data_config,
       "modules",
@@ -233,15 +234,46 @@ mod_summary_snapshot_server <- function(
       "outputs",
       "merged_table"
     )
+
+    create_merged_table_with_param_list(group_object(), param_list)
+  })
+  
+  output$file_upload_timeline_filter_ui <- shiny::renderUI({
     
-    create_merged_table_with_param_list(group_object(), param_list) %>% 
+    shiny::req(merged_table(), data_config)
+    
+    column <- purrr::pluck(
+      data_config,
+      "modules",
+      "summary_snapshot",
+      "outputs",
+      "file_upload_timeline",
+      "filter_column"
+    ) %>% 
       print()
     
+    choices <- merged_table() %>% 
+      dplyr::pull(column) %>% 
+      unlist(.) %>% 
+      unique() %>% 
+      sort() %>% 
+      c("All", .) %>% 
+      print()
+    
+    shiny::selectInput(
+      inputId = ns("file_upload_timeline_filter_value"),
+      label   = "Select a consortium",
+      choices = choices
+    )
   })
   
   output$file_upload_timeline <- plotly::renderPlotly({
     
-    shiny::req(merged_table(), data_config)
+    shiny::req(
+      merged_table(), 
+      data_config, 
+      input$file_upload_timeline_filter_value
+    )
     
     param_list <- purrr::pluck(
       data_config,
@@ -251,16 +283,25 @@ mod_summary_snapshot_server <- function(
       "file_upload_timeline"
     )
     
-    data <- merged_table() %>% 
-      print() %>% 
+
+    if (input$file_upload_timeline_filter_value != "All"){
+      data <- merged_table() %>% 
+        filter_list_column(
+          param_list$filter_column, 
+          input$file_upload_timeline_filter_value
+        )
+    } else {
+      data <- merged_table() 
+    }
+    
+    data <- data %>% 
       format_plot_data_with_param_list(param_list) %>% 
-      print() %>% 
       create_plot_count_df(
         factor_columns   = param_list$plot$x, 
         complete_columns = c(param_list$plot$x, param_list$plot$facet)
-      ) %>% print()
+      ) 
     
-    validate(need(nrow(data) > 0, param_list$empty_table_message))
+    validate(need(sum(data$Count) > 0, param_list$empty_table_message))
     
     create_plot_with_param_list(
       data, param_list, "create_file_upload_timeline_plot", height = 700
