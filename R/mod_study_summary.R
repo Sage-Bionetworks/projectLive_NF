@@ -65,9 +65,6 @@ mod_study_summary_ui <- function(id){
             solidHeader = TRUE,
             width = 12,
             collapsible = FALSE,
-            #shinydashboard::infoBoxOutput(ns('study'), width = 12),
-            #shiny::textOutput(ns('study')),
-            shiny::uiOutput(ns("data_focus_selection_ui")),
             plotly::plotlyOutput(ns('data_focus_plot'))
           ),
           shinydashboard::box(
@@ -76,13 +73,6 @@ mod_study_summary_ui <- function(id){
             solidHeader = TRUE,
             width = 12,
             collapsible = FALSE,
-            # shiny::selectizeInput(ns('variable'),
-            #                       label = "Choose to view", 
-            #                       choices = c("resourceType", "tumorType", "assay"),
-            #                       selected = "resourceType", 
-            #                       multiple = F),
-            #shinydashboard::infoBoxOutput(ns('study'), width = 12),
-            #shiny::textOutput(ns('study')),
             plotly::plotlyOutput(ns('study_timeline_plot'))
           ),
           shinydashboard::box(
@@ -216,31 +206,10 @@ mod_study_summary_server <- function(
     filter_list_column(merged_table(), column, selected_study_name()) 
   })
   
-  output$data_focus_selection_ui <- shiny::renderUI({
-    shiny::req(data_config)
-    choices <- data_config %>% 
-      purrr::pluck(
-        "modules", 
-        "study_summary", 
-        "outputs", 
-        "data_focus", 
-        "plot",
-        "fill"
-      )
-    shiny::selectizeInput(
-      ns('data_focus_columns'),
-      label = "Choose to view",
-      choices = choices,
-      selected = choices,
-      multiple = T
-    )
-  })
-  
   output$data_focus_plot <- plotly::renderPlotly({
     
     shiny::req(
       filtered_merged_table(), 
-      input$data_focus_columns,
       data_config
     )
     
@@ -254,7 +223,7 @@ mod_study_summary_server <- function(
     
     data_list <- filtered_merged_table() %>% 
       format_plot_data_with_param_list(param_list) %>% 
-      create_data_focus_tables(param_list$plot$x, input$data_focus_columns)
+      create_data_focus_tables(param_list$plot$x, param_list$plot$fill)
     
     validate(need(length(data_list) > 0 , param_list$empty_table_message))
     
