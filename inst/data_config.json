@@ -201,41 +201,6 @@
          }
        }
     },
-    "study_lead": {
-       "outputs": {
-         "annotation_activity": {
-           "table": "merged_table",
-           "filter_column": "studyLeads",
-           "empty_table_message": "The investigators have not uploaded any files yet. Please check back later.",
-           "tooltips": ["Count", "fill"],
-           "columns": [
-             {
-               "name": "studyLeads",
-               "display_name": "Study Leads",
-               "type": "list:character",
-               "na_replace": "Pending Annotation"
-             },
-             {
-               "name": "assay",
-               "display_name": "Assay",
-               "type": "character",
-               "na_replace": "Pending Annotation"
-             },
-             {
-               "name": "year",
-               "display_name": "Year",
-               "type": "integer"
-             }
-           ],
-           "plot": {
-             "x": "Study Leads",
-             "y": "Count",
-             "fill": "Assay",
-             "facet": "Year"
-           }
-         }
-       }
-    },
     "study_summary": {
       "outputs": {
         "merged_table": {
@@ -301,6 +266,37 @@
           ],
           "id_column": "Name"
         },
+        "annotation_activity": {
+          "table": "merged_table",
+          "filter_column": "studyLeads",
+          "empty_table_message": "The investigators have not uploaded any files yet. Please check back later.",
+          "tooltips": ["Count", "fill"],
+          "columns": [
+            {
+              "name": "studyLeads",
+              "display_name": "Study Leads",
+              "type": "list:character",
+              "na_replace": "Pending Annotation"
+            },
+            {
+              "name": "assay",
+              "display_name": "Assay",
+              "type": "character",
+              "na_replace": "Pending Annotation"
+            },
+            {
+              "name": "year",
+              "display_name": "Year",
+              "type": "integer"
+            }
+          ],
+          "plot": {
+            "x": "Study Leads",
+            "y": "Count",
+            "fill": "Assay",
+            "facet": "Year"
+          }
+         },
         "data_focus": {
           "columns": [
             {
