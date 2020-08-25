@@ -424,6 +424,71 @@
           ]
         }
       }
+    },
+    "new_submissions": {
+      "outputs": {
+        "merged_table": {
+          "tables": [
+            "files_table",
+            "studies_table"
+          ],
+          "columns": [
+            [
+              "studyName",
+              "date",
+              "name",
+              "assay",
+              "parentId",
+              "resourceType"
+            ],
+            ["studyName", "studyLeads", "studyId"]
+          ]
+        },
+        "new_files_table": {
+          "columns": [
+            {
+              "display_name": "File Name", 
+              "name": "name",
+              "type": "character"
+            },
+            {
+              "display_name": "Date", 
+              "name": "date",
+              "type": "other"
+            },
+            {
+              "display_name": "Study Name", 
+              "name": "studyName",
+              "type": "character",
+              "na_replace": "Not Annotated"
+            },
+            {
+              "display_name": "Study Leads", 
+              "name": "studyLeads",
+              "type": "list:character",
+              "na_replace": "Not Annotated"
+            },
+            {
+              "display_name": "Parent ID", 
+              "name": "parentId",
+              "type": "character",
+              "na_replace": "Not Annotated"
+            },
+            {
+              "display_name": "Resource Type", 
+              "name": "resourceType",
+              "type": "character",
+              "na_replace": "Not Annotated"
+            },
+            {
+              "display_name": "Assay", 
+              "name":"assay",
+              "type": "character",
+              "na_replace": "Not Annotated"
+            }
+          ]
+        }
+      }
     }
   }
 }

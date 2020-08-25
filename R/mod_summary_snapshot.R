@@ -91,11 +91,6 @@ mod_summary_snapshot_server <- function(
 ){
   ns <- session$ns
   
-  files_table <- shiny::reactive({
-    shiny::req(group_object())
-    group_object()$files_table
-  })
-  
   output$funding_agency <- shiny::renderText({
     print(glue::glue(
       "You are now viewing studies funded by {group_object()$selected_group}.
