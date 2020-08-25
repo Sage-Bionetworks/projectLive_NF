@@ -66,7 +66,6 @@ mod_study_summary_ui <- function(id){
             solidHeader = TRUE,
             width = 12,
             collapsible = FALSE,
-            shiny::uiOutput(ns("annotation_activity_filter_ui")),
             plotly::plotlyOutput(ns('annotation_activity'))
           ),
           shinydashboard::box(
@@ -75,8 +74,6 @@ mod_study_summary_ui <- function(id){
             solidHeader = TRUE,
             width = 12,
             collapsible = FALSE,
-            #shinydashboard::infoBoxOutput(ns('study'), width = 12),
-            #shiny::textOutput(ns('study')),
             shiny::uiOutput(ns("data_focus_selection_ui")),
             plotly::plotlyOutput(ns('data_focus_plot'))
           ),
@@ -86,13 +83,6 @@ mod_study_summary_ui <- function(id){
             solidHeader = TRUE,
             width = 12,
             collapsible = FALSE,
-            # shiny::selectizeInput(ns('variable'),
-            #                       label = "Choose to view", 
-            #                       choices = c("resourceType", "tumorType", "assay"),
-            #                       selected = "resourceType", 
-            #                       multiple = F),
-            #shinydashboard::infoBoxOutput(ns('study'), width = 12),
-            #shiny::textOutput(ns('study')),
             plotly::plotlyOutput(ns('study_timeline_plot'))
           ),
           shinydashboard::box(
@@ -226,38 +216,11 @@ mod_study_summary_server <- function(
     filter_list_column(merged_table(), column, selected_study_name()) 
   })
   
-  output$annotation_activity_filter_ui <- shiny::renderUI({
-    
-    shiny::req(filtered_merged_table(), data_config)
-    
-    column <- purrr::pluck(
-      data_config,
-      "modules",
-      "study_summary",
-      "outputs",
-      "annotation_activity",
-      "filter_column"
-    )
-    
-    choices <- filtered_merged_table() %>% 
-      dplyr::pull(column) %>% 
-      unlist(.) %>% 
-      unique() %>% 
-      sort() 
-    
-    shiny::selectInput(
-      inputId = ns("annotation_activity_filter_value"),
-      label   = "Select a principal investigator",
-      choices = choices
-    )
-  })
-  
   output$annotation_activity <- plotly::renderPlotly({
     
     shiny::req(
       filtered_merged_table(), 
-      data_config, 
-      input$annotation_activity_filter_value
+      data_config
     )
     
     param_list <- purrr::pluck(
@@ -269,17 +232,13 @@ mod_study_summary_server <- function(
     )
     
     data <- filtered_merged_table() %>% 
-      filter_list_column(
-        param_list$filter_column, 
-        input$annotation_activity_filter_value
-      ) %>% 
       format_plot_data_with_param_list(param_list) %>% 
       create_plot_count_df(
         factor_columns   = param_list$plot$x, 
         complete_columns = c(param_list$plot$x, param_list$plot$facet)
       )
     
-    validate(need(nrow(data) > 0, param_list$empty_table_message))
+    validate(need(sum(data$Count) > 0, param_list$empty_table_message))
     
     create_plot_with_param_list(
       data, param_list, "create_annotation_activity_plot"
