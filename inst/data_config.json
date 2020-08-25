@@ -120,18 +120,19 @@
           "join_column" : "studyName",
           "tables": ["studies_table", "files_table"],
           "columns": [
-            ["studyName", "studyLeads"],
+            ["studyName", "consortium"],
             ["studyName", "resourceType", "year", "assay"]
           ]
         },
         "file_upload_timeline":{
-          "empty_table_message": "The investigators have not uploaded any files yet. Please check back later.",
+          "empty_table_message": "The studies have not uploaded any files yet. Please check back later.",
           "table": "merged_table",
+          "filter_column": "consortium",
           "columns": [
             {
-              "name": "studyLeads",
-              "display_name": "Study Leads",
-              "type": "list:character",
+              "name": "studyName",
+              "display_name": "Study Name",
+              "type": "character",
               "na_replace": "Pending Annotation"
             },
             {
@@ -147,7 +148,7 @@
             }
           ],
           "plot": {
-            "x": "Study Leads",
+            "x": "Study Name",
             "y": "Count",
             "fill": "Resource Type",
             "facet": "Year"
