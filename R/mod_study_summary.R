@@ -53,6 +53,14 @@ mod_study_summary_ui <- function(id){
             DT::dataTableOutput(ns('study_table')),
           ),
           shinydashboard::box(
+            title = "",
+            status = "primary",
+            solidHeader = F,
+            width = 12,
+            collapsible = FALSE,
+            shinydashboard::infoBoxOutput(ns('study'), width = 12)
+          ),
+          shinydashboard::box(
             title = "Annotation Activity", 
             status = "primary", 
             solidHeader = TRUE,
@@ -60,13 +68,6 @@ mod_study_summary_ui <- function(id){
             collapsible = FALSE,
             shiny::uiOutput(ns("annotation_activity_filter_ui")),
             plotly::plotlyOutput(ns('annotation_activity'))
-          ),
-          shinydashboard::box(title = "",
-              status = "primary",
-              solidHeader = F,
-              width = 12,
-              collapsible = FALSE,
-              shinydashboard::infoBoxOutput(ns('study'), width = 12)
           ),
           shinydashboard::box(
             title = "Data Focus",
