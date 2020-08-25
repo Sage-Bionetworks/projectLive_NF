@@ -43,15 +43,15 @@ mod_study_lead_ui <- function(id){
             status = "primary",
             shiny::textOutput(ns('funding_agency'))
           ),
-          shinydashboard::box(
-            title = "File Upload Timeline", 
-            status = "primary", 
-            solidHeader = TRUE,
-            width = 12,
-            height = 800,
-            collapsible = FALSE,
-            plotly::plotlyOutput(ns('file_upload_timeline'))
-          ),
+          # shinydashboard::box(
+          #   title = "File Upload Timeline", 
+          #   status = "primary", 
+          #   solidHeader = TRUE,
+          #   width = 12,
+          #   height = 800,
+          #   collapsible = FALSE,
+          #   plotly::plotlyOutput(ns('file_upload_timeline'))
+          # ),
           shinydashboard::box(
             title = "Annotation Activity", 
             status = "primary", 
@@ -92,48 +92,48 @@ mod_study_lead_server <- function(
     ))
   })
   
-  merged_table <- shiny::reactive({
-    
-    shiny::req(group_object(), data_config)
-    
-    param_list <- purrr::pluck(
-      data_config,
-      "modules",
-      "study_lead",
-      "outputs",
-      "merged_table"
-    )
-    
-    create_merged_table_with_param_list(group_object(), param_list)
-    
-  })
+  # merged_table <- shiny::reactive({
+  #   
+  #   shiny::req(group_object(), data_config)
+  #   
+  #   param_list <- purrr::pluck(
+  #     data_config,
+  #     "modules",
+  #     "study_lead",
+  #     "outputs",
+  #     "merged_table"
+  #   )
+  #   
+  #   create_merged_table_with_param_list(group_object(), param_list)
+  #   
+  # })
   
-  output$file_upload_timeline <- plotly::renderPlotly({
-    
-    shiny::req(merged_table(), data_config)
-    
-    param_list <- purrr::pluck(
-      data_config,
-      "modules",
-      "study_lead",
-      "outputs",
-      "file_upload_timeline"
-    )
-    
-    data <- merged_table() %>% 
-      format_plot_data_with_param_list(param_list) %>% 
-      create_plot_count_df(
-        factor_columns   = param_list$plot$x, 
-        complete_columns = c(param_list$plot$x, param_list$plot$facet)
-      )
-    
-    validate(need(nrow(data) > 0, param_list$empty_table_message))
-    
-    create_plot_with_param_list(
-      data, param_list, "create_file_upload_timeline_plot", height = 700
-    ) %>%
-    plotly::layout(autosize = T)
-  })
+  # output$file_upload_timeline <- plotly::renderPlotly({
+  #   
+  #   shiny::req(merged_table(), data_config)
+  #   
+  #   param_list <- purrr::pluck(
+  #     data_config,
+  #     "modules",
+  #     "study_lead",
+  #     "outputs",
+  #     "file_upload_timeline"
+  #   )
+  #   
+  #   data <- merged_table() %>% 
+  #     format_plot_data_with_param_list(param_list) %>% 
+  #     create_plot_count_df(
+  #       factor_columns   = param_list$plot$x, 
+  #       complete_columns = c(param_list$plot$x, param_list$plot$facet)
+  #     )
+  #   
+  #   validate(need(nrow(data) > 0, param_list$empty_table_message))
+  #   
+  #   create_plot_with_param_list(
+  #     data, param_list, "create_file_upload_timeline_plot", height = 700
+  #   ) %>%
+  #   plotly::layout(autosize = T)
+  # })
   
   output$annotation_activity_filter_ui <- shiny::renderUI({
     
