@@ -70,7 +70,6 @@ mod_summary_snapshot_ui <- function(id){
             status = "primary", 
             solidHeader = TRUE,
             width = 12,
-            height = 800,
             collapsible = FALSE,
             plotly::plotlyOutput(ns("resources_generated"))
           ),
@@ -79,7 +78,7 @@ mod_summary_snapshot_ui <- function(id){
             status = "primary", 
             solidHeader = TRUE,
             width = 12,
-            height = 800,
+            height = 1000,
             collapsible = FALSE,
             shiny::uiOutput(ns("file_upload_timeline_filter_ui")),
             plotly::plotlyOutput(ns('file_upload_timeline'))
@@ -184,7 +183,6 @@ mod_summary_snapshot_server <- function(
     )
   })
   
-  
   output$resources_generated <- plotly::renderPlotly({
     shiny::req(data_config, group_object())
     param_list <- purrr::pluck(
@@ -204,23 +202,8 @@ mod_summary_snapshot_server <- function(
     create_plot_with_param_list(
       data,
       param_list,
-      "create_resources_generated_plot",
-      height = 700
-    ) %>%
-    plotly::layout(
-      autosize = T, 
-      legend = list(
-        orientation = "v", 
-        x = 0.25, 
-        y = -1.5, 
-        title = list(
-          text = '\n Double-click on individual studies below to see yearly additions of resources in the plot above \n'
-        ),
-        bgcolor = "#E9EAEC",
-        bordercolor = "#676E79",
-        borderwidth = 1
-      )
-    )
+      "create_resources_generated_plot"
+    ) 
   })
   
   merged_table <- shiny::reactive({
@@ -249,16 +232,14 @@ mod_summary_snapshot_server <- function(
       "outputs",
       "file_upload_timeline",
       "filter_column"
-    ) %>% 
-      print()
+    ) 
     
     choices <- merged_table() %>% 
       dplyr::pull(column) %>% 
       unlist(.) %>% 
       unique() %>% 
       sort() %>% 
-      c("All", .) %>% 
-      print()
+      c("All", .) 
     
     shiny::selectInput(
       inputId = ns("file_upload_timeline_filter_value"),
