@@ -269,7 +269,6 @@
         },
         "annotation_activity": {
           "table": "merged_table",
-          "filter_column": "studyLeads",
           "empty_table_message": "The investigators have not uploaded any files yet. Please check back later.",
           "tooltips": ["Count", "fill"],
           "columns": [
