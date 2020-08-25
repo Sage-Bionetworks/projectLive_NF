@@ -115,6 +115,44 @@
             "facet": "Year"
           },
           "tooltips": ["count", "fill"]
+        },
+        "merged_table": {            
+          "join_column" : "studyName",
+          "tables": ["studies_table", "files_table"],
+          "columns": [
+            ["studyName", "studyLeads"],
+            ["studyName", "resourceType", "year", "assay"]
+          ]
+        },
+        "file_upload_timeline":{
+          "empty_table_message": "The investigators have not uploaded any files yet. Please check back later.",
+          "table": "merged_table",
+          "columns": [
+            {
+              "name": "studyLeads",
+              "display_name": "Study Leads",
+              "type": "list:character",
+              "na_replace": "Pending Annotation"
+            },
+            {
+              "name": "resourceType",
+              "display_name": "Resource Type",
+              "type": "character",
+              "na_replace": "Pending Annotation"
+            },
+            {
+              "name": "year",
+              "type": "integer",
+              "display_name": "Year" 
+            }
+          ],
+          "plot": {
+            "x": "Study Leads",
+            "y": "Count",
+            "fill": "Resource Type",
+            "facet": "Year"
+          },
+          "tooltips": ["Count", "fill"]
         }
       }
     },
@@ -165,44 +203,6 @@
     },
     "study_lead": {
        "outputs": {
-         "merged_table": {            
-           "join_column" : "studyName",
-           "tables": ["studies_table", "files_table"],
-           "columns": [
-             ["studyName", "studyLeads"],
-             ["studyName", "resourceType", "year", "assay"]
-           ]
-         },
-         "file_upload_timeline":{
-           "empty_table_message": "The investigators have not uploaded any files yet. Please check back later.",
-           "table": "merged_table",
-           "columns": [
-             {
-               "name": "studyLeads",
-               "display_name": "Study Leads",
-               "type": "list:character",
-               "na_replace": "Pending Annotation"
-             },
-             {
-               "name": "resourceType",
-               "display_name": "Resource Type",
-               "type": "character",
-               "na_replace": "Pending Annotation"
-             },
-             {
-               "name": "year",
-               "type": "integer",
-               "display_name": "Year" 
-             }
-           ],
-           "plot": {
-             "x": "Study Leads",
-             "y": "Count",
-             "fill": "Resource Type",
-             "facet": "Year"
-           },
-           "tooltips": ["Count", "fill"]
-         },
          "annotation_activity": {
            "table": "merged_table",
            "filter_column": "studyLeads",

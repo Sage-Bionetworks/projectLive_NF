@@ -73,6 +73,15 @@ mod_summary_snapshot_ui <- function(id){
             height = 800,
             collapsible = FALSE,
             plotly::plotlyOutput(ns("resources_generated"))
+          ),
+          shinydashboard::box(
+            title = "File Upload Timeline", 
+            status = "primary", 
+            solidHeader = TRUE,
+            width = 12,
+            height = 800,
+            collapsible = FALSE,
+            plotly::plotlyOutput(ns('file_upload_timeline'))
           )
         )
       )
@@ -90,11 +99,6 @@ mod_summary_snapshot_server <- function(
   input, output, session, group_object, data_config
 ){
   ns <- session$ns
-  
-  files_table <- shiny::reactive({
-    shiny::req(group_object())
-    group_object()$files_table
-  })
   
   output$funding_agency <- shiny::renderText({
     print(glue::glue(
@@ -217,4 +221,51 @@ mod_summary_snapshot_server <- function(
       )
     )
   })
+  
+  merged_table <- shiny::reactive({
+    
+    shiny::req(group_object(), data_config)
+    
+    param_list <- purrr::pluck(
+      data_config,
+      "modules",
+      "summary_snapshot",
+      "outputs",
+      "merged_table"
+    )
+    
+    create_merged_table_with_param_list(group_object(), param_list) %>% 
+      print()
+    
+  })
+  
+  output$file_upload_timeline <- plotly::renderPlotly({
+    
+    shiny::req(merged_table(), data_config)
+    
+    param_list <- purrr::pluck(
+      data_config,
+      "modules",
+      "summary_snapshot",
+      "outputs",
+      "file_upload_timeline"
+    )
+    
+    data <- merged_table() %>% 
+      print() %>% 
+      format_plot_data_with_param_list(param_list) %>% 
+      print() %>% 
+      create_plot_count_df(
+        factor_columns   = param_list$plot$x, 
+        complete_columns = c(param_list$plot$x, param_list$plot$facet)
+      ) %>% print()
+    
+    validate(need(nrow(data) > 0, param_list$empty_table_message))
+    
+    create_plot_with_param_list(
+      data, param_list, "create_file_upload_timeline_plot", height = 700
+    ) %>%
+      plotly::layout(autosize = T)
+  })
+  
 }
