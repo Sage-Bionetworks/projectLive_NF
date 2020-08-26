@@ -73,25 +73,9 @@ store_file_in_synapse <- function(file, parent_id, remove_file = T){
   if(remove_file) rm(file)
 }
 
-read_rds_file_from_synapse <- function(syn, synapse_id){
+read_rds_file_from_synapse <- function(synapse_id, syn){
   synapse_id %>% 
     syn$get(.) %>% 
     purrr::pluck("path") %>% 
     readRDS(.)
-}
-
-synapse_dates_to_year <- function(dates){
-  dates %>% 
-    magrittr::divide_by(., 1000) %>% 
-    purrr::map(as.POSIXct, origin = "1970-01-01") %>% 
-    purrr::map_dbl(lubridate::year) %>% 
-    as.integer()
-}
-
-synapse_dates_to_month <- function(dates){
-  dates %>% 
-    magrittr::divide_by(., 1000) %>% 
-    purrr::map(as.POSIXct, origin = "1970-01-01") %>% 
-    purrr::map(lubridate::month, label  = TRUE, abbr = TRUE) %>% 
-    unlist()
 }
