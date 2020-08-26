@@ -122,18 +122,8 @@ mod_study_summary_server <- function(
       "merged_table"
     )
     
-    table1 <- group_object()[[param_list$table1]] %>% 
-      dplyr::select_at(unlist(param_list$table1_cols))
+    create_merged_table_with_param_list(group_object(), param_list)
     
-    table2 <- group_object()[[param_list$table2]] %>% 
-      dplyr::select_at(unlist(param_list$table2_cols))
-    
-    table3 <- group_object()[[param_list$table3]] %>% 
-      dplyr::select_at(unlist(param_list$table3_cols))
-    
-    table1 %>%
-      dplyr::left_join(table2, by = param_list$join_column1) %>% 
-      dplyr::left_join(table3, by = param_list$join_column2) 
   })
   
   study_table <- shiny::reactive({
@@ -153,10 +143,14 @@ mod_study_summary_server <- function(
         unlist(c(param_list$group_columns, param_list$count_columns))
       ) %>% 
       dplyr::group_by_at(unlist(param_list$group_columns))%>% 
-      dplyr::summarise_at(unlist(param_list$count_columns), dplyr::n_distinct, na.rm = T) %>% 
+      dplyr::summarise_at(
+        unlist(param_list$count_columns), 
+        dplyr::n_distinct,
+        na.rm = T
+      ) %>% 
       dplyr::ungroup() %>% 
       format_plot_data_with_param_list(param_list) %>% 
-      dplyr::arrange(`Name`)
+      dplyr::arrange(!!rlang::sym(param_list$id_column))
   })
   
   ##start making outputs
@@ -174,10 +168,20 @@ mod_study_summary_server <- function(
   )
   
   selected_study_name <- shiny::reactive({
-    shiny::req(!is.null(input$study_table_rows_selected))
+    shiny::req(!is.null(input$study_table_rows_selected), data_config)
+    
+    column_name <- purrr::pluck(
+      data_config,
+      "modules",
+      "study_summary",
+      "outputs",
+      "study_table",
+      "id_column"
+    ) 
+    
     study_table() %>% 
       dplyr::slice(input$study_table_rows_selected) %>% 
-      dplyr::pull("Name")
+      dplyr::pull(column_name)
   })
   
   output$study <- shinydashboard::renderInfoBox({
@@ -265,26 +269,27 @@ mod_study_summary_server <- function(
   
   output$study_details <- shiny::renderText({
     
-    shiny::req(filtered_merged_table(), selected_study_name())
+    shiny::req(filtered_merged_table(), data_config)
     
-    filtered_merged_table() %>%
-      dplyr::select(
-        "projectId", "studyStatus", "dataStatus", "summary", "diseaseFocus"
-      ) %>%
+    param_list <- data_config %>% 
+      purrr::pluck(
+        "modules", 
+        "study_summary", 
+        "outputs", 
+        "study_details"
+      ) 
+
+    filtered_merged_table() %>% 
+      format_plot_data_with_param_list(param_list) %>% 
       dplyr::distinct() %>% 
-      dplyr::mutate(
-        "diseaseFocus" = purrr::map_chr(.data$diseaseFocus, stringr::str_c, collapse = " | ")
-      ) %>% 
-      tidyr::pivot_longer(
-        cols = c("projectId", "studyStatus", "dataStatus", "summary", "diseaseFocus")
-      ) %>%
+      tidyr::pivot_longer(dplyr::everything()) %>% 
       dplyr::mutate(
         "name" = stringr::str_to_title(.data$name),
         "name" = stringr::str_c("<b>", .data$name, "</b>")
       ) %>% 
       knitr::kable(
         "html", escape = FALSE, col.names = NULL, align = c('r', 'l')
-      ) %>%
+      ) %>% 
       kableExtra::kable_styling("striped", full_width = T)
   })
 }

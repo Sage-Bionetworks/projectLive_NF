@@ -58,7 +58,7 @@ mod_study_lead_ui <- function(id){
             solidHeader = TRUE,
             width = 12,
             collapsible = FALSE,
-            shiny::uiOutput(ns("study_lead_ui")),
+            shiny::uiOutput(ns("annotation_activity_filter_ui")),
               # shiny::selectInput(ns("time"), 
               #                    label = "Select a time window", 
               #                    choices = c("year", "month"),
@@ -104,9 +104,8 @@ mod_study_lead_server <- function(
       "merged_table"
     )
     
-    group_object() %>% 
-      .[unlist(param_list$tables)] %>% 
-      purrr::reduce(dplyr::left_join, by = param_list$join_column)
+    create_merged_table_with_param_list(group_object(), param_list)
+    
   })
   
   output$file_upload_timeline <- plotly::renderPlotly({
@@ -123,16 +122,10 @@ mod_study_lead_server <- function(
     
     data <- merged_table() %>% 
       format_plot_data_with_param_list(param_list) %>% 
-      dplyr::mutate("Study Leads" = forcats::as_factor(`Study Leads`)) %>% 
-      tidyr::drop_na() %>% 
-      dplyr::count(`Study Leads`, `Resource Type`, `Year`, name = "Count") %>% 
-      tidyr::complete(`Study Leads`, `Resource Type`, `Year`, fill = list("Count" = 0)) %>% 
-      dplyr::mutate("Resource Type" = dplyr::if_else(
-        .data$Count == 0,
-        NA_character_,
-        .data$`Resource Type`
-      )) %>% 
-      dplyr::distinct()
+      create_plot_count_df(
+        factor_columns   = param_list$plot$x, 
+        complete_columns = c(param_list$plot$x, param_list$plot$facet)
+      )
     
     validate(need(nrow(data) > 0, param_list$empty_table_message))
     
@@ -142,26 +135,27 @@ mod_study_lead_server <- function(
     plotly::layout(autosize = T)
   })
   
-  output$study_lead_ui <- shiny::renderUI({
+  output$annotation_activity_filter_ui <- shiny::renderUI({
     
-    shiny::req(group_object(), data_config)
+    shiny::req(merged_table(), data_config)
     
-    param_list <- purrr::pluck(
+    column <- purrr::pluck(
       data_config,
       "modules",
       "study_lead",
       "outputs",
-      "study_lead_ui"
+      "annotation_activity",
+      "filter_column"
     )
     
     choices <- merged_table() %>% 
-      dplyr::pull(param_list$column) %>% 
+      dplyr::pull(column) %>% 
       unlist(.) %>% 
       unique() %>% 
       sort() 
     
     shiny::selectInput(
-      inputId = ns("studylead"),
+      inputId = ns("annotation_activity_filter_value"),
       label   = "Select a principal investigator",
       choices = choices
     )
@@ -169,7 +163,11 @@ mod_study_lead_server <- function(
   
   output$annotation_activity <- plotly::renderPlotly({
     
-    shiny::req(merged_table(), data_config, input$studylead)
+    shiny::req(
+      merged_table(), 
+      data_config, 
+      input$annotation_activity_filter_value
+    )
     
     param_list <- purrr::pluck(
       data_config,
@@ -180,21 +178,15 @@ mod_study_lead_server <- function(
     )
     
     data <- merged_table() %>% 
-      dplyr::filter(purrr::map_lgl(
-        .data$studyLeads, 
-        ~input$studylead %in% .x
-      )) %>% 
+      filter_list_column(
+        param_list$filter_column, 
+        input$annotation_activity_filter_value
+      ) %>% 
       format_plot_data_with_param_list(param_list) %>% 
-      dplyr::mutate("Study Leads" = forcats::as_factor(`Study Leads`)) %>% 
-      tidyr::drop_na() %>% 
-      dplyr::count(`Study Leads`, `Assay`, `Year`, name = "Count") %>% 
-      tidyr::complete(`Study Leads`, `Assay`, `Year`, fill = list("Count" = 0)) %>% 
-      dplyr::mutate("Assay" = dplyr::if_else(
-        .data$Count == 0,
-        NA_character_,
-        .data$`Assay`
-      )) %>% 
-      dplyr::distinct()
+      create_plot_count_df(
+        factor_columns   = param_list$plot$x, 
+        complete_columns = c(param_list$plot$x, param_list$plot$facet)
+      )
 
     validate(need(nrow(data) > 0, param_list$empty_table_message))
     
