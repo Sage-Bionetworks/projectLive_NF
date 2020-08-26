@@ -102,6 +102,96 @@ mod_new_submissions_server <- function(
     } else {
       data <- filtered_data
     }
+    
+    # files_table <- files %>%
+    #   dplyr::select("id", "name", "studyName", "createdOn", "projectId", "benefactorId")
+    # 
+    # studies_table <- studies %>%
+    #   dplyr::select("studyName", "studyId", "studyLeads")
+    # 
+    # data1 <- files_table %>%
+    #   dplyr::select(id, name, studyName) %>%
+    #   dplyr::inner_join(
+    #     dplyr::select(studies_table, studyName, studyLeads),
+    #     by = "studyName"
+    #   )
+    # 
+    # data2 <- files_table %>%
+    #   dplyr::filter(!id %in% data1$id) %>%
+    #   dplyr::select(id, name, projectId) %>%
+    #   dplyr::inner_join(
+    #     dplyr::select(studies_table, studyName, studyId, studyLeads),
+    #     by = c("projectId" = "studyId")
+    #   ) %>%
+    #   dplyr::select(-projectId)
+    # 
+    # data3 <- files_table %>%
+    #   dplyr::filter(!id %in% c(data1$id, data2$id)) %>% 
+    #   dplyr::select(id, name, benefactorId) %>%
+    #   dplyr::inner_join(
+    #     dplyr::select(studies_table, studyName, studyId, studyLeads),
+    #     by = c("benefactorId" = "studyId")
+    #   ) %>% 
+    #   dplyr::select(-benefactorId)
+    # 
+    # data4 <- files_table %>%
+    #   dplyr::filter(!id %in% c(data1$id, data2$id, data3$id)) %>% 
+    #   dplyr::select("id", "name")
+    
+    # files_table <- files %>% 
+    #   dplyr::select("id", "name", "studyName", "createdOn", "projectId", "benefactorId")
+    # 
+    # studies_table <- studies %>% 
+    #   dplyr::select("studyName", "studyId", "studyLeads")
+    # 
+    # data1 <- files_table %>% 
+    #   dplyr::filter(!is.na(studyName)) %>% 
+    #   dplyr::select(id, name, studyName) %>% 
+    #   dplyr::inner_join(
+    #     dplyr::select(studies_table, studyName, studyLeads), 
+    #     by = "studyName"
+    #   )
+    # 
+    # data2 <- files_table %>% 
+    #   dplyr::filter(!is.na(studyName), !id %in% data1$id) %>% 
+    #   dplyr::select(id, name, projectId) %>% 
+    #   dplyr::inner_join(
+    #     dplyr::select(studies_table, studyName, studyId, studyLeads),
+    #     by = c("projectId" = "studyId")
+    #   ) %>% 
+    #   dplyr::select(-projectId)
+    # 
+    # data3 <- files_table %>% 
+    #   dplyr::filter(
+    #     !id %in% c(data1$id, data2$id), 
+    #     !is.na(studyName) 
+    #   ) %>%
+    #   dplyr::select(id, name, studyName) 
+    # 
+    # data4 <- files_table %>% 
+    #   dplyr::filter(is.na(studyName))%>%
+    #   dplyr::select(id, name, projectId) %>%
+    #   dplyr::inner_join( 
+    #     dplyr::select(studies_table, studyName, studyId, studyLeads),
+    #     by = c("projectId" = "studyId")
+    #   ) %>% 
+    #   dplyr::select(-projectId)
+    # 
+    # data5 <- files_table %>% 
+    #   dplyr::filter(
+    #     !id %in% data4$id, 
+    #     is.na(studyName), 
+    #     !projectId == "syn4940963"
+    #   ) %>% 
+    #   dplyr::select(id, name, benefactorId) %>%
+    #   dplyr::inner_join( 
+    #     dplyr::select(studies_table, studyName, studyId, studyLeads),
+    #     by = c("benefactorId" = "studyId") 
+    #   )
+    # 
+    # data6 <- files_table %>% 
+    #   dplyr::filter(!id %in% c(data4$id, data5$id), is.na(studyName)) %>% 
+    #   dplyr::select(id, name, studyName, projectId, benefactorId)
   })
   
   output$new_files_dt <- DT::renderDataTable(
