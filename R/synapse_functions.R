@@ -1,15 +1,3 @@
-create_synapse_login <- function(){
-  # reticulate::use_condaenv(
-  #   condaenv = "py37b",
-  #   required = TRUE,
-  #   conda = "/home/aelamb/anaconda3/condabin/conda"
-  # )
-  synapseclient <- reticulate::import("synapseclient")
-  syn <- synapseclient$Synapse()
-  syn$login()
-  return(syn)
-}
-
 create_team_table_from_synapse <- function(syn, data_config){
   synapse_id <- purrr::pluck(data_config, "team_table", "synapse_id")
   team_col <- purrr::pluck(data_config, "team_table", "team_column")
@@ -85,25 +73,9 @@ store_file_in_synapse <- function(file, parent_id, remove_file = T){
   if(remove_file) rm(file)
 }
 
-read_rds_file_from_synapse <- function(syn, synapse_id){
+read_rds_file_from_synapse <- function(synapse_id, syn){
   synapse_id %>% 
     syn$get(.) %>% 
     purrr::pluck("path") %>% 
     readRDS(.)
-}
-
-synapse_dates_to_year <- function(dates){
-  dates %>% 
-    magrittr::divide_by(., 1000) %>% 
-    purrr::map(as.POSIXct, origin = "1970-01-01") %>% 
-    purrr::map_dbl(lubridate::year) %>% 
-    as.integer()
-}
-
-synapse_dates_to_month <- function(dates){
-  dates %>% 
-    magrittr::divide_by(., 1000) %>% 
-    purrr::map(as.POSIXct, origin = "1970-01-01") %>% 
-    purrr::map(lubridate::month, label  = TRUE, abbr = TRUE) %>% 
-    unlist()
 }

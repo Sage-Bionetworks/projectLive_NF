@@ -1,5 +1,5 @@
 # Module UI
-  
+
 #' @title   mod_about_page_ui and mod_about_page_server
 #' @description  A shiny Module.
 #'
@@ -14,14 +14,13 @@
 #' @export 
 #' @importFrom shiny NS tagList 
 mod_about_page_ui <- function(id){
-  ns <- NS(id)
-  tagList(
-    dashboardPage(
-      dashboardHeader(disable = T),
-      dashboardSidebar(disable = T),
-      
-      dashboardBody(
-        fluidPage(
+  ns <- shiny::NS(id)
+  shiny::tagList(
+    shinydashboard::dashboardPage(
+      shinydashboard::dashboardHeader(disable = T),
+      shinydashboard::dashboardSidebar(disable = T),
+      shinydashboard::dashboardBody(
+        shiny::fluidPage(
           #add analytics
           #         tags$head(includeScript("<!-- Global site tag (gtag.js) - Google Analytics -->
           # <script async src=\"https://www.googletagmanager.com/gtag/js?id=UA-160814003-1\"></script>
@@ -48,19 +47,18 @@ mod_about_page_ui <- function(id){
           #     solidHeader = F,
           #     width = 12,
           #     collapsible = FALSE,
-              shinydashboard::infoBoxOutput(ns('about'), width = 12),
-          #),
-          
-          box(title = "Funding Partner",
-              width = 12,
-              solidHeader = T,
-              status = "primary",
-              shiny::uiOutput(ns("group_selection_ui")),
-              shiny::textOutput(ns('group'))
-              #DT::dataTableOutput(ns('study_table'))
+          shinydashboard::infoBoxOutput(ns('about'), width = 12),
+          shinydashboard::box(
+            title = "Funding Partner",
+            width = 12,
+            solidHeader = T,
+            status = "primary",
+            shiny::uiOutput(ns("group_selection_ui")),
+            shiny::textOutput(ns('group'))
+            #DT::dataTableOutput(ns('study_table'))
           )
-  
-))))
+          
+        ))))
 }
     
 # Module Server
@@ -114,83 +112,29 @@ mod_about_page_server <- function(input, output, session, syn, data_config){
     ))
   })
   
-  
-  selected_group <- shiny::reactive(input$selected_group)
-  
-  files_table <- shiny::reactive({
+  tables <- shiny::reactive({
     shiny::req(syn, data_config)
-    tbl <-
-      read_rds_file_from_synapse(
-        syn,
-        purrr::pluck(data_config, "data_files", "files", "synapse_id")
-      ) %>% 
-      dplyr::mutate(
-        "year" = synapse_dates_to_year(.data$createdOn),
-        "month" = synapse_dates_to_month(.data$createdOn)
-      ) 
+    synapse_ids <- data_config %>%
+      purrr::pluck("data_files") %>%
+      purrr::map_chr("synapse_id") %>%
+      purrr::map(read_rds_file_from_synapse, syn) %>%
+      purrr::map(add_date_columns)
   })
-  
-  filtered_files_table <- shiny::reactive({
-    shiny::req(files_table(), selected_group())
-    dplyr::filter(files_table(), selected_group() == .data$fundingAgency) 
-  })
-  
-  publications_table <- shiny::reactive({
-    shiny::req(syn, data_config)
-    read_rds_file_from_synapse(
-      syn,
-      purrr::pluck(data_config, "data_files", "publications", "synapse_id")
-    ) 
-  })
-  
-  filtered_publications_table <- shiny::reactive({
-    shiny::req(publications_table(), selected_group())
-    dplyr::filter(
-      publications_table(),
-      purrr::map_lgl(.data$fundingAgency, ~selected_group() %in% .x)
+
+  filtered_tables <- shiny::reactive({
+    shiny::req(tables(), input$selected_group)
+    purrr::map(
+      tables(),
+      filter_list_column,
+      data_config$team_filter_column,
+      input$selected_group
     )
   })
-  
-  studies_table <- shiny::reactive({
-    shiny::req(syn, data_config)
-    read_rds_file_from_synapse(
-      syn,
-      purrr::pluck(data_config, "data_files", "studies", "synapse_id")
-    ) 
-  })
-  
-  filtered_studies_table <- shiny::reactive({
-    shiny::req(studies_table(), selected_group())
-    tbl <- dplyr::filter( 
-      studies_table(),
-      purrr::map_lgl(.data$fundingAgency, ~selected_group() %in% .x)
-    ) 
-  })
-  
-  tools_table <- shiny::reactive({
-    shiny::req(syn, data_config)
-    read_rds_file_from_synapse(
-      syn,
-      purrr::pluck(data_config, "data_files", "tools", "synapse_id")
-    ) 
-  })
-  
-  filtered_tools_table <- shiny::reactive({
-    shiny::req(tools_table(), selected_group()) 
-    dplyr::filter(tools_table(), selected_group() == .data$fundingAgency) 
-  })
-  
+
   group_object <- shiny::reactive({
-    list(
-      "selected_group"     = selected_group(),
-      "files_table"        = filtered_files_table(),
-      "publications_table" = filtered_publications_table(),
-      "studies_table"      = filtered_studies_table(),
-      "tools_table"        = filtered_tools_table()
-    )
+    shiny::req(filtered_tables(), input$selected_group)
+    c("selected_group" = input$selected_group, filtered_tables())
   })
-  
-  return(group_object)
 }
     
 ## To be copied in the UI
