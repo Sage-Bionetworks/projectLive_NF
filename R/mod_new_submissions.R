@@ -37,6 +37,13 @@ mod_new_submissions_ui <- function(id){
             solidHeader = TRUE,
             width = 12,
             collapsible = FALSE,
+            shiny::numericInput(
+              ns("new_files_day_choice"),
+              "Display files uploaded within the last N days:",
+              62,
+              min = 1,
+              step = 1
+            ),
             DT::dataTableOutput(ns('new_files_dt')),
           )
         )
@@ -62,24 +69,9 @@ mod_new_submissions_server <- function(
     ))
   })
   
-  merged_table <- shiny::reactive({
-    
-    shiny::req(group_object(), data_config)
-    
-    param_list <- purrr::pluck(
-      data_config,
-      "modules",
-      "new_submissions",
-      "outputs",
-      "merged_table"
-    )
-    
-    create_merged_table_with_param_list(group_object(), param_list) 
-})
-  
   new_files_table <- shiny::reactive({
     
-    shiny::req(merged_table(), data_config)
+    shiny::req(group_object(), data_config, input$new_files_day_choice)
     
     param_list <- purrr::pluck(
       data_config,
@@ -89,109 +81,57 @@ mod_new_submissions_server <- function(
       "new_files_table"
     )
     
-    data <- merged_table() %>% 
-      dplyr::arrange(dplyr::desc(.data$date)) %>% 
-      format_plot_data_with_param_list(param_list) %>% 
-      print()
+    minimum_date <- 
+      lubridate::now() - 
+      lubridate::ddays(input$new_files_day_choice)
+    
+    files_table <- group_object() %>%
+      purrr::pluck("files_table") %>% 
+      dplyr::filter(!!rlang::sym(param_list$filter_column) > minimum_date) %>% 
+      dplyr::arrange(!!rlang::sym(param_list$filter_column))
+    
+    studies_table <- group_object() %>%
+      purrr::pluck("studies_table") 
 
-    filtered_data <- data %>% 
-      dplyr::filter(.data$Date > (lubridate::now() - lubridate::ddays(7)))
+    data1 <- files_table %>%
+      dplyr::inner_join(
+        dplyr::select(studies_table, studyName, studyLeads),
+        by = "studyName"
+      )
+
+    data2 <- files_table %>%
+      dplyr::filter(!id %in% data1$id) %>%
+      dplyr::select(-studyName) %>%
+      dplyr::inner_join(
+        dplyr::select(studies_table, studyName, studyId, studyLeads),
+        by = c("projectId" = "studyId")
+      )
+
+    data3 <- files_table %>%
+      dplyr::filter(!id %in% c(data1$id, data2$id)) %>%
+      dplyr::select(-studyName) %>%
+      dplyr::inner_join(
+        dplyr::select(studies_table, studyName, studyId, studyLeads),
+        by = c("benefactorId" = "studyId")
+      ) 
     
-    if(nrow(filtered_data) == 0) {
-      data <- dplyr::slice(data, 1:10)
-    } else {
-      data <- filtered_data
-    }
+    data_a <-  
+      dplyr::bind_rows(data1, data2, data3) %>% 
+      format_plot_data_with_param_list(param_list$table1)
+
+    data_b <- files_table %>%
+      dplyr::filter(!id %in% c(data1$id, data2$id, data3$id)) %>%
+      dplyr::mutate(
+        "studyName" = NA_character_, "studyLeads" = NA_character_
+      ) %>% 
+      format_plot_data_with_param_list(param_list$table2)
+      
     
-    # files_table <- files %>%
-    #   dplyr::select("id", "name", "studyName", "createdOn", "projectId", "benefactorId")
-    # 
-    # studies_table <- studies %>%
-    #   dplyr::select("studyName", "studyId", "studyLeads")
-    # 
-    # data1 <- files_table %>%
-    #   dplyr::select(id, name, studyName) %>%
-    #   dplyr::inner_join(
-    #     dplyr::select(studies_table, studyName, studyLeads),
-    #     by = "studyName"
-    #   )
-    # 
-    # data2 <- files_table %>%
-    #   dplyr::filter(!id %in% data1$id) %>%
-    #   dplyr::select(id, name, projectId) %>%
-    #   dplyr::inner_join(
-    #     dplyr::select(studies_table, studyName, studyId, studyLeads),
-    #     by = c("projectId" = "studyId")
-    #   ) %>%
-    #   dplyr::select(-projectId)
-    # 
-    # data3 <- files_table %>%
-    #   dplyr::filter(!id %in% c(data1$id, data2$id)) %>% 
-    #   dplyr::select(id, name, benefactorId) %>%
-    #   dplyr::inner_join(
-    #     dplyr::select(studies_table, studyName, studyId, studyLeads),
-    #     by = c("benefactorId" = "studyId")
-    #   ) %>% 
-    #   dplyr::select(-benefactorId)
-    # 
-    # data4 <- files_table %>%
-    #   dplyr::filter(!id %in% c(data1$id, data2$id, data3$id)) %>% 
-    #   dplyr::select("id", "name")
+    data <- dplyr::bind_rows(data_a, data_b)
     
-    # files_table <- files %>% 
-    #   dplyr::select("id", "name", "studyName", "createdOn", "projectId", "benefactorId")
-    # 
-    # studies_table <- studies %>% 
-    #   dplyr::select("studyName", "studyId", "studyLeads")
-    # 
-    # data1 <- files_table %>% 
-    #   dplyr::filter(!is.na(studyName)) %>% 
-    #   dplyr::select(id, name, studyName) %>% 
-    #   dplyr::inner_join(
-    #     dplyr::select(studies_table, studyName, studyLeads), 
-    #     by = "studyName"
-    #   )
-    # 
-    # data2 <- files_table %>% 
-    #   dplyr::filter(!is.na(studyName), !id %in% data1$id) %>% 
-    #   dplyr::select(id, name, projectId) %>% 
-    #   dplyr::inner_join(
-    #     dplyr::select(studies_table, studyName, studyId, studyLeads),
-    #     by = c("projectId" = "studyId")
-    #   ) %>% 
-    #   dplyr::select(-projectId)
-    # 
-    # data3 <- files_table %>% 
-    #   dplyr::filter(
-    #     !id %in% c(data1$id, data2$id), 
-    #     !is.na(studyName) 
-    #   ) %>%
-    #   dplyr::select(id, name, studyName) 
-    # 
-    # data4 <- files_table %>% 
-    #   dplyr::filter(is.na(studyName))%>%
-    #   dplyr::select(id, name, projectId) %>%
-    #   dplyr::inner_join( 
-    #     dplyr::select(studies_table, studyName, studyId, studyLeads),
-    #     by = c("projectId" = "studyId")
-    #   ) %>% 
-    #   dplyr::select(-projectId)
-    # 
-    # data5 <- files_table %>% 
-    #   dplyr::filter(
-    #     !id %in% data4$id, 
-    #     is.na(studyName), 
-    #     !projectId == "syn4940963"
-    #   ) %>% 
-    #   dplyr::select(id, name, benefactorId) %>%
-    #   dplyr::inner_join( 
-    #     dplyr::select(studies_table, studyName, studyId, studyLeads),
-    #     by = c("benefactorId" = "studyId") 
-    #   )
-    # 
-    # data6 <- files_table %>% 
-    #   dplyr::filter(!id %in% c(data4$id, data5$id), is.na(studyName)) %>% 
-    #   dplyr::select(id, name, studyName, projectId, benefactorId)
+    validate(need(nrow(data) > 0, param_list$empty_table_message))
+    
+    return(data)
   })
   
   output$new_files_dt <- DT::renderDataTable(
