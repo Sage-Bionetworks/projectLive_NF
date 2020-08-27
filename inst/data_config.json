@@ -5,19 +5,20 @@
     "group_column": "Permission List"
   },
   "data_files": {
-    "files": {
+    "files_table": {
       "synapse_id": "syn22282675"
     },
-    "publications": {
+    "publications_table": {
       "synapse_id": "syn22282673"
     },
-    "studies": {
+    "studies_table": {
       "synapse_id": "syn22282670"
     },
-    "tools": {
+    "tools_table": {
       "synapse_id": "syn22282674"
     }
   },
+  "team_filter_column": "fundingAgency",
   "modules": {
     "summary_snapshot": {
       "outputs": {
@@ -166,11 +167,11 @@
        "outputs": {
          "merged_table": {            
            "join_column" : "studyName",
-           "tables": ["studies_table", "files_table"]
-         },
-         "study_lead_ui": {
-           "table": "merged_table",
-           "column": "studyLeads"
+           "tables": ["studies_table", "files_table"],
+           "columns": [
+             ["studyName", "studyLeads"],
+             ["studyName", "resourceType", "year", "assay"]
+           ]
          },
          "file_upload_timeline":{
            "empty_table_message": "The investigators have not uploaded any files yet. Please check back later.",
@@ -204,6 +205,7 @@
          },
          "annotation_activity": {
            "table": "merged_table",
+           "filter_column": "studyLeads",
            "empty_table_message": "The investigators have not uploaded any files yet. Please check back later.",
            "tooltips": ["Count", "fill"],
            "columns": [
@@ -237,18 +239,49 @@
     "study_summary": {
       "outputs": {
         "merged_table": {
-          "table1": "studies_table",
-          "table1_cols": ["studyName", "studyStatus", "dataStatus", "studyLeads", "diseaseFocus", "summary", "consortium"],
-          "table2": "files_table",
-          "table2_cols": ["studyName", "individualID", "specimenID", "assay", "id", "resourceType", "year",  "month", "tumorType", "species", "projectId"],
-          "table3": "tools_table",
-          "table3_cols": ["studyName", "softwareName"],
-          "join_column1": "studyName",
-          "join_column2": "studyName"
+          "tables": ["studies_table", "files_table", "tools_table"],
+          "join_column": "studyName",
+          "columns": [
+            [
+              "studyName",
+              "studyStatus", 
+              "dataStatus", 
+              "studyLeads",
+              "diseaseFocus", 
+              "summary",
+              "consortium"
+            ],
+            [
+              "studyName",
+              "individualID",
+              "specimenID", 
+              "assay",
+              "id", 
+              "resourceType",
+              "year", 
+              "month",
+              "tumorType",
+              "species",
+              "projectId"
+            ],
+            ["studyName", "softwareName"]
+          ]
         },
         "study_table": {
-          "group_columns": ["studyName", "studyLeads", "studyStatus", "dataStatus", "diseaseFocus"],
-          "count_columns": [ "individualID", "specimenID", "assay", "id", "softwareName"],
+          "group_columns": [
+            "studyName", 
+            "studyLeads", 
+            "studyStatus",
+            "dataStatus",
+            "diseaseFocus"
+          ],
+          "count_columns": [
+            "individualID",
+            "specimenID",
+            "assay", 
+            "id", 
+            "softwareName"
+          ],
           "columns": [
             {"display_name": "Name", "name": "studyName"},
             {"display_name": "Leads", "name":"studyLeads"}, 
@@ -260,7 +293,8 @@
             {"display_name": "Assays", "name":"assay"},
             {"display_name": "Files", "name":"id"},
             {"display_name": "Tools", "name":"softwareName"}
-          ]
+          ],
+          "id_column": "Name"
         },
         "data_focus": {
           "columns": [
@@ -333,6 +367,34 @@
           },
           "tooltips": ["count", "fill"],
           "empty_table_message": "The investigator/investigators has/have not uploaded any files yet. Please check back later."
+        },
+        "study_details": {
+          "columns": [
+            {
+              "name": "projectId",   
+              "type": "character",
+              "display_name": "Project ID"
+            },
+            {
+              "name": "studyStatus",
+              "type": "character",
+              "display_name": "Study Status"
+            },
+            {
+              "name": "dataStatus",
+              "type": "character",
+              "display_name": "Data Status"
+            },
+            {
+              "name": "summary",
+              "type": "character"
+            },
+            {
+              "name": "diseaseFocus",
+              "type": "list:character",
+              "display_name": "Disease Focus"
+            }
+          ]
         }
       }
     }
