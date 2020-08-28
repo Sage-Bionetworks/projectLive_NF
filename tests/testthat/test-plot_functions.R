@@ -25,7 +25,7 @@ test_that("create_consortium_activity_plot", {
   data <- dplyr::tibble(
     "Consortium" = c("c1", "c2", "c3", "c1", "c2"),
     "Access Type" = c("a1", "a2", "a1", "a1", "a1"),
-    "Year" = c(2001L, 2001L, 2001L, 2002L, 2002L)
+    "Year" = forcats::as_factor(c(2001L, 2001L, 2001L, 2002L, 2002L))
   )
   fig <- create_consortium_activity_plot(
     data  = data,
@@ -35,6 +35,7 @@ test_that("create_consortium_activity_plot", {
   ) %>% 
     plotly::ggplotly(tooltip = c("count", "Access Type"))
   expect_type(fig, "list")
+  print(fig)
 })
 
 test_that("create_resources_generated_plot",{
