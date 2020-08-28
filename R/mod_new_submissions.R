@@ -65,7 +65,7 @@ mod_new_submissions_server <- function(
   
   output$funding_agency <- shiny::renderText({
     print(glue::glue(
-      "You are now viewing new files funded by {group_object()$selected_group}."
+      "You are now viewing recent additions to studies moderated by {group_object()$selected_group}"
     ))
   })
   
