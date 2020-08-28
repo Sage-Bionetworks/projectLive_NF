@@ -115,6 +115,45 @@
             "facet": "Year"
           },
           "tooltips": ["count", "fill"]
+        },
+        "merged_table": {            
+          "join_column" : "studyName",
+          "tables": ["studies_table", "files_table"],
+          "columns": [
+            ["studyName", "consortium"],
+            ["studyName", "resourceType", "year", "assay"]
+          ]
+        },
+        "file_upload_timeline":{
+          "empty_table_message": "The studies have not uploaded any files yet. Please check back later.",
+          "table": "merged_table",
+          "filter_column": "consortium",
+          "columns": [
+            {
+              "name": "studyName",
+              "display_name": "Study Name",
+              "type": "character",
+              "na_replace": "Pending Annotation"
+            },
+            {
+              "name": "resourceType",
+              "display_name": "Resource Type",
+              "type": "character",
+              "na_replace": "Pending Annotation"
+            },
+            {
+              "name": "year",
+              "type": "integer",
+              "display_name": "Year" 
+            }
+          ],
+          "plot": {
+            "x": "Study Name",
+            "y": "Count",
+            "fill": "Resource Type",
+            "facet": "Year"
+          },
+          "tooltips": ["Count", "fill"]
         }
       }
     },
@@ -160,79 +199,6 @@
              "fill": "Manifestation"
            },
            "tooltips": ["count", "fill"]
-         }
-       }
-    },
-    "study_lead": {
-       "outputs": {
-         "merged_table": {            
-           "join_column" : "studyName",
-           "tables": ["studies_table", "files_table"],
-           "columns": [
-             ["studyName", "studyLeads"],
-             ["studyName", "resourceType", "year", "assay"]
-           ]
-         },
-         "file_upload_timeline":{
-           "empty_table_message": "The investigators have not uploaded any files yet. Please check back later.",
-           "table": "merged_table",
-           "columns": [
-             {
-               "name": "studyLeads",
-               "display_name": "Study Leads",
-               "type": "list:character",
-               "na_replace": "Pending Annotation"
-             },
-             {
-               "name": "resourceType",
-               "display_name": "Resource Type",
-               "type": "character",
-               "na_replace": "Pending Annotation"
-             },
-             {
-               "name": "year",
-               "type": "integer",
-               "display_name": "Year" 
-             }
-           ],
-           "plot": {
-             "x": "Study Leads",
-             "y": "Count",
-             "fill": "Resource Type",
-             "facet": "Year"
-           },
-           "tooltips": ["Count", "fill"]
-         },
-         "annotation_activity": {
-           "table": "merged_table",
-           "filter_column": "studyLeads",
-           "empty_table_message": "The investigators have not uploaded any files yet. Please check back later.",
-           "tooltips": ["Count", "fill"],
-           "columns": [
-             {
-               "name": "studyLeads",
-               "display_name": "Study Leads",
-               "type": "list:character",
-               "na_replace": "Pending Annotation"
-             },
-             {
-               "name": "assay",
-               "display_name": "Assay",
-               "type": "character",
-               "na_replace": "Pending Annotation"
-             },
-             {
-               "name": "year",
-               "display_name": "Year",
-               "type": "integer"
-             }
-           ],
-           "plot": {
-             "x": "Study Leads",
-             "y": "Count",
-             "fill": "Assay",
-             "facet": "Year"
-           }
          }
        }
     },
@@ -301,6 +267,36 @@
           ],
           "id_column": "Name"
         },
+        "annotation_activity": {
+          "table": "merged_table",
+          "empty_table_message": "The investigators have not uploaded any files yet. Please check back later.",
+          "tooltips": ["Count", "fill"],
+          "columns": [
+            {
+              "name": "studyLeads",
+              "display_name": "Study Leads",
+              "type": "list:character",
+              "na_replace": "Pending Annotation"
+            },
+            {
+              "name": "assay",
+              "display_name": "Assay",
+              "type": "character",
+              "na_replace": "Pending Annotation"
+            },
+            {
+              "name": "year",
+              "display_name": "Year",
+              "type": "integer"
+            }
+          ],
+          "plot": {
+            "x": "Study Leads",
+            "y": "Count",
+            "fill": "Assay",
+            "facet": "Year"
+          }
+         },
         "data_focus": {
           "columns": [
             {
