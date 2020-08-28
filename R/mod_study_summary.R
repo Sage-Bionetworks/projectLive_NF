@@ -52,12 +52,13 @@ mod_study_summary_ui <- function(id){
             collapsible = FALSE,
             DT::dataTableOutput(ns('study_table')),
           ),
-          shinydashboard::box(title = "",
-              status = "primary",
-              solidHeader = F,
-              width = 12,
-              collapsible = FALSE,
-              shinydashboard::infoBoxOutput(ns('study'), width = 12)
+          shinydashboard::box(
+            title = "",
+            status = "primary",
+            solidHeader = F,
+            width = 12,
+            collapsible = FALSE,
+            shinydashboard::infoBoxOutput(ns('study'), width = 12)
           ),
           shinydashboard::box(
             title = "Data Focus",
@@ -82,6 +83,14 @@ mod_study_summary_ui <- function(id){
             width = 12,
             collapsible = FALSE,
             plotly::plotlyOutput(ns('publication_status'))
+          ),
+          shinydashboard::box(
+            title = "Annotation Activity", 
+            status = "primary", 
+            solidHeader = TRUE,
+            width = 12,
+            collapsible = FALSE,
+            plotly::plotlyOutput(ns('annotation_activity'))
           ),
           shinydashboard::box(
             title = "Study Summary",
@@ -204,6 +213,55 @@ mod_study_summary_server <- function(
     ) 
     shiny::req(merged_table(), selected_study_name())
     filter_list_column(merged_table(), column, selected_study_name()) 
+  })
+  
+  output$annotation_activity <- plotly::renderPlotly({
+    
+    shiny::req(
+      filtered_merged_table(), 
+      data_config
+    )
+    
+    param_list <- purrr::pluck(
+      data_config,
+      "modules",
+      "study_summary",
+      "outputs",
+      "annotation_activity"
+    )
+    
+    data <- filtered_merged_table() %>% 
+      format_plot_data_with_param_list(param_list) %>% 
+      create_plot_count_df(
+        factor_columns   = param_list$plot$x, 
+        complete_columns = c(param_list$plot$x, param_list$plot$facet)
+      )
+    
+    validate(need(sum(data$Count) > 0, param_list$empty_table_message))
+    
+    create_plot_with_param_list(
+      data, param_list, "create_annotation_activity_plot"
+    )
+  })
+  
+  output$data_focus_selection_ui <- shiny::renderUI({
+    shiny::req(data_config)
+    choices <- data_config %>% 
+      purrr::pluck(
+        "modules", 
+        "study_summary", 
+        "outputs", 
+        "data_focus", 
+        "plot",
+        "fill"
+      )
+    shiny::selectizeInput(
+      ns('data_focus_columns'),
+      label = "Choose to view",
+      choices = choices,
+      selected = choices,
+      multiple = T
+    )
 
   })
   
@@ -276,7 +334,8 @@ mod_study_summary_server <- function(
       data,
       param_list,
       "create_publication_status_plot"
-    )
+    )%>%
+      plotly::layout(yaxis = list(range = c(0, 5)), autosize = T)
   })
   
   output$study_details <- shiny::renderText({
