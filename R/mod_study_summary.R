@@ -204,6 +204,7 @@ mod_study_summary_server <- function(
     ) 
     shiny::req(merged_table(), selected_study_name())
     filter_list_column(merged_table(), column, selected_study_name()) 
+
   })
   
   output$data_focus_plot <- plotly::renderPlotly({
