@@ -335,7 +335,7 @@
             ]
           },
           "tooltips": ["count", "fill"],
-          "empty_table_message": "No columns selected have data for current Study"
+          "empty_table_message": "The investigators have not uploaded data for this study yet. Please check back later."
         },
         "study_timeline": {
           "columns": [
@@ -388,7 +388,7 @@
              "x": "Year",
              "fill": "Study Name"
            },
-           "empty_table_message": "This study has no associated publications.",
+           "empty_table_message": "This study has no associated publications yet.",
            "tooltips": ["count", "fill"]
         },
         "study_details": {

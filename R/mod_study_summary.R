@@ -334,7 +334,8 @@ mod_study_summary_server <- function(
       data,
       param_list,
       "create_publication_status_plot"
-    )
+    )%>%
+      plotly::layout(yaxis = list(range = c(0, 5)), autosize = T)
   })
   
   output$study_details <- shiny::renderText({
