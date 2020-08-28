@@ -424,6 +424,103 @@
           ]
         }
       }
+    },
+    "new_submissions": {
+      "outputs": {
+        "new_files_table": {
+          "filter_column": "date",
+          "empty_table_message": "No files uploaded within the selected number of days",
+          "table1": {
+            "columns": [
+              {
+                "display_name": "File Name", 
+                "name": "name",
+                "type": "character"
+              },
+              {
+                "display_name": "Date", 
+                "name": "date",
+                "type": "other"
+              },
+              {
+              "display_name": "Study Name", 
+              "name": "studyName",
+              "type": "character",
+              "na_replace": "Not Annotated"
+            },
+              {
+              "display_name": "Study Leads", 
+              "name": "studyLeads",
+              "type": "list:character",
+              "na_replace": "Not Annotated"
+            },
+              {
+              "display_name": "Parent ID", 
+              "name": "parentId",
+              "type": "character",
+              "na_replace": "Not Annotated"
+            },
+              {
+              "display_name": "Resource Type", 
+              "name": "resourceType",
+              "type": "character",
+              "na_replace": "Not Annotated"
+            },
+              {
+              "display_name": "Assay", 
+              "name": "assay",
+              "type": "character",
+              "na_replace": "Not Annotated"
+            }
+            ]
+          },
+          "table2": {
+            "columns": [
+              {
+                "display_name": "File Name", 
+                "name": "name",
+                "type": "character"
+              },
+              {
+                "display_name": "Date", 
+                "name": "date",
+                "type": "other"
+              },
+              {
+                "display_name": "Study Name", 
+                "name": "studyName",
+                "type": "character",
+                "na_replace": "NA due to older study structure"
+              },
+              {
+                "display_name": "Study Leads", 
+                "name": "studyLeads",
+                "type": "list:character",
+                "na_replace": "NA due to older study structure"
+              },
+              {
+                "display_name": "Parent ID", 
+                "name": "parentId",
+                "type": "character",
+                "na_replace": "Not Annotated"
+                
+              },
+              {
+                "display_name": "Resource Type", 
+                "name": "resourceType",
+                "type": "character",
+                "na_replace": "Not Annotated"
+              },
+              {
+                "display_name": "Assay", 
+                "name": "assay",
+                "type": "character",
+                "na_replace": "Not Annotated"
+              }
+            ]
+          }
+        }
+      }
     }
   }
 }
