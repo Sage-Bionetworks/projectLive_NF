@@ -86,6 +86,14 @@ mod_study_summary_ui <- function(id){
             plotly::plotlyOutput(ns('study_timeline_plot'))
           ),
           shinydashboard::box(
+            title = "Publication Status", 
+            status = "primary", 
+            solidHeader = TRUE,
+            width = 12,
+            collapsible = FALSE,
+            plotly::plotlyOutput(ns('publication_status'))
+          ),
+          shinydashboard::box(
             title = "Study Summary",
             status = "primary",
             solidHeader = T,
@@ -196,8 +204,16 @@ mod_study_summary_server <- function(
   })
   
   filtered_merged_table <- shiny::reactive({
+    column <- purrr::pluck(
+      data_config,
+      "modules",
+      "study_summary",
+      "outputs",
+      "merged_table",
+      "filter_column"
+    ) 
     shiny::req(merged_table(), selected_study_name())
-    dplyr::filter(merged_table(), .data$studyName == selected_study_name()) 
+    filter_list_column(merged_table(), column, selected_study_name()) 
   })
   
   output$data_focus_selection_ui <- shiny::renderUI({
@@ -264,6 +280,32 @@ mod_study_summary_server <- function(
     
     create_plot_with_param_list(
       data, param_list, "create_study_timeline_plot"
+    )
+  })
+  
+  output$publication_status <- plotly::renderPlotly({
+    
+    shiny::req(data_config, group_object(), selected_study_name())
+    
+    param_list <- purrr::pluck(
+      data_config,
+      "modules",
+      "study_summary",
+      "outputs",
+      "publication_status"
+    )
+    
+    data <- group_object() %>% 
+      purrr::pluck(param_list$table) %>% 
+      filter_list_column(param_list$filter_column, selected_study_name()) %>% 
+      format_plot_data_with_param_list(param_list)
+    
+    validate(need(nrow(data) > 0 , param_list$empty_table_message))
+    
+    create_plot_with_param_list(
+      data,
+      param_list,
+      "create_publication_status_plot"
     )
   })
   
