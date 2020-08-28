@@ -3,4 +3,5 @@
 .RData
 .Ruserdata
 */Rplots.pdf
+man/*
 R/use_conda_env.R
