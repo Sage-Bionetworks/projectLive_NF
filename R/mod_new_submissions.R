@@ -87,8 +87,8 @@ mod_new_submissions_server <- function(
     
     files_table <- group_object() %>%
       purrr::pluck("files_table") %>% 
-      dplyr::filter(!!rlang::sym(param_list$filter_column) > minimum_date) %>% 
-      dplyr::arrange(!!rlang::sym(param_list$filter_column))
+      dplyr::filter(!!rlang::sym(param_list$date_column) > minimum_date) %>% 
+      dplyr::arrange(dplyr::desc(!!rlang::sym(param_list$date_column)))
     
     studies_table <- group_object() %>%
       purrr::pluck("studies_table") 

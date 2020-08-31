@@ -424,7 +424,7 @@
     "new_submissions": {
       "outputs": {
         "new_files_table": {
-          "filter_column": "date",
+          "date_column": "date",
           "empty_table_message": "No files uploaded within the selected number of days",
           "table1": {
             "columns": [
