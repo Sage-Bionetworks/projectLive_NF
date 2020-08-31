@@ -52,12 +52,13 @@ mod_study_summary_ui <- function(id){
             collapsible = FALSE,
             DT::dataTableOutput(ns('study_table')),
           ),
-          shinydashboard::box(title = "",
-              status = "primary",
-              solidHeader = F,
-              width = 12,
-              collapsible = FALSE,
-              shinydashboard::infoBoxOutput(ns('study'), width = 12)
+          shinydashboard::box(
+            title = "",
+            status = "primary",
+            solidHeader = F,
+            width = 12,
+            collapsible = FALSE,
+            shinydashboard::infoBoxOutput(ns('study'), width = 12)
           ),
           shinydashboard::box(
             title = "Data Focus",
@@ -65,9 +66,6 @@ mod_study_summary_ui <- function(id){
             solidHeader = TRUE,
             width = 12,
             collapsible = FALSE,
-            #shinydashboard::infoBoxOutput(ns('study'), width = 12),
-            #shiny::textOutput(ns('study')),
-            shiny::uiOutput(ns("data_focus_selection_ui")),
             plotly::plotlyOutput(ns('data_focus_plot'))
           ),
           shinydashboard::box(
@@ -76,13 +74,6 @@ mod_study_summary_ui <- function(id){
             solidHeader = TRUE,
             width = 12,
             collapsible = FALSE,
-            # shiny::selectizeInput(ns('variable'),
-            #                       label = "Choose to view", 
-            #                       choices = c("resourceType", "tumorType", "assay"),
-            #                       selected = "resourceType", 
-            #                       multiple = F),
-            #shinydashboard::infoBoxOutput(ns('study'), width = 12),
-            #shiny::textOutput(ns('study')),
             plotly::plotlyOutput(ns('study_timeline_plot'))
           ),
           shinydashboard::box(
@@ -92,6 +83,14 @@ mod_study_summary_ui <- function(id){
             width = 12,
             collapsible = FALSE,
             plotly::plotlyOutput(ns('publication_status'))
+          ),
+          shinydashboard::box(
+            title = "Annotation Activity", 
+            status = "primary", 
+            solidHeader = TRUE,
+            width = 12,
+            collapsible = FALSE,
+            plotly::plotlyOutput(ns('annotation_activity'))
           ),
           shinydashboard::box(
             title = "Study Summary",
@@ -216,6 +215,35 @@ mod_study_summary_server <- function(
     filter_list_column(merged_table(), column, selected_study_name()) 
   })
   
+  output$annotation_activity <- plotly::renderPlotly({
+    
+    shiny::req(
+      filtered_merged_table(), 
+      data_config
+    )
+    
+    param_list <- purrr::pluck(
+      data_config,
+      "modules",
+      "study_summary",
+      "outputs",
+      "annotation_activity"
+    )
+    
+    data <- filtered_merged_table() %>% 
+      format_plot_data_with_param_list(param_list) %>% 
+      create_plot_count_df(
+        factor_columns   = param_list$plot$x, 
+        complete_columns = c(param_list$plot$x, param_list$plot$facet)
+      )
+    
+    validate(need(sum(data$Count) > 0, param_list$empty_table_message))
+    
+    create_plot_with_param_list(
+      data, param_list, "create_annotation_activity_plot"
+    )
+  })
+  
   output$data_focus_selection_ui <- shiny::renderUI({
     shiny::req(data_config)
     choices <- data_config %>% 
@@ -234,13 +262,13 @@ mod_study_summary_server <- function(
       selected = choices,
       multiple = T
     )
+
   })
   
   output$data_focus_plot <- plotly::renderPlotly({
     
     shiny::req(
       filtered_merged_table(), 
-      input$data_focus_columns,
       data_config
     )
     
@@ -254,7 +282,7 @@ mod_study_summary_server <- function(
     
     data_list <- filtered_merged_table() %>% 
       format_plot_data_with_param_list(param_list) %>% 
-      create_data_focus_tables(param_list$plot$x, input$data_focus_columns)
+      create_data_focus_tables(param_list$plot$x, param_list$plot$fill)
     
     validate(need(length(data_list) > 0 , param_list$empty_table_message))
     
@@ -306,7 +334,8 @@ mod_study_summary_server <- function(
       data,
       param_list,
       "create_publication_status_plot"
-    )
+    )%>%
+      plotly::layout(yaxis = list(range = c(0, 5)), autosize = T)
   })
   
   output$study_details <- shiny::renderText({
