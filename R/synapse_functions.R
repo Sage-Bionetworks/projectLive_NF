@@ -1,3 +1,11 @@
+create_synapse_login <- function(){
+  if("use_conda_env.R" %in% list.files("R")) source("R/use_conda_env.R")
+  synapseclient <- reticulate::import("synapseclient")
+  syn <- synapseclient$Synapse()
+  syn$login()
+  return(syn)
+}
+
 create_team_table_from_synapse <- function(syn, data_config){
   synapse_id <- purrr::pluck(data_config, "team_table", "synapse_id")
   team_col <- purrr::pluck(data_config, "team_table", "team_column")
