@@ -123,7 +123,7 @@ create_resources_generated_plot <- function(data, x, fill, facet){
       axis.text.y = ggplot2::element_text(size = 10),
       text = ggplot2::element_text(size = 10),
       strip.text.x = ggplot2::element_text(size = 10),
-      legend.position = "right",
+      legend.position = "none",
       panel.grid.major.y = ggplot2::element_blank(),
       panel.background = ggplot2::element_rect(fill = "grey95")) +
     ggplot2::facet_grid(cols = ggplot2::vars(!!!rlang::syms(unlist(facet))))
