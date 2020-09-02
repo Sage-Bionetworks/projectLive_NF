@@ -38,12 +38,14 @@ app_server <- function(input, output,session) {
       list(
         mod_summary_snapshot_server,
         mod_file_status_server,
-        mod_study_summary_server
+        mod_study_summary_server,
+        mod_new_submissions_server
       ),
       list(
         "summary_snapshot_ui_1",
         "file_status_ui_1",
-        "study_summary_ui_1"
+        "study_summary_ui_1",
+        "new_submissions_ui_1"
       ),
       shiny::callModule,
       group_object,

@@ -17,16 +17,12 @@ format_date_columns <- function(data){
   else{
     data <- data %>% 
       dplyr::mutate(
-        "date" = purrr::map(
-          .data$createdOn, 
-          ~as.POSIXct(.x/1000, origin = "1970-01-01")
+        "datetime" = lubridate::as_datetime(
+          .data$createdOn/1000, origin = "1970-01-01"
         ),
-        "year" = forcats::as_factor(purrr::map_dbl(
-          .data$date, lubridate::year
-        )),
-        "month" = unlist(purrr::map(
-          .data$date, lubridate::month, label  = TRUE, abbr = TRUE
-        ))
+        "date" = lubridate::ymd(lubridate::floor_date(.data$datetime, "day")),
+        "year" = forcats::as_factor(lubridate::year(.data$datetime)),
+        "month" = lubridate::month(.data$datetime, label = TRUE, abbr = TRUE)
       )
   }
   return(data)
