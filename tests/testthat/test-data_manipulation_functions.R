@@ -1,9 +1,9 @@
 test_that("format_date_columns", {
   data1 <- dplyr::tibble("createdOn" = c(1.454526e+12, 1.454526e+12))
   data2 <- dplyr::tibble("year" = 2001L, "month" = "January")
-  result1 <- format_date_columns(data1)
+  result1 <- format_date_columns(data1) %>%  print()
   result2 <- format_date_columns(data2)
-  expect_named(result1, c("createdOn", "date", "year", "month"))
+  expect_named(result1, c("createdOn", "datetime", "date", "year", "month"))
   expect_named(result2, c("year", "month"))
 })
 
