@@ -4,7 +4,8 @@ syn <- create_synapse_login()
 files <- get_synapse_tbl(syn, "syn16858331")
 studies <- get_synapse_tbl(syn, "syn16787123")
 files <- files %>% 
-  dplyr::mutate(fundingAgency = studies$fundingAgency[match(projectId, studies$studyId)]) 
+  dplyr::mutate(fundingAgency = studies$fundingAgency[match(projectId, studies$studyId)]) %>% 
+  dplyr::filter(type != "folder")
 
 saveRDS(files, "files.RDS")
 store_file_in_synapse(
