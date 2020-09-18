@@ -157,7 +157,6 @@ mod_study_summary_server <- function(
       ) %>% 
       dplyr::ungroup() %>% 
       format_plot_data_with_param_list(param_list) %>% 
-      print() %>% 
       dplyr::arrange(!!rlang::sym(param_list$id_column))
   })
   
