@@ -157,6 +157,7 @@ mod_study_summary_server <- function(
       ) %>% 
       dplyr::ungroup() %>% 
       format_plot_data_with_param_list(param_list) %>% 
+      print() %>% 
       dplyr::arrange(!!rlang::sym(param_list$id_column))
   })
   
@@ -164,7 +165,7 @@ mod_study_summary_server <- function(
   output$funding_agency <- shiny::renderText({
     print(glue::glue(
       "You are now viewing studies funded by {group_object()$selected_group}. 
-      Please select a study from the table below to view the details."
+      Please select a study from the table below by clicking on a row to view the details."
     ))
   })
   

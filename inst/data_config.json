@@ -256,10 +256,10 @@
           ],
           "columns": [
             {"display_name": "Name", "name": "studyName"},
-            {"display_name": "Leads", "name":"studyLeads"}, 
+            {"display_name": "Leads", "name":"studyLeads", "type": "list:character"}, 
             {"display_name": "Study Status", "name":"studyStatus"},
             {"display_name": "Data Status", "name":"dataStatus"}, 
-            {"display_name": "Disease Focus", "name":"diseaseFocus"},
+            {"display_name": "Disease Focus", "name":"diseaseFocus", "type": "list:character"},
             {"display_name": "Individuals", "name":"individualID"}, 
             {"display_name": "Specimens", "name":"specimenID"},
             {"display_name": "Assays", "name":"assay"},
