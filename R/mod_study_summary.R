@@ -61,12 +61,12 @@ mod_study_summary_ui <- function(id){
             shinydashboard::infoBoxOutput(ns('study'), width = 12)
           ),
           shinydashboard::box(
-            title = "Data Focus",
+            title = "Study Summary",
             status = "primary",
-            solidHeader = TRUE,
+            solidHeader = T,
             width = 12,
             collapsible = FALSE,
-            plotly::plotlyOutput(ns('data_focus_plot'))
+            shiny::htmlOutput(ns('study_details'))
           ),
           shinydashboard::box(
             title = "Study Timeline",
@@ -77,12 +77,12 @@ mod_study_summary_ui <- function(id){
             plotly::plotlyOutput(ns('study_timeline_plot'))
           ),
           shinydashboard::box(
-            title = "Publication Status", 
-            status = "primary", 
+            title = "Data Focus",
+            status = "primary",
             solidHeader = TRUE,
             width = 12,
             collapsible = FALSE,
-            plotly::plotlyOutput(ns('publication_status'))
+            plotly::plotlyOutput(ns('data_focus_plot'))
           ),
           shinydashboard::box(
             title = "Annotation Activity", 
@@ -93,12 +93,12 @@ mod_study_summary_ui <- function(id){
             plotly::plotlyOutput(ns('annotation_activity'))
           ),
           shinydashboard::box(
-            title = "Study Summary",
-            status = "primary",
-            solidHeader = T,
+            title = "Publication Status", 
+            status = "primary", 
+            solidHeader = TRUE,
             width = 12,
             collapsible = FALSE,
-            shiny::htmlOutput(ns('study_details'))
+            plotly::plotlyOutput(ns('publication_status'))
           )
         )
       )
