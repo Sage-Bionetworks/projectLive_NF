@@ -205,13 +205,13 @@
     "study_summary": {
       "outputs": {
         "merged_table": {
+          "filter_column": "studyName",
+          "join_column": "studyName",
           "tables": [
             "studies_table",
             "files_table",
             "tools_table"
           ],
-          "filter_column": "studyName",
-          "join_column": "studyName",
           "columns": [
             [
               "studyName",
@@ -220,7 +220,8 @@
               "studyLeads",
               "diseaseFocus", 
               "summary",
-              "consortium"
+              "consortium",
+              "studyId"
             ],
             [
               "studyName",
@@ -394,9 +395,9 @@
         "study_details": {
           "columns": [
             {
-              "name": "projectId",   
+              "name": "studyId",   
               "type": "character",
-              "display_name": "Project ID"
+              "display_name": "Study ID"
             },
             {
               "name": "studyStatus",
