@@ -279,16 +279,18 @@ mod_summary_snapshot_server <- function(
       format_plot_data_with_param_list(param_list) %>% 
       dplyr::mutate("Study Name" = stringr::str_trunc(.data$`Study Name`, 40)) %>% 
       create_plot_count_df(
-        factor_columns   = param_list$plot$x, 
+        factor_columns   = c(param_list$plot$x), 
         complete_columns = c(param_list$plot$x, param_list$plot$facet)
-      )
+      ) 
     
     validate(need(sum(data$Count) > 0, param_list$empty_table_message))
     
     create_plot_with_param_list(
       data, param_list, "create_file_upload_timeline_plot", height = 870
     ) %>%
-      plotly::layout(autosize = T)
+      plotly::layout(
+        autosize = T
+      )
   })
   
 }
