@@ -133,13 +133,13 @@
               "name": "studyName",
               "display_name": "Study Name",
               "type": "character",
-              "na_replace": "Pending Annotation"
+              "na_replace": "pendingAnnotation"
             },
             {
               "name": "resourceType",
               "display_name": "Resource Type",
               "type": "character",
-              "na_replace": "Pending Annotation"
+              "na_replace": "pendingAnnotation"
             },
             {
               "name": "year",
@@ -277,13 +277,13 @@
               "name": "studyLeads",
               "display_name": "Study Leads",
               "type": "list:character",
-              "na_replace": "Pending Annotation"
+              "na_replace": "pendingAnnotation"
             },
             {
               "name": "assay",
               "display_name": "Assay",
               "type": "character",
-              "na_replace": "Pending Annotation"
+              "na_replace": "pendingAnnotation"
             },
             {
               "name": "year",
