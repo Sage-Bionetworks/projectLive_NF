@@ -397,7 +397,7 @@
             {
               "name": "studyId",   
               "type": "character",
-              "display_name": "Study ID"
+              "display_name": "Unique Study ID"
             },
             {
               "name": "studyStatus",

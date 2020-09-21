@@ -85,7 +85,7 @@ mod_file_status_server <- function(
 
   output$funding_agency <- shiny::renderText({
     print(glue::glue(
-      "You are now viewing studies funded by {group_object()$selected_group}. 
+      "You are now viewing studies moderated by {group_object()$selected_group}. 
       Please hover your cursor over the plots to view more information. 
       You can also zoom into parts of the plot."
     ))
