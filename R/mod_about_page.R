@@ -59,7 +59,7 @@ mod_about_page_ui <- function(id){
           ),
           shiny::actionButton(inputId='back_to_portal', label="Back to the NF Data Portal", 
                               icon = icon("map-marker-alt"), lib = "font-awesome",
-                              class="btn btn-secondary btn-lg btn-block",
+                              class="btn btn-primary btn-lg btn-block",
                               onclick ="window.open('https://nf.synapse.org/', '_blank')")
           
         ))))

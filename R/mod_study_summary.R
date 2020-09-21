@@ -241,7 +241,7 @@ mod_study_summary_server <- function(
     
     create_plot_with_param_list(
       data, param_list, "create_annotation_activity_plot"
-    )
+    ) 
   })
   
   output$data_focus_selection_ui <- shiny::renderUI({

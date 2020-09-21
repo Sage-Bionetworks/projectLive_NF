@@ -53,7 +53,7 @@ mod_file_status_ui <- function(id){
             plotly::plotlyOutput(ns('publication_status'))
           ),
           shinydashboard::box(
-            title = "Publication status by Disease Manifestation", 
+            title = "Publication Status by Disease Manifestation", 
             status = "primary", 
             solidHeader = TRUE,
             width = 12,
