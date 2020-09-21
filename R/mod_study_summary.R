@@ -61,12 +61,12 @@ mod_study_summary_ui <- function(id){
             shinydashboard::infoBoxOutput(ns('study'), width = 12)
           ),
           shinydashboard::box(
-            title = "Data Focus",
+            title = "Study Summary",
             status = "primary",
-            solidHeader = TRUE,
+            solidHeader = T,
             width = 12,
             collapsible = FALSE,
-            plotly::plotlyOutput(ns('data_focus_plot'))
+            shiny::htmlOutput(ns('study_details'))
           ),
           shinydashboard::box(
             title = "Study Timeline",
@@ -77,12 +77,12 @@ mod_study_summary_ui <- function(id){
             plotly::plotlyOutput(ns('study_timeline_plot'))
           ),
           shinydashboard::box(
-            title = "Publication Status", 
-            status = "primary", 
+            title = "Data Focus",
+            status = "primary",
             solidHeader = TRUE,
             width = 12,
             collapsible = FALSE,
-            plotly::plotlyOutput(ns('publication_status'))
+            plotly::plotlyOutput(ns('data_focus_plot'))
           ),
           shinydashboard::box(
             title = "Annotation Activity", 
@@ -93,12 +93,12 @@ mod_study_summary_ui <- function(id){
             plotly::plotlyOutput(ns('annotation_activity'))
           ),
           shinydashboard::box(
-            title = "Study Summary",
-            status = "primary",
-            solidHeader = T,
+            title = "Publication Status", 
+            status = "primary", 
+            solidHeader = TRUE,
             width = 12,
             collapsible = FALSE,
-            shiny::htmlOutput(ns('study_details'))
+            plotly::plotlyOutput(ns('publication_status'))
           )
         )
       )
@@ -163,8 +163,8 @@ mod_study_summary_server <- function(
   ##start making outputs
   output$funding_agency <- shiny::renderText({
     print(glue::glue(
-      "You are now viewing studies funded by {group_object()$selected_group}. 
-      Please select a study from the table below to view the details."
+      "You are now viewing studies moderated by {group_object()$selected_group}. 
+      Please click on a row in the table below to select a study and view the details."
     ))
   })
   
@@ -241,7 +241,7 @@ mod_study_summary_server <- function(
     
     create_plot_with_param_list(
       data, param_list, "create_annotation_activity_plot"
-    )
+    ) 
   })
   
   output$data_focus_selection_ui <- shiny::renderUI({

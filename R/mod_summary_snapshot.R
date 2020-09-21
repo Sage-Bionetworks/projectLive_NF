@@ -102,7 +102,7 @@ mod_summary_snapshot_server <- function(
   
   output$funding_agency <- shiny::renderText({
     print(glue::glue(
-      "You are now viewing studies funded by {group_object()$selected_group}.
+      "You are now viewing studies moderated by {group_object()$selected_group}. 
       Please hover your cursor over the plots to view more information. 
       You can also zoom into parts of the plot."
     ))
@@ -277,8 +277,9 @@ mod_summary_snapshot_server <- function(
     
     data <- data %>% 
       format_plot_data_with_param_list(param_list) %>% 
+      dplyr::mutate("Study Name" = stringr::str_trunc(.data$`Study Name`, 40)) %>% 
       create_plot_count_df(
-        factor_columns   = param_list$plot$x, 
+        factor_columns   = c(param_list$plot$x), 
         complete_columns = c(param_list$plot$x, param_list$plot$facet)
       ) 
     
@@ -287,7 +288,9 @@ mod_summary_snapshot_server <- function(
     create_plot_with_param_list(
       data, param_list, "create_file_upload_timeline_plot", height = 870
     ) %>%
-      plotly::layout(autosize = T)
+      plotly::layout(
+        autosize = T
+      )
   })
   
 }
