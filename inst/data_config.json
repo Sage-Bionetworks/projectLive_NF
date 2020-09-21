@@ -66,7 +66,7 @@
             {
               "name": "accessType",
               "display_name": "Access Type",
-              "na_replace": "Not Annotated",
+              "na_replace": "NOT ANNOTATED",
               "type": "character"
             }
           ],
