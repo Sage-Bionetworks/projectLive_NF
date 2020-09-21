@@ -85,7 +85,7 @@ mod_about_page_server <- function(input, output, session, syn, data_config){
     
     shinydashboard::infoBox(
       " ",
-      print("projectLive: Track the progress and impact of our funding partners in real time"),
+      print("projectLive: Track the progress and impact of your funding initiatives in real time"),
       icon = shiny::icon("university", "fa-1x"),
       color = "light-blue", #Valid colors are: red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, orange, fuchsia, purple, maroon, black.
       fill = TRUE
