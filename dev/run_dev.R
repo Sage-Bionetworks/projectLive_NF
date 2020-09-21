@@ -6,7 +6,8 @@ golem::detach_all_attached()
 # rm(list=ls(all.names = TRUE))
 
 # Document and reload your package
-golem::document_and_reload(pkg = here::here())
+#golem::document_and_reload(pkg = here::here())
+golem::document_and_reload()
 
 # Run the application
 projectLive::run_app()
