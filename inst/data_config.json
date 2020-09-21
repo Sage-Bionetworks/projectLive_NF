@@ -66,7 +66,7 @@
             {
               "name": "accessType",
               "display_name": "Access Type",
-              "na_replace": "Not Annotated",
+              "na_replace": "NOT ANNOTATED",
               "type": "character"
             }
           ],
@@ -133,13 +133,13 @@
               "name": "studyName",
               "display_name": "Study Name",
               "type": "character",
-              "na_replace": "Pending Annotation"
+              "na_replace": "pendingAnnotation"
             },
             {
               "name": "resourceType",
               "display_name": "Resource Type",
               "type": "character",
-              "na_replace": "Pending Annotation"
+              "na_replace": "pendingAnnotation"
             },
             {
               "name": "year",
@@ -205,13 +205,13 @@
     "study_summary": {
       "outputs": {
         "merged_table": {
+          "filter_column": "studyName",
+          "join_column": "studyName",
           "tables": [
             "studies_table",
             "files_table",
             "tools_table"
           ],
-          "filter_column": "studyName",
-          "join_column": "studyName",
           "columns": [
             [
               "studyName",
@@ -220,7 +220,8 @@
               "studyLeads",
               "diseaseFocus", 
               "summary",
-              "consortium"
+              "consortium",
+              "studyId"
             ],
             [
               "studyName",
@@ -255,10 +256,10 @@
           ],
           "columns": [
             {"display_name": "Name", "name": "studyName"},
-            {"display_name": "Leads", "name":"studyLeads"}, 
+            {"display_name": "Leads", "name":"studyLeads", "type": "list:character"}, 
             {"display_name": "Study Status", "name":"studyStatus"},
             {"display_name": "Data Status", "name":"dataStatus"}, 
-            {"display_name": "Disease Focus", "name":"diseaseFocus"},
+            {"display_name": "Disease Focus", "name":"diseaseFocus", "type": "list:character"},
             {"display_name": "Individuals", "name":"individualID"}, 
             {"display_name": "Specimens", "name":"specimenID"},
             {"display_name": "Assays", "name":"assay"},
@@ -276,13 +277,13 @@
               "name": "studyLeads",
               "display_name": "Study Leads",
               "type": "list:character",
-              "na_replace": "Pending Annotation"
+              "na_replace": "pendingAnnotation"
             },
             {
               "name": "assay",
               "display_name": "Assay",
               "type": "character",
-              "na_replace": "Pending Annotation"
+              "na_replace": "pendingAnnotation"
             },
             {
               "name": "year",
@@ -394,9 +395,9 @@
         "study_details": {
           "columns": [
             {
-              "name": "projectId",   
+              "name": "studyId",   
               "type": "character",
-              "display_name": "Project ID"
+              "display_name": "Unique Study ID"
             },
             {
               "name": "studyStatus",

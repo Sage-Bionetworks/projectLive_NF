@@ -279,7 +279,7 @@ create_annotation_activity_plot <- function(data, x, y, fill, facet){
     ggplot2::theme_bw() +
     ggplot2::theme(
       legend.text = ggplot2::element_blank(),
-      axis.text.x  = ggplot2::element_text(size = 10),
+      axis.text.x  = ggplot2::element_text(size = 10, angle = 90),
       axis.text.y = ggplot2::element_text(size = 10),
       text = ggplot2::element_text(size = 10),
       strip.text.x = ggplot2::element_text(size = 10),
@@ -407,6 +407,7 @@ create_study_timeline_plot <- function(data, x, fill, facet){
     ggplot2::theme_bw() +
     ggplot2::theme(
       legend.text = ggplot2::element_blank(), 
+      axis.ticks.x = ggplot2::element_blank(),
       axis.text.x  = ggplot2::element_blank(), 
       axis.text.y = ggplot2::element_text(size = 10),
       text = ggplot2::element_text(size = 10),
