@@ -163,8 +163,8 @@ mod_study_summary_server <- function(
   ##start making outputs
   output$funding_agency <- shiny::renderText({
     print(glue::glue(
-      "You are now viewing studies funded by {group_object()$selected_group}. 
-      Please select a study from the table below by clicking on a row to view the details."
+      "You are now viewing studies moderated by {group_object()$selected_group}. 
+      Please click on a row in the table below to select a study and view the details."
     ))
   })
   
@@ -241,7 +241,7 @@ mod_study_summary_server <- function(
     
     create_plot_with_param_list(
       data, param_list, "create_annotation_activity_plot"
-    )
+    ) 
   })
   
   output$data_focus_selection_ui <- shiny::renderUI({
