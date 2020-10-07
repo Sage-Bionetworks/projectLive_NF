@@ -16,7 +16,8 @@ app_server <- function(input, output,session) {
   
   syn <- .GlobalEnv$synapseclient$Synapse()
   
-  shiny::observeEvent(input$cookie, { 
+  observeEvent(input$cookie, {
+    
     syn$login(sessionToken = input$cookie)
     
     output$title <- shiny::renderUI({
@@ -50,6 +51,6 @@ app_server <- function(input, output,session) {
       shiny::callModule,
       group_object,
       data_config
-    )
+    ) 
   })
 }

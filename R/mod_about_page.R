@@ -110,10 +110,12 @@ mod_about_page_server <- function(input, output, session, syn, data_config){
   })
   
   output$group <- shiny::renderText({
-    print(glue::glue(
-      "You are now viewing studies moderated by {input$selected_group}. 
+    txt <- glue::glue(
+      "You are now viewing studies funded by {input$selected_group}. 
     Navigate to the tabs at the top of the page to get more information about the participating investigators and the various resources that they have generated."
-    ))
+    )
+    waiter::hide_waiter()
+    txt
   })
   
   tables <- shiny::reactive({
@@ -139,6 +141,7 @@ mod_about_page_server <- function(input, output, session, syn, data_config){
     shiny::req(filtered_tables(), input$selected_group)
     c("selected_group" = input$selected_group, filtered_tables())
   })
+
 }
     
 ## To be copied in the UI
