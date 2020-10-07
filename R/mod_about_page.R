@@ -114,7 +114,7 @@ mod_about_page_server <- function(input, output, session, syn, data_config){
       "You are now viewing studies funded by {input$selected_group}. 
     Navigate to the tabs at the top of the page to get more information about the participating investigators and the various resources that they have generated."
     )
-    waiter::hide_waiter()
+    waiter::waiter_hide()
     txt
   })
   
