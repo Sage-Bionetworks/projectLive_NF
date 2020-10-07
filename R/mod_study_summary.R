@@ -353,6 +353,14 @@ mod_study_summary_server <- function(
     filtered_merged_table() %>% 
       format_plot_data_with_param_list(param_list) %>% 
       dplyr::distinct() %>% 
+      dplyr::mutate("Unique Study ID" = stringr::str_c(
+        '<a href=',
+        '"https://www.synapse.org/#!Synapse:',
+        .data$`Unique Study ID`,
+        '">', 
+        .data$`Unique Study ID`,
+        '</a>'
+      )) %>% 
       tidyr::pivot_longer(dplyr::everything()) %>% 
       dplyr::mutate(
         "name" = stringr::str_to_title(.data$name),
