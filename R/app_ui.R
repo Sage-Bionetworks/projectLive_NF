@@ -1,12 +1,19 @@
 #' @import shiny
 #' @import shinydashboard
+#' @import waiter
 
 app_ui <- function() {
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
+    waiter::use_waiter(),
+  waiter::waiter_show_on_load(html = span(
+      style="color:white;",
+      waiter::spin_pulsar(),
+      h3("logging in...")
+    )),
     #shinythemes::shinytheme("readable"),
-    navbarPage(    
+    navbarPage(   
       title = strong("projectLive"), selected = "About",	
       tabPanel("About",
                mod_about_page_ui("about_page_ui_1"),
@@ -50,5 +57,5 @@ golem_add_external_resources <- function(){
     # If you have a custom.css in the inst/app/www
     # Or for example, you can add shinyalert::useShinyalert() here
     tags$link(rel="stylesheet", type="text/css", href="www/custom.css")
-  )
+    )
 }
