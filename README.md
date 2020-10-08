@@ -9,7 +9,7 @@ https://shiny.synapse.org/users/jbanerjee/projectLive/ (pulling from the master 
 
 ## Development pipeline:
 1. Please branch off of develop branch
-2. Reference the issue you are working on in the new branch name (eg. user/issueX
+2. Reference the issue you are working on in the new branch name (eg. user/issueX)
 3. Make your additions, test locally, and then file a PR against develop (1 review required). 
 4. Once the changes have been deployed in testprojectlive and tested, PR against master. 
 Note - as with all Shiny apps, touch restart.txt any time you make changes to make sure they are reflected in your testing.
