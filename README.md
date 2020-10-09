@@ -26,3 +26,7 @@ Note - as with all Shiny apps, touch restart.txt any time you make changes to ma
 6. Start R
 7. Restore the development environment by typing in `renv::restore()`
 8. Quit R and `touch restart.txt`
+
+## Contributors
+
+## Maintainers
