@@ -58,12 +58,12 @@ mod_summary_snapshot_ui <- function(id){
             )
           ),
           shinydashboard::box(
-            title = "Consortium Activity", 
+            title = "Initiative Activity", 
             status = "primary", 
             solidHeader = TRUE,
             width = 12,
             collapsible = FALSE,
-            plotly::plotlyOutput(ns("consortium_activity"))
+            plotly::plotlyOutput(ns("initiative_activity"))
           ),
           shinydashboard::box(
             title = "Resources Generated", 
@@ -160,14 +160,14 @@ mod_summary_snapshot_server <- function(
     create_info_box(param_list, group_object())
   })
   
-  output$consortium_activity <- plotly::renderPlotly({
+  output$initiative_activity <- plotly::renderPlotly({
     shiny::req(data_config, group_object())
     param_list <- purrr::pluck(
       data_config,
       "modules",
       "summary_snapshot",
       "outputs",
-      "consortium_activity"
+      "initiative_activity"
     )
     
     data <- group_object() %>% 
@@ -179,7 +179,7 @@ mod_summary_snapshot_server <- function(
     create_plot_with_param_list(
       data,
       param_list,
-      "create_consortium_activity_plot"
+      "create_initiative_activity_plot"
     )
   })
   
@@ -243,7 +243,7 @@ mod_summary_snapshot_server <- function(
     
     shiny::selectInput(
       inputId = ns("file_upload_timeline_filter_value"),
-      label   = "Select a consortium",
+      label   = "Select an initiative",
       choices = choices
     )
   })
@@ -263,7 +263,6 @@ mod_summary_snapshot_server <- function(
       "outputs",
       "file_upload_timeline"
     )
-    
 
     if (input$file_upload_timeline_filter_value != "All"){
       data <- merged_table() %>% 
