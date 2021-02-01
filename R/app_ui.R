@@ -18,9 +18,14 @@ app_ui <- function() {
       tabPanel("About",
                mod_about_page_ui("about_page_ui_1"),
                icon = icon("info-circle")),
-      tabPanel("Snapshot",
-               mod_summary_snapshot_ui("summary_snapshot_ui_1"),
-               icon = icon("chart-area")),
+      # tabPanel("Snapshot",
+      #          mod_summary_snapshot_ui("summary_snapshot_ui_1"),
+      #          icon = icon("chart-area")),
+      tabPanel(
+        "Snapshot",
+        projectlive.modules::summary_snapshot_module_ui("summary_snapshot_ui_1"),
+        icon = icon("chart-area")
+      ),
       tabPanel("Publications",
                mod_file_status_ui("file_status_ui_1"),
                icon = icon("book-reader")),

@@ -5,16 +5,16 @@
     "group_column": "Permission List"
   },
   "data_files": {
-    "files_table": {
+    "files": {
       "synapse_id": "syn22282675"
     },
-    "publications_table": {
+    "publications": {
       "synapse_id": "syn22282673"
     },
-    "studies_table": {
+    "studies": {
       "synapse_id": "syn22282670"
     },
-    "tools_table": {
+    "tools": {
       "synapse_id": "syn22282674"
     }
   },
@@ -22,34 +22,35 @@
   "modules": {
     "summary_snapshot": {
       "outputs": {
+        "header_text": "You are now viewing studies moderated by {data()$selected_group}.Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot.",
         "overview_boxes": {
           "box1": {
             "title": "Studies",
-            "table": "studies_table",
+            "table": "studies",
             "columns": ["studyId"],
             "icon": "university"
           },
           "box2": {
             "title": "Files",
-            "table": "files_table",
+            "table": "files",
             "columns": ["id"],
             "icon": "file"
           },
           "box3": {
             "title": "Samples",
-            "table": "files_table",
+            "table": "files",
             "columns": ["individualID", "specimenID"],
             "icon": "file"
           },
           "box4": {
             "title": "Publications",
-            "table": "publications_table",
+            "table": "publications",
             "columns": ["title"],
             "icon": "pencil"
           }
         },
-        "consortium_activity": {
-          "table": "files_table",
+        "initiative_activity": {
+          "table": "files",
           "empty_table_message": "The investigator/investigators has/have not uploaded any files yet. Please check back later.",
           "columns": [
             {
@@ -78,7 +79,7 @@
           "tooltips": ["count", "fill"]
         },
         "resources_generated": {
-          "table": "files_table",
+          "table": "files",
           "empty_table_message": "The investigator/investigators has/have not uploaded any files yet. Please check back later.",
           "columns": [
             {
@@ -116,18 +117,10 @@
           },
           "tooltips": ["count", "fill"]
         },
-        "merged_table": {            
-          "join_column" : "studyName",
-          "tables": ["studies_table", "files_table"],
-          "columns": [
-            ["studyName", "consortium"],
-            ["studyName", "resourceType", "year", "assay"]
-          ]
-        },
         "file_upload_timeline":{
           "empty_table_message": "The studies have not uploaded any files yet. Please check back later.",
-          "table": "merged_table",
-          "filter_column": "consortium",
+          "table": "files",
+          "filter_column": "initiative",
           "columns": [
             {
               "name": "studyName",
