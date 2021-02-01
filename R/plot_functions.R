@@ -40,7 +40,7 @@ create_plot_with_param_list <- function(data, param_list, plot_func, ...){
     )
 }
 
-#' Create Consortium Activity Plot
+#' Create Initiative Activity Plot
 #'
 #' @param data A Tibble
 #' @param x A string that is the name of a column in the data
@@ -49,7 +49,7 @@ create_plot_with_param_list <- function(data, param_list, plot_func, ...){
 #'
 #' @importFrom magrittr %>% 
 #' @importFrom rlang !!! !!
-create_consortium_activity_plot <- function(data, x, fill, facet){
+create_initiative_activity_plot <- function(data, x, fill, facet){
   
   data %>% 
     ggplot2::ggplot() +
@@ -379,7 +379,7 @@ create_data_focus_plot <- function(data, x, fill){
     ) 
 }
 
-#' Create Consortium Activity Plot
+#' Create Study Timeline Plot
 #'
 #' @param data A Tibble
 #' @param x A string that is the name of a column in the data
