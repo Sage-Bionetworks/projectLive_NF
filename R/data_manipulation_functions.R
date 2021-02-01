@@ -53,6 +53,7 @@ filter_list_column <- function(data, column, values){
 #' @importFrom magrittr %>% 
 create_merged_table_with_param_list <- function(group_object, param_list){
   group_object %>% 
+    purrr::pluck("tables") %>% 
     magrittr::extract(unlist(param_list$tables)) %>% 
     purrr::map2(
       purrr::map(param_list$columns, unlist), 

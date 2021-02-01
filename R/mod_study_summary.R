@@ -113,13 +113,13 @@ mod_study_summary_ui <- function(id){
 #' @keywords internal
 
 mod_study_summary_server <- function(
-  input, output, session, group_object, data_config
+  input, output, session, data, data_config
 ){
   ns <- session$ns
   
   merged_table <- shiny::reactive({
     
-    shiny::req(group_object(), data_config)
+    shiny::req(data(), data_config)
     
     param_list <- purrr::pluck(
       data_config,
@@ -129,13 +129,13 @@ mod_study_summary_server <- function(
       "merged_table"
     )
     
-    create_merged_table_with_param_list(group_object(), param_list)
+    create_merged_table_with_param_list(data(), param_list)
     
   })
   
   study_table <- shiny::reactive({
     
-    shiny::req(group_object(), data_config)
+    shiny::req(data(), data_config)
     
     param_list <- purrr::pluck(
       data_config,
@@ -163,7 +163,7 @@ mod_study_summary_server <- function(
   ##start making outputs
   output$funding_agency <- shiny::renderText({
     print(glue::glue(
-      "You are now viewing studies moderated by {group_object()$selected_group}. 
+      "You are now viewing studies moderated by {data()$selected_group}. 
       Please click on a row in the table below to select a study and view the details."
     ))
   })
@@ -313,7 +313,7 @@ mod_study_summary_server <- function(
   
   output$publication_status <- plotly::renderPlotly({
     
-    shiny::req(data_config, group_object(), selected_study_name())
+    shiny::req(data_config, data(), selected_study_name())
     
     param_list <- purrr::pluck(
       data_config,
@@ -323,8 +323,8 @@ mod_study_summary_server <- function(
       "publication_status"
     )
     
-    data <- group_object() %>% 
-      purrr::pluck(param_list$table) %>% 
+    data <- data() %>% 
+      purrr::pluck("tables", param_list$table) %>% 
       filter_list_column(param_list$filter_column, selected_study_name()) %>% 
       format_plot_data_with_param_list(param_list)
     

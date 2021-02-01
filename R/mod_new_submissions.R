@@ -59,22 +59,22 @@ mod_new_submissions_ui <- function(id){
 #' @keywords internal
 
 mod_new_submissions_server <- function(
-  input, output, session, group_object, data_config
+  input, output, session, data, config
 ){
   ns <- session$ns
   
   output$funding_agency <- shiny::renderText({
     print(glue::glue(
-      "You are now viewing recent additions to studies moderated by {group_object()$selected_group}."
+      "You are now viewing recent additions to studies moderated by {data()$selected_group}."
     ))
   })
   
   new_files_table <- shiny::reactive({
     
-    shiny::req(group_object(), data_config, input$new_files_day_choice)
+    shiny::req(data(), config, input$new_files_day_choice)
     
     param_list <- purrr::pluck(
-      data_config,
+      config,
       "modules",
       "new_submissions",
       "outputs",
@@ -85,13 +85,13 @@ mod_new_submissions_server <- function(
       lubridate::now() - 
       lubridate::ddays(input$new_files_day_choice)
     
-    files_table <- group_object() %>%
-      purrr::pluck("files_table") %>% 
+    files_table <- data() %>%
+      purrr::pluck("tables", "files") %>% 
       dplyr::filter(!!rlang::sym(param_list$date_column) > minimum_date) %>% 
       dplyr::arrange(dplyr::desc(!!rlang::sym(param_list$date_column)))
     
-    studies_table <- group_object() %>%
-      purrr::pluck("studies_table") 
+    studies_table <- data() %>%
+      purrr::pluck("tables", "studies") 
 
     data1 <- files_table %>%
       dplyr::inner_join(

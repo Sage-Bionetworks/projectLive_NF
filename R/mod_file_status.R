@@ -73,19 +73,20 @@ mod_file_status_ui <- function(id){
 #' @keywords internal
 
 mod_file_status_server <- function(
-  input, output, session, group_object, data_config
+  input, output, session, data, config
 ){
   ns <- session$ns
   
   publications_table <- shiny::reactive({
-    shiny::req(group_object())
-    group_object()$publications_table %>% 
+    shiny::req(data())
+    data() %>% 
+      purrr::pluck("tables", config$publications_table) %>% 
       dplyr::select("year", "studyName", "manifestation")
   })
 
   output$funding_agency <- shiny::renderText({
     print(glue::glue(
-      "You are now viewing studies moderated by {group_object()$selected_group}. 
+      "You are now viewing studies moderated by {data()$selected_group}. 
       Please hover your cursor over the plots to view more information. 
       You can also zoom into parts of the plot."
     ))
@@ -93,18 +94,18 @@ mod_file_status_server <- function(
   
   output$publication_status <- plotly::renderPlotly({
     
-    shiny::req(data_config, group_object())
+    shiny::req(config, data())
     
     param_list <- purrr::pluck(
-      data_config,
+      config,
       "modules",
       "file_status",
       "outputs",
       "publication_status"
     )
     
-    data <- group_object() %>% 
-      purrr::pluck(param_list$table) %>% 
+    data <- data() %>% 
+      purrr::pluck("tables", param_list$table) %>% 
       format_plot_data_with_param_list(param_list)
     
     create_plot_with_param_list(
@@ -116,18 +117,18 @@ mod_file_status_server <- function(
   
   output$publication_disease <- plotly::renderPlotly({
     
-    shiny::req(data_config, group_object())
+    shiny::req(config, data())
     
     param_list <- purrr::pluck(
-      data_config,
+      config,
       "modules",
       "file_status",
       "outputs",
       "publication_disease"
     )
     
-    data <- group_object() %>% 
-      purrr::pluck(param_list$table) %>% 
+    data <- data() %>% 
+      purrr::pluck("tables", param_list$table) %>% 
       format_plot_data_with_param_list(param_list)
     
     create_plot_with_param_list(
