@@ -213,7 +213,7 @@
               "studyLeads",
               "diseaseFocus", 
               "summary",
-              "initiative",
+              "consortium",
               "studyId"
             ],
             [
@@ -364,7 +364,7 @@
           "empty_table_message": "The investigator/investigators has/have not uploaded any files yet. Please check back later."
         },
         "publication_status": {
-           "table": "publications_table",
+           "table": "publications",
            "filter_column": "studyName",
            "columns": [
              {
