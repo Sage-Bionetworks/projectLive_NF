@@ -60,7 +60,7 @@
             },
             {
               "name": "consortium",
-              "display_name": "Consortium",
+              "display_name": "Initiative",
               "na_replace": "Not Applicable",
               "type": "character"
             },
@@ -72,7 +72,7 @@
             }
           ],
           "plot": {
-            "x": "Consortium",
+            "x": "Initiative",
             "fill": "Access Type",
             "facet": "Year"
           },
@@ -120,7 +120,7 @@
         "file_upload_timeline":{
           "empty_table_message": "The studies have not uploaded any files yet. Please check back later.",
           "table": "files",
-          "filter_column": "initiative",
+          "filter_column": "consortium",
           "columns": [
             {
               "name": "studyName",
@@ -153,7 +153,7 @@
     "file_status": {
        "outputs": {
          "publication_status": {
-           "table": "publications_table",
+           "table": "publications",
            "columns": [
              {
               "name": "year",
@@ -173,7 +173,7 @@
            "tooltips": ["count", "fill"]
          },
          "publication_disease": {
-           "table": "publications_table",
+           "table": "publications",
            "columns": [
              {
               "name": "year",
@@ -201,9 +201,9 @@
           "filter_column": "studyName",
           "join_column": "studyName",
           "tables": [
-            "studies_table",
-            "files_table",
-            "tools_table"
+            "studies",
+            "files",
+            "tools"
           ],
           "columns": [
             [
@@ -213,7 +213,7 @@
               "studyLeads",
               "diseaseFocus", 
               "summary",
-              "consortium",
+              "initiative",
               "studyId"
             ],
             [
