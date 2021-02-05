@@ -13,28 +13,33 @@ app_ui <- function() {
       h3("logging in...")
     )),
     #shinythemes::shinytheme("readable"),
-    navbarPage(   
-      title = strong("projectLive"), selected = "About",	
-      tabPanel("About",
-               mod_about_page_ui("about_page_ui_1"),
-               icon = icon("info-circle")),
-      # tabPanel("Snapshot",
-      #          mod_summary_snapshot_ui("summary_snapshot_ui_1"),
-      #          icon = icon("chart-area")),
-      tabPanel(
+    shiny::navbarPage(   
+      title = shiny::strong("projectLive"), selected = "About",	
+      shiny::tabPanel(
+        "About",
+        mod_about_page_ui("about_page_ui_1"),
+        icon = shiny::icon("info-circle")
+      ),
+      shiny::tabPanel(
         "Snapshot",
         projectlive.modules::summary_snapshot_module_ui("summary_snapshot_ui_1"),
-        icon = icon("chart-area")
+        icon = shiny::icon("chart-area")
       ),
-      tabPanel("Publications",
-               mod_file_status_ui("file_status_ui_1"),
-               icon = icon("book-reader")),
-      tabPanel("Participating Studies",
-               mod_study_summary_ui("study_summary_ui_1"),
-               icon = icon("bar-chart-o")),
-      shiny::tabPanel("New Submissions",
-               mod_new_submissions_ui("new_submissions_ui_1"),
-               icon = shiny::icon("bar-chart-o")),
+      shiny::tabPanel(
+        "Publications",
+        mod_file_status_ui("file_status_ui_1"),
+        icon = shiny::icon("book-reader")
+      ),
+      shiny::tabPanel(
+        "Participating Studies",
+        projectlive.modules::study_summary_module_ui("study_summary_ui_1"),
+        icon = shiny::icon("bar-chart-o")
+      ),
+      shiny::tabPanel(
+        "New Submissions",
+        mod_new_submissions_ui("new_submissions_ui_1"),
+        icon = shiny::icon("bar-chart-o")
+      ),
       # tabPanel("Analyses",
       #          mod_analysis_ui("analysis_ui"),
       #          icon = icon("bar-chart-o")),

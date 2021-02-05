@@ -98,9 +98,7 @@ mod_file_status_server <- function(
     
     param_list <- purrr::pluck(
       config,
-      "modules",
       "file_status",
-      "outputs",
       "publication_status"
     )
     
@@ -121,9 +119,7 @@ mod_file_status_server <- function(
     
     param_list <- purrr::pluck(
       config,
-      "modules",
       "file_status",
-      "outputs",
       "publication_disease"
     )
     
