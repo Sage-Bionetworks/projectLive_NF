@@ -16,7 +16,7 @@ app_server <- function(input, output,session) {
   
   syn <- .GlobalEnv$synapseclient$Synapse()
   
-  observeEvent(input$cookie, {
+  shiny::observeEvent(input$cookie, {
     
     syn$login(sessionToken = input$cookie)
     
@@ -27,7 +27,9 @@ app_server <- function(input, output,session) {
     require(magrittr)
     require(rlang)
     
-    config <- jsonlite::read_json("inst/data_config.json")
+    app_config <- jsonlite::read_json("inst/app_config.json")
+    #data_config <- jsonlite::read_json("inst/data_config.json")
+    data_config <- jsonlite::read_json("inst/dev_data_config.json")
     
     data <- shiny::callModule(
       mod_about_page_server, 
@@ -39,23 +41,27 @@ app_server <- function(input, output,session) {
     projectlive.modules::summary_snapshot_module_server(
       id = "summary_snapshot_ui_1",
       data = data,
-      config = shiny::reactive(config$modules$summary_snapshot$outputs)
+      config = shiny::reactive(app_config$summary_snapshot)
+    )
+    
+    projectlive.modules::study_summary_module_server(
+      id = "study_summary_ui_1",
+      data = data,
+      config = shiny::reactive(app_config$study_summary)
     )
     
     purrr::walk2(
       list(
         mod_file_status_server,
-        mod_study_summary_server,
         mod_new_submissions_server
       ),
       list(
         "file_status_ui_1",
-        "study_summary_ui_1",
         "new_submissions_ui_1"
       ),
       shiny::callModule,
       data,
-      config
+      app_config
     ) 
   })
 }
