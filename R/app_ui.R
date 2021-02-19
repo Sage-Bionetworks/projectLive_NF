@@ -14,7 +14,7 @@ app_ui <- function() {
     )),
     #shinythemes::shinytheme("readable"),
     navbarPage(   
-      title = strong("projectLive"), selected = "About",	
+      title = strong("projectLive"), selected = "Snapshot",	
       tabPanel("Snapshot",
                mod_summary_snapshot_ui("summary_snapshot_ui_1"),
                icon = icon("chart-area")),
