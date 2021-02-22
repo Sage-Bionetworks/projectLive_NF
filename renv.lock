@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.0.3",
+    "Version": "4.0.4",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -662,15 +662,15 @@
     },
     "projectlive.modules": {
       "Package": "projectlive.modules",
-      "Version": "0.1.9",
+      "Version": "0.2.0",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteUsername": "Sage-Bionetworks",
       "RemoteRepo": "projectlive.modules",
       "RemoteRef": "main",
-      "RemoteSha": "61fdb12b0ca0ac1b4eb66cdac0d284e5d55e6f92",
+      "RemoteSha": "da848ea70ccb16522da4af538e9c4d21f8e5c381",
       "RemoteHost": "api.github.com",
-      "Hash": "f42ac41c4b09c334183f1b618f6b42bb"
+      "Hash": "663847ee58d7f6ce0f395808da5fa19b"
     },
     "promises": {
       "Package": "promises",
