@@ -27,7 +27,7 @@ app_ui <- function() {
       ),
       shiny::tabPanel(
         "Publications",
-        mod_file_status_ui("file_status_ui_1"),
+        projectlive.modules::publication_status_module_ui("file_status_ui_1"),
         icon = shiny::icon("book-reader")
       ),
       shiny::tabPanel(
@@ -40,12 +40,6 @@ app_ui <- function() {
         mod_new_submissions_ui("new_submissions_ui_1"),
         icon = shiny::icon("bar-chart-o")
       ),
-      # tabPanel("Analyses",
-      #          mod_analysis_ui("analysis_ui"),
-      #          icon = icon("bar-chart-o")),
-      # tabPanel("Resources",
-      #          mod_resources_page_ui("resources_page_ui_1"),
-      #          icon = icon("external-link")),
       collapsible = TRUE,	inverse = TRUE,
       windowTitle = "projectLive")
   )
