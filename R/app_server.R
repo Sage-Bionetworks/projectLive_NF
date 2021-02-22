@@ -41,22 +41,32 @@ app_server <- function(input, output,session) {
     projectlive.modules::summary_snapshot_module_server(
       id = "summary_snapshot_ui_1",
       data = data,
-      config = shiny::reactive(app_config$summary_snapshot)
+      config = shiny::reactive(
+        jsonlite::read_json("inst/summary_snapshot_module.json")
+      )
+    )
+    
+    projectlive.modules::publication_status_module_server(
+      id = "file_status_ui_1",
+      data = data,
+      config = shiny::reactive(
+        jsonlite::read_json("inst/publication_status_module.json")
+      )
     )
     
     projectlive.modules::study_summary_module_server(
       id = "study_summary_ui_1",
       data = data,
-      config = shiny::reactive(app_config$study_summary)
+      config = shiny::reactive(
+        jsonlite::read_json("inst/study_summary_module.json")
+      )
     )
     
     purrr::walk2(
       list(
-        mod_file_status_server,
         mod_new_submissions_server
       ),
       list(
-        "file_status_ui_1",
         "new_submissions_ui_1"
       ),
       shiny::callModule,
