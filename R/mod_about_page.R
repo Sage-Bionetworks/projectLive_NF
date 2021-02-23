@@ -137,11 +137,14 @@ mod_about_page_server <- function(input, output, session, syn, data_config){
     )
   })
 
-  group_object <- shiny::reactive({
+  data <- shiny::reactive({
     shiny::req(filtered_tables(), input$selected_group)
-    c("selected_group" = input$selected_group, filtered_tables())
+    list(
+      "tables" = filtered_tables(),
+      "selected_group" = input$selected_group
+    ) 
   })
-
+  
 }
     
 ## To be copied in the UI
