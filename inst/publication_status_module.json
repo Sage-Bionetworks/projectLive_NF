@@ -10,7 +10,7 @@
         {
           "name": "studyName",
           "display_name": "Study Name",
-          "recode": {"na_replace": "None Listed"}
+          "recode": {"na_replace": "pendingAnnotation"}
         }
       ],
       "plot": {
