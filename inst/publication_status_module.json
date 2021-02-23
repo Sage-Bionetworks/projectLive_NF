@@ -9,7 +9,8 @@
         },
         {
           "name": "studyName",
-          "display_name": "Study Name"
+          "display_name": "Study Name",
+          "recode": {"na_replace": "None Listed"}
         }
       ],
       "plot": {
