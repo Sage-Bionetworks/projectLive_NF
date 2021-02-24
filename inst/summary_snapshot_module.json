@@ -1,5 +1,5 @@
 {
-  "header_text": "You are now viewing studies moderated by {data()$selected_group}",
+  "header_text": "You are now viewing studies moderated by {data()$selected_group}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot.",
   "overview_boxes": {
     "box1": {
       "title": "Studies",
