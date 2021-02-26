@@ -2,7 +2,7 @@ require(magrittr)
 devtools::load_all()
 syn <- create_synapse_login()
 studies <- get_synapse_tbl(syn, "syn16787123") %>%
-   dplyr::rename("initiative" = "consortium")
+   dplyr::rename("consortium" = "initiative")
 
 saveRDS(studies, "studies.RDS")
 store_file_in_synapse(
