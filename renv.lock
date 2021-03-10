@@ -79,6 +79,13 @@
       "Repository": "CRAN",
       "Hash": "125dc7a0ed375eb68c0ce533b48d291f"
     },
+    "Rttf2pt1": {
+      "Package": "Rttf2pt1",
+      "Version": "1.3.8",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "8c4137a9ab70de4787d57758f8190617"
+    },
     "askpass": {
       "Package": "askpass",
       "Version": "1.1",
@@ -281,6 +288,20 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "ec8ca05cffcc70569eaaad8469d2a3a7"
+    },
+    "extrafont": {
+      "Package": "extrafont",
+      "Version": "0.17",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "7f2f50e8f998a4bea4b04650fc4f2ca8"
+    },
+    "extrafontdb": {
+      "Package": "extrafontdb",
+      "Version": "1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "a861555ddec7451c653b40e713166c6f"
     },
     "fansi": {
       "Package": "fansi",
@@ -590,6 +611,13 @@
       "Repository": "CRAN",
       "Hash": "9ab1426429ad716b42088a0fd8e909ee"
     },
+    "patchwork": {
+      "Package": "patchwork",
+      "Version": "1.1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "c446b30cb33ec125ff02588b60660ccb"
+    },
     "pillar": {
       "Package": "pillar",
       "Version": "1.4.6",
@@ -632,6 +660,13 @@
       "Repository": "CRAN",
       "Hash": "ec0e5ab4e5f851f6ef32cd1d1984957f"
     },
+    "png": {
+      "Package": "png",
+      "Version": "0.1-7",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "03b7076c234cb3331288919983326c55"
+    },
     "praise": {
       "Package": "praise",
       "Version": "1.0.0",
@@ -662,15 +697,15 @@
     },
     "projectlive.modules": {
       "Package": "projectlive.modules",
-      "Version": "0.2.2",
+      "Version": "0.3.0",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteUsername": "Sage-Bionetworks",
       "RemoteRepo": "projectlive.modules",
       "RemoteRef": "main",
-      "RemoteSha": "1585ba63a10957f7a63841ad02d786dadfced144",
+      "RemoteSha": "cba7ef184f923c684b2c23fb7f92ec402477d2c9",
       "RemoteHost": "api.github.com",
-      "Hash": "ecbbe828d22ddbed05640ef4b190ee61"
+      "Hash": "05290d20177fa9581c68ea956e2534ac"
     },
     "promises": {
       "Package": "promises",
@@ -825,6 +860,18 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "a9795ccb2d608330e841998b67156764"
+    },
+    "sagethemes": {
+      "Package": "sagethemes",
+      "Version": "0.0.0.9003",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "Sage-Bionetworks",
+      "RemoteRepo": "sagethemes",
+      "RemoteRef": "main",
+      "RemoteSha": "1a8eb0da028c28d7c88dd6627f9121782d88a1ef",
+      "Hash": "8a2c9c159860e98471f4f44c5647cc07"
     },
     "scales": {
       "Package": "scales",
