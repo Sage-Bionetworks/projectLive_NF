@@ -1,6 +1,5 @@
 {
-  "header_text": "You are now viewing studies moderated by {data()$selected_group}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot.
-",
+  "header_text": "You are now viewing studies moderated by {data()$selected_group}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot.",
   "overview_boxes": {
     "box1": {
       "title": "Studies",
@@ -34,6 +33,10 @@
     "empty_table_message": "The investigator/investigators has/have not uploaded any files yet. Please check back later.",
     "columns": [
       {
+        "name": "year",
+        "display_name": "Year"
+      },
+      {
         "name": "species",
         "display_name": "Species",
         "recode": {
@@ -56,7 +59,7 @@
     "plot": {
       "x": "Initiative",
       "fill": "Access Type",
-      "facet": "Species",
+      "facet": "Year",
       "y_axis_text": {
         "size": 10
       }
