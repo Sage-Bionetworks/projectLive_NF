@@ -27,7 +27,7 @@ app_ui <- function() {
       shiny::tabPanel("New Submissions",
                mod_new_submissions_ui("new_submissions_ui_1"),
                icon = shiny::icon("bar-chart-o")),
-      tabPanel("About",
+      tabPanel("Back to NF Portal",
                mod_about_page_ui("about_page_ui_1"),
                icon = icon("info-circle")),
       # tabPanel("Analyses",
