@@ -1,5 +1,5 @@
 {
-  "header_text": "You are now viewing studies moderated by {data()$selected_group}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot.",
+  "header_text": "You are now viewing studies moderated by {data()$selected_group}.Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot.",
   "study_table": {
     "join_column": "studyName",
     "filter_column": "initiative",
@@ -7,6 +7,7 @@
       "studies": {
         "columns": [
           "studyName",
+          "initiative",
           "studyLeads",
           "studyStatus",
           "dataStatus",
@@ -33,6 +34,10 @@
           {
             "display_name": "Name",
             "name": "studyName"
+          },
+          {
+            "display_name": "Initiative",
+            "name": "initiative"
           },
           {
             "display_name": "Leads",
@@ -103,6 +108,7 @@
   "study_timeline_plot": {
     "table": "files",
     "filter_column": "studyName",
+    "drop_na": true,
     "columns": [
       {
         "name": "studyName",
@@ -124,15 +130,12 @@
     "plot": {
       "x": "Study Name",
       "fill": "Resource Type",
-      "facet": [
-        "Year",
-        "Month"
-      ]
+      "facet": ["Year", "Month"],
+      "y_axis_text": {
+        "size": 10
+      }
     },
-    "tooltips": [
-      "count",
-      "fill"
-    ],
+    "tooltips": ["count","fill"],
     "empty_table_message": "The investigator/investigators has/have not uploaded any files yet. Please check back later."
   },
   "data_focus_plot": {
@@ -167,12 +170,12 @@
         "Resource Added",
         "Species Used",
         "Tumor Types Investigated"
-      ]
+      ],
+      "y_axis_text": {
+        "size": 10
+      }
     },
-    "tooltips": [
-      "count",
-      "fill"
-    ],
+    "tooltips": ["count", "fill"],
     "empty_table_message": "The investigators have not uploaded data for this study yet. Please check back later."
   },
   "annotation_activity_plot": {
@@ -202,7 +205,14 @@
       "x": "Study Leads",
       "y": "Count",
       "fill": "Assay",
-      "facet": "Year"
+      "facet": "Year",
+      "x_axis_text": {
+        "size": 10,
+        "angle": 90
+      },
+      "y_axis_text": {
+        "size": 10
+      }
     },
     "empty_table_message": "The investigators have not uploaded any files yet. Please check back later.",
     "tooltips": [
