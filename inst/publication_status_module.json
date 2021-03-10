@@ -11,11 +11,15 @@
           "name": "studyName",
           "display_name": "Study Name",
           "recode": {"na_replace": "None Listed"}
-        }
+        },
+        {
+          "name": "theme",
+          "display_name": "Theme"
+        },
       ],
       "plot": {
         "x": "Year",
-        "fill": "Study Name",
+        "fill": "Theme",
         "x_axis_text": {
           "size": 10
         },
