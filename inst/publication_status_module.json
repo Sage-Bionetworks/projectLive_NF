@@ -1,5 +1,6 @@
 {
-  "header_text": "You are now viewing studies moderated by {data()$selected_group}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot.",
+  "header_text": "You are now viewing studies moderated by {data()$selected_group}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot.
+",
   "publication_status": {
       "table": "publications",
       "columns": [
@@ -10,12 +11,18 @@
         {
           "name": "studyName",
           "display_name": "Study Name",
-          "recode": {"na_replace": "pendingAnnotation"}
+          "recode": {"na_replace": "None Listed"}
         }
       ],
       "plot": {
         "x": "Year",
-        "fill": "Study Name"
+        "fill": "Study Name",
+        "x_axis_text": {
+          "size": 10
+        },
+        "y_axis_text": {
+          "size": 10
+        }
       },
       "tooltips": ["count", "fill"]
     },
@@ -34,7 +41,15 @@
       ],
       "plot": {
         "x": "Year",
-        "fill": "Manifestation"
+        "fill": "Manifestation",
+        "x_axis_text": {
+          "size": 10
+
+        },
+        "y_axis_text": {
+          "size": 10
+
+        }
       },
       "tooltips": ["count", "fill"]
     }
