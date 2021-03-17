@@ -5,8 +5,7 @@ studies <- get_synapse_tbl(syn, "syn16787123")
 
 # live ----
 
-files <- get_synapse_tbl(syn, "syn16858331") %>% 
-  dplyr::rename("initiative" = "consortium")
+files <- get_synapse_tbl(syn, "syn16858331") 
 
 files <- files %>% 
   dplyr::filter(.data$type == "file") %>% 
@@ -28,7 +27,7 @@ dev_files <-
       "individualID",
       "specimenID",
       "assay",
-      "consortium",
+      "initiative",
       "dataType",
       "fileFormat",
       "resourceType",
