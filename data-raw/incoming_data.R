@@ -8,7 +8,7 @@ studies <- get_synapse_tbl(syn, "syn16787123")
 # develop ----
 
 dev_incoming_data <-
-  get_synapse_tbl(
+  projectlive.modules::get_synapse_tbl(
     syn,
     "syn23364404",
     columns = c(
