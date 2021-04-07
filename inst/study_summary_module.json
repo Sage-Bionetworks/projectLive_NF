@@ -240,5 +240,70 @@
     },
     "empty_table_message": "This study has no associated publications yet.",
     "tooltips": ["count", "fill"]
+  },
+    "milestone_reporting_plot": {
+    "files_table": {
+      "name": "files",
+      "columns": [
+        {
+          "name": "fileFormat",
+          "display_name": "Format",
+          "recode": {
+            "na_replace": "Unspecified",
+            "replace_values": {
+              "jpg": "image",
+              "png": "image",
+              "tif": "image",
+              "xls": "xlsx"
+            }
+          }
+        },
+        {
+          "name": "date",
+          "display_name": "Date Created"
+        },
+        {
+          "name": "reportMilestone",
+          "display_name": "Milestone"
+        }
+      ]
+    },
+    "incoming_data_table": {
+      "name": "incoming_data",
+      "unlist_columns": "fileFormat",
+      "columns": [
+        {
+          "name": "fileFormat",
+          "display_name": "Format",
+          "recode": {
+            "na_replace": "Unspecified",
+            "replace_values": {
+              "jpg": "image",
+              "png": "image",
+              "tif": "image",
+              "xls": "xlsx"
+            }
+          }
+        },
+        {
+          "name": "date_uploadestimate",
+          "display_name": "Date Estimate"
+        },
+        {
+          "name": "reportMilestone",
+          "display_name": "Milestone"
+        },
+        {
+          "name": "estimatedMinNumSamples",
+          "display_name": "Expected"
+        }
+      ]
+    },
+    "format_column": "Format",
+    "milestone_column": "Milestone",
+    "date_created_column": "Date Created",
+    "date_estimate_column": "Date Estimate",
+    "expected_files_column": "Expected",
+    "actual_files_column": "Actual"
   }
 }
