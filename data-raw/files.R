@@ -24,7 +24,9 @@ dev_files <-
     "syn16858331",
     columns = c(
       "id",
+      "name",
       "individualID",
+      "parentId",
       "specimenID",
       "assay",
       "initiative",
@@ -36,6 +38,7 @@ dev_files <-
       "tumorType",
       "species",
       "projectId",
+      "benefactorId",
       "reportMilestone",
       "createdOn"
     ),
