@@ -248,7 +248,15 @@
         {
           "name": "fileFormat",
           "display_name": "Format",
-          "recode": {"na_replace": "Unspecified"}
+          "recode": {
+            "na_replace": "Unspecified",
+            "replace_values": {
+              "jpg": "image",
+              "png": "image",
+              "tif": "image",
+              "xls": "xlsx"
+            }
+          }
         },
         {
           "name": "date",
@@ -267,7 +275,15 @@
         {
           "name": "fileFormat",
           "display_name": "Format",
-          "recode": {"na_replace": "Unspecified"}
+          "recode": {
+            "na_replace": "Unspecified",
+            "replace_values": {
+              "jpg": "image",
+              "png": "image",
+              "tif": "image",
+              "xls": "xlsx"
+            }
+          }
         },
         {
           "name": "date_uploadestimate",
