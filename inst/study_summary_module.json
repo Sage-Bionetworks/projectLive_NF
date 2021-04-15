@@ -1,5 +1,5 @@
 {
-  "header_text": "You are now viewing studies moderated by {data()$selected_group}.Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot.",
+  "header_text": "You are now viewing studies moderated by {data()$selected_group}.Please click on a row in the table below to select a study and view the details. You can also hover over or zoom into parts of the plots to view more information.",
   "study_table": {
     "join_column": "studyName",
     "filter_column": "initiative",
