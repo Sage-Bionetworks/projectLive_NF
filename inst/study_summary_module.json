@@ -241,22 +241,19 @@
     "empty_table_message": "This study has no associated publications yet.",
     "tooltips": ["count", "fill"]
   },
-    "milestone_reporting_plot": {
+  "milestone_reporting_plot": {
     "files_table": {
       "name": "files",
       "columns": [
         {
           "name": "fileFormat",
-          "display_name": "Format",
-          "recode": {
-            "na_replace": "Unspecified",
-            "replace_values": {
-              "jpg": "image",
-              "png": "image",
-              "tif": "image",
-              "xls": "xlsx"
-            }
-          }
+          "display_name": "File Format",
+          "recode": {"na_replace": "Not Annotated"}
+        },
+        {
+          "name": "dataType",
+          "display_name": "Data Type",
+          "recode": {"na_replace": "Not Annotated"}
         },
         {
           "name": "date",
@@ -264,7 +261,7 @@
         },
         {
           "name": "reportMilestone",
-          "display_name": "Milestone"
+          "display_name": "Milestone Number"
         }
       ]
     },
@@ -274,24 +271,21 @@
       "columns": [
         {
           "name": "fileFormat",
-          "display_name": "Format",
-          "recode": {
-            "na_replace": "Unspecified",
-            "replace_values": {
-              "jpg": "image",
-              "png": "image",
-              "tif": "image",
-              "xls": "xlsx"
-            }
-          }
+          "display_name": "File Format",
+          "recode": {"na_replace": "Not Annotated"}
+        },
+        {
+          "name": "dataType",
+          "display_name": "Data Type",
+          "recode": {"na_replace": "Not Annotated"}
         },
         {
           "name": "date_uploadestimate",
-          "display_name": "Date Estimate"
+          "display_name": "Designated Upload Date"
         },
         {
           "name": "reportMilestone",
-          "display_name": "Milestone"
+          "display_name": "Milestone Number"
         },
         {
           "name": "estimatedMinNumSamples",
@@ -299,10 +293,10 @@
         }
       ]
     },
-    "format_column": "Format",
-    "milestone_column": "Milestone",
+    "join_columns": ["Data Type", "File Format"],
+    "milestone_column": "Milestone Number",
     "date_created_column": "Date Created",
-    "date_estimate_column": "Date Estimate",
+    "date_estimate_column": "Designated Upload Date",
     "expected_files_column": "Expected",
     "actual_files_column": "Actual"
   }
