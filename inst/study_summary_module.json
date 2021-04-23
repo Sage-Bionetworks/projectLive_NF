@@ -248,7 +248,15 @@
         {
           "name": "fileFormat",
           "display_name": "File Format",
-          "recode": {"na_replace": "Not Annotated"}
+          "recode": {
+            "replace_values": {
+              "jpg": "image",
+              "png": "image",
+              "tif": "image",
+              "xls": "xlsx"
+            },
+            "na_replace": "Not Annotated"
+          }
         },
         {
           "name": "dataType",
@@ -272,7 +280,15 @@
         {
           "name": "fileFormat",
           "display_name": "File Format",
-          "recode": {"na_replace": "Not Annotated"}
+          "recode": {
+            "replace_values": {
+              "jpg": "image",
+              "png": "image",
+              "tif": "image",
+              "xls": "xlsx"
+            },
+            "na_replace": "Not Annotated"
+          }
         },
         {
           "name": "dataType",
