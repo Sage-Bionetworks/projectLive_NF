@@ -357,7 +357,7 @@ mod_study_summary_server <- function(
         '<a href=',
         '"https://www.synapse.org/#!Synapse:',
         .data$`Unique Study ID`,
-        '">', 
+        '" target="_blank">', 
         .data$`Unique Study ID`,
         '</a>'
       )) %>% 
