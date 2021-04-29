@@ -257,7 +257,7 @@
               "xlsx": "spreadsheet",
               "excel": "spreadsheet",
               "docx": "document",
-              "pdf": "document",
+              "pdf": "document"
             },
             "na_replace": "Not Annotated"
           }
