@@ -253,7 +253,11 @@
               "jpg": "image",
               "png": "image",
               "tif": "image",
-              "xls": "xlsx"
+              "xls": "spreadsheet",
+              "xlsx": "spreadsheet",
+              "excel": "spreadsheet",
+              "docx": "document",
+              "pdf": "document",
             },
             "na_replace": "Not Annotated"
           }
