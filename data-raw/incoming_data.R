@@ -17,7 +17,8 @@ dev_incoming_data <-
       "reportMilestone",
       "estimatedMinNumSamples",
       "fundingAgency",
-      "projectSynID"
+      "projectSynID",
+      "dataType"
     ),
     col_types = readr::cols(
       "estimatedMinNumSamples" = readr::col_integer(),
@@ -41,7 +42,8 @@ dev_incoming_data <-
     .data$date_uploadestimate,
     .data$reportMilestone,
     .data$fundingAgency,
-    .data$studyName
+    .data$studyName,
+    .data$dataType
   ) %>%
   dplyr::summarise("estimatedMinNumSamples" = sum(.data$estimatedMinNumSamples)) %>%
   dplyr::ungroup() %>%
