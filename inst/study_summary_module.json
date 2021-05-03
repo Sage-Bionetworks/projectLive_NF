@@ -259,13 +259,13 @@
               "docx": "document",
               "pdf": "document"
             },
-            "na_replace": "Not Annotated"
+            "na_replace": "notAnnotated"
           }
         },
         {
           "name": "dataType",
           "display_name": "Data Type",
-          "recode": {"na_replace": "Not Annotated"}
+          "recode": {"na_replace": "notAnnotated"}
         },
         {
           "name": "date",
@@ -289,15 +289,17 @@
               "jpg": "image",
               "png": "image",
               "tif": "image",
-              "xls": "xlsx"
+              "xls": "spreadsheet",
+              "xlsx": "spreadsheet",
+              "excel": "spreadsheet"
             },
-            "na_replace": "Not Annotated"
+            "na_replace": "notAnnotated"
           }
         },
         {
           "name": "dataType",
           "display_name": "Data Type",
-          "recode": {"na_replace": "Not Annotated"}
+          "recode": {"na_replace": "notAnnotated"}
         },
         {
           "name": "date_uploadestimate",
