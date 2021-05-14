@@ -25,44 +25,46 @@ store_file_in_synapse(
 )
 
 # develop ----
-dev_files <- 
+dev_files <-
   projectlive.modules::get_synapse_tbl(
-    syn, 
+    syn,
     "syn16858331",
     columns = c(
       "id",
+      "name",
       "individualID",
+      "parentId",
       "specimenID",
       "assay",
       "initiative",
       "dataType",
       "fileFormat",
       "resourceType",
-      "studyName",
       "accessType",
+      "initiative",
       "tumorType",
       "species",
       "projectId",
       "benefactorId",
-      "name",
-      "parentId",
-      "createdOn",
-      "type"
+      "reportMilestone",
+      "createdOn"
+    ),
+    col_types = readr::cols(
+      "consortium" = readr::col_character(),
+      "reportMilestone" = readr::col_integer()
     )
-  ) %>% 
-  dplyr::filter(.data$type == "file") %>% 
-  dplyr::mutate(
-    fundingAgency = studies$fundingAgency[match(projectId, studies$studyId)]
-  ) %>% 
-  format_date_columns() %>% 
-  dplyr::select(-c("createdOn", "ROW_ID", "ROW_VERSION", "ROW_ETAG", "type")) %>%
-  dplyr::left_join(
+  ) %>%
+  format_date_columns() %>%
+  dplyr::select(-c("createdOn")) %>%
+  dplyr::inner_join(
     dplyr::select(
       studies,
       "studyName",
-      "studyLeads"
+      "studyLeads",
+      "fundingAgency",
+      "studyId"
     ),
-    by = "studyName"
+    by = c("projectId" = "studyId")
   )
   
 

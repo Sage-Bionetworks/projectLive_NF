@@ -1,5 +1,5 @@
 {
-  "header_text": "You are now viewing studies moderated by {data()$selected_group}.Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot.",
+  "header_text": "You are now viewing studies moderated by {data()$selected_group}.Please click on a row in the table below to select a study and view the details. You can also hover over or zoom into parts of the plots to view more information.",
   "study_table": {
     "join_column": "studyName",
     "filter_column": "initiative",
@@ -240,5 +240,86 @@
     },
     "empty_table_message": "This study has no associated publications yet.",
     "tooltips": ["count", "fill"]
+  },
+  "milestone_reporting_plot": {
+    "files_table": {
+      "name": "files",
+      "columns": [
+        {
+          "name": "fileFormat",
+          "display_name": "File Format",
+          "recode": {
+            "replace_values": {
+              "jpg": "image",
+              "png": "image",
+              "tif": "image",
+              "xls": "spreadsheet",
+              "xlsx": "spreadsheet",
+              "excel": "spreadsheet",
+              "docx": "document",
+              "pdf": "document"
+            },
+            "na_replace": "notAnnotated"
+          }
+        },
+        {
+          "name": "dataType",
+          "display_name": "Data Type",
+          "recode": {"na_replace": "notAnnotated"}
+        },
+        {
+          "name": "date",
+          "display_name": "Date Created"
+        },
+        {
+          "name": "reportMilestone",
+          "display_name": "Milestone Number"
+        }
+      ]
+    },
+    "incoming_data_table": {
+      "name": "incoming_data",
+      "unlist_columns": "fileFormat",
+      "columns": [
+        {
+          "name": "fileFormat",
+          "display_name": "File Format",
+          "recode": {
+            "replace_values": {
+              "jpg": "image",
+              "png": "image",
+              "tif": "image",
+              "xls": "spreadsheet",
+              "xlsx": "spreadsheet",
+              "excel": "spreadsheet"
+            },
+            "na_replace": "notAnnotated"
+          }
+        },
+        {
+          "name": "dataType",
+          "display_name": "Data Type",
+          "recode": {"na_replace": "notAnnotated"}
+        },
+        {
+          "name": "date_uploadestimate",
+          "display_name": "Designated Upload Date"
+        },
+        {
+          "name": "reportMilestone",
+          "display_name": "Milestone Number"
+        },
+        {
+          "name": "estimatedMinNumSamples",
+          "display_name": "Expected"
+        }
+      ]
+    },
+    "join_columns": ["Data Type", "File Format"],
+    "milestone_column": "Milestone Number",
+    "date_created_column": "Date Created",
+    "date_estimate_column": "Designated Upload Date",
+    "expected_files_column": "Expected",
+    "actual_files_column": "Actual"
   }
 }
