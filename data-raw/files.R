@@ -1,6 +1,7 @@
 require(magrittr)
 devtools::load_all()
 syn <- create_synapse_login()
+<<<<<<< HEAD
 studies <- get_synapse_tbl(syn, "syn16787123") 
 
 # live ----
@@ -8,6 +9,12 @@ studies <- get_synapse_tbl(syn, "syn16787123")
 files <- get_synapse_tbl(syn, "syn16858331") 
 
 files <- files %>% 
+=======
+files <- get_synapse_tbl(syn, "syn16858331")
+studies <- get_synapse_tbl(syn, "syn16787123")
+files <- files %>%
+  dplyr::rename("consortium" = "initiative") %>%
+>>>>>>> master
   dplyr::filter(.data$type == "file") %>% 
   dplyr::mutate(fundingAgency = studies$fundingAgency[match(projectId, studies$studyId)]) 
 
