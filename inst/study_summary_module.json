@@ -1,0 +1,244 @@
+{
+  "header_text": "You are now viewing studies moderated by {data()$selected_group}.Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot.",
+  "study_table": {
+    "join_column": "studyName",
+    "filter_column": "initiative",
+    "tables": {
+      "studies": {
+        "columns": [
+          "studyName",
+          "initiative",
+          "studyLeads",
+          "studyStatus",
+          "dataStatus",
+          "diseaseFocus"
+        ]
+      },
+      "files": {
+        "columns": [
+          "studyName",
+          "id",
+          "individualID",
+          "specimenID",
+          "assay"
+        ]
+      },
+      "tools": {
+        "columns": [
+          "studyName",
+          "softwareName"
+        ]
+      },
+      "merged": {
+        "columns": [
+          {
+            "display_name": "Name",
+            "name": "studyName"
+          },
+          {
+            "display_name": "Initiative",
+            "name": "initiative"
+          },
+          {
+            "display_name": "Leads",
+            "name": "studyLeads"
+          },
+          {
+            "display_name": "Study Status",
+            "name": "studyStatus"
+          },
+          {
+            "display_name": "Data Status",
+            "name": "dataStatus"
+          },
+          {
+            "display_name": "Disease Focus",
+            "name": "diseaseFocus"
+          },
+          {
+            "display_name": "Individuals",
+            "name": "individualID"
+          },
+          {
+            "display_name": "Specimens",
+            "name": "specimenID"
+          },
+          {
+            "display_name": "Assays",
+            "name": "assay"
+          },
+          {
+            "display_name": "Files",
+            "name": "id"
+          },
+          {
+            "display_name": "Tools",
+            "name": "softwareName"
+          }
+        ]
+      }
+    }
+  },
+  "study_name_column": "Name",
+  "study_summary": {
+    "table": "studies",
+    "filter_column": "studyName",
+    "columns": [
+      {
+        "name": "studyId",
+        "display_name": "Unique Study ID"
+      },
+      {
+        "name": "studyStatus",
+        "display_name": "Study Status"
+      },
+      {
+        "name": "dataStatus",
+        "display_name": "Data Status"
+      },
+      {
+        "name": "summary"
+      },
+      {
+        "name": "diseaseFocus",
+        "display_name": "Disease Focus"
+      }
+    ]
+  },
+  "study_timeline_plot": {
+    "table": "files",
+    "filter_column": "studyName",
+    "drop_na": true,
+    "columns": [
+      {
+        "name": "studyName",
+        "display_name": "Study Name"
+      },
+      {
+        "name": "resourceType",
+        "display_name": "Resource Type"
+      },
+      {
+        "name": "year",
+        "display_name": "Year"
+      },
+      {
+        "name": "month",
+        "display_name": "Month"
+      }
+    ],
+    "plot": {
+      "x": "Study Name",
+      "fill": "Resource Type",
+      "facet": ["Year", "Month"],
+      "y_axis_text": {
+        "size": 10
+      }
+    },
+    "tooltips": ["count","fill"],
+    "empty_table_message": "The investigator/investigators has/have not uploaded any files yet. Please check back later."
+  },
+  "data_focus_plot": {
+    "table": "files",
+    "filter_column": "studyName",
+    "columns": [
+      {
+        "name": "studyName",
+        "display_name": "Study Name"
+      },
+      {
+        "name": "assay",
+        "display_name": "Assays Used"
+      },
+      {
+        "name": "resourceType",
+        "display_name": "Resource Added"
+      },
+      {
+        "name": "species",
+        "display_name": "Species Used"
+      },
+      {
+        "name": "tumorType",
+        "display_name": "Tumor Types Investigated"
+      }
+    ],
+    "plot": {
+      "x": "Study Name",
+      "fill": [
+        "Assays Used",
+        "Resource Added",
+        "Species Used",
+        "Tumor Types Investigated"
+      ],
+      "y_axis_text": {
+        "size": 10
+      }
+    },
+    "tooltips": ["count", "fill"],
+    "empty_table_message": "The investigators have not uploaded data for this study yet. Please check back later."
+  },
+  "annotation_activity_plot": {
+    "table": "files",
+    "filter_column": "studyName",
+    "count_column": {
+      "name": "Count",
+      "complete_columns": ["studyLeads", "year"]
+    },
+    "columns": [
+      {
+        "name": "studyLeads",
+        "display_name": "Study Leads",
+        "recode": {"na_replace": "Pending Annotation"}
+      },
+      {
+        "name": "assay",
+        "display_name": "Assay",
+        "recode": {"na_replace": "Pending Annotation"}
+      },
+      {
+        "name": "year",
+        "display_name": "Year"
+      }
+    ],
+    "plot": {
+      "x": "Study Leads",
+      "y": "Count",
+      "fill": "Assay",
+      "facet": "Year",
+      "x_axis_text": {
+        "size": 10,
+        "angle": 90
+      },
+      "y_axis_text": {
+        "size": 10
+      }
+    },
+    "empty_table_message": "The investigators have not uploaded any files yet. Please check back later.",
+    "tooltips": [
+      "Count",
+      "fill"
+    ]
+  },
+  "publication_status_plot": {
+    "table": "publications",
+    "filter_column": "studyName",
+    "unnest_columns" : "studyName",
+    "columns": [
+      {
+        "name": "year",
+        "display_name": "Year"
+      },
+      {
+        "name": "studyName",
+        "display_name": "Study Name"
+      }
+    ],
+    "plot": {
+      "x": "Year",
+      "fill": "Study Name"
+    },
+    "empty_table_message": "This study has no associated publications yet.",
+    "tooltips": ["count", "fill"]
+  }
+}

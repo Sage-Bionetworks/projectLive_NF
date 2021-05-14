@@ -1,0 +1,152 @@
+{
+  "header_text": "You are now viewing studies moderated by {data()$selected_group}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot.",
+  "overview_boxes": {
+    "box1": {
+      "title": "Studies",
+      "table": "studies",
+      "columns": [
+        "studyId"
+      ],
+      "icon": "university"
+    },
+    "box2": {
+      "title": "Files",
+      "table": "files",
+      "columns": ["id"],
+      "icon": "file"
+    },
+    "box3": {
+      "title": "Samples",
+      "table": "files",
+      "columns": [ "individualID", "specimenID"],
+      "icon": "file"
+    },
+    "box4": {
+      "title": "Publications",
+      "table": "publications",
+      "columns": ["title"],
+      "icon": "pencil"
+    }
+  },
+  "initiative_activity": {
+    "table": "files",
+    "empty_table_message": "The investigator/investigators has/have not uploaded any files yet. Please check back later.",
+    "columns": [
+      {
+        "name": "year",
+        "display_name": "Year"
+      },
+      {
+        "name": "species",
+        "display_name": "Species",
+        "recode": {
+          "top_values": 3,
+          "na_replace": "Missing",
+          "default_replace": "Other"
+        }
+      },
+      {
+        "name": "initiative",
+        "display_name": "Initiative",
+        "recode": {"na_replace": "Not Applicable"}
+      },
+      {
+        "name": "accessType",
+        "display_name": "Access Type",
+        "recode": {"na_replace": "Not Annotated"}
+      }
+    ],
+    "plot": {
+      "x": "Initiative",
+      "fill": "Access Type",
+      "facet": "Year",
+      "y_axis_text": {
+        "size": 10
+      }
+    },
+    "tooltips": [
+      "count",
+      "fill"
+    ]
+  },
+  "resources_generated": {
+    "table": "files",
+    "empty_table_message": "The investigator/investigators has/have not uploaded any files yet. Please check back later.",
+    "columns": [
+      {
+        "name": "year",
+        "display_name": "Year"
+      },
+      {
+        "name": "studyName",
+        "display_name": "Study Name",
+        "recode": {"na_replace": "Not Applicable"}
+      },
+      {
+        "name": "dataType",
+        "display_name": "Data Type",
+        "recode": {
+          "replace_values": {
+            "drugScreen": "Drug Screening",
+            "drugCombinationScreen": "Drug Screening",
+            "immunofluorescence": "Immunofluorescence",
+            "genomicVariants": "Genomic Variants",
+            "geneExpression": "Gene Expression",
+            "cellularPhysiology": "Cellular Physiology",
+            "chromatinActivity": "Chromatin Activity"
+          },
+          "na_replace": "Other",
+          "default_replace": "Other"
+        }
+      }
+    ],
+    "plot": {
+      "x": "Data Type",
+      "fill": "Study Name",
+      "facet": "Year",
+      "y_axis_text": {
+        "size": 10
+      }
+    },
+    "tooltips": [ "count", "fill"]
+  },
+  "file_upload_timeline": {
+    "empty_table_message": "The studies have not uploaded any files yet. Please check back later.",
+    "table": "files",
+    "filter_column": "initiative",
+    "count_column": {
+      "name": "Count",
+      "complete_columns": ["studyName", "year"]
+    },
+    "columns": [
+      {
+        "name": "studyName",
+        "display_name": "Study Name",
+        "recode": {"na_replace": "Pending Annotation"},
+        "truncate": 40
+      },
+      {
+        "name": "resourceType",
+        "display_name": "Resource Type",
+        "recode": {"na_replace": "Pending Annotation"}
+      },
+      {
+        "name": "year",
+        "display_name": "Year"
+      }
+    ],
+    "plot": {
+      "x": "Study Name",
+      "y": "Count",
+      "fill": "Resource Type",
+      "facet": "Year",
+      "x_axis_text": {
+        "size": 10
+      },
+      "y_axis_text": {
+        "size": 10
+      }
+    },
+    "tooltips": ["Count", "fill"]
+  }
+}
