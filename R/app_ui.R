@@ -13,6 +13,35 @@ app_ui <- function() {
       h3("logging in...")
     )),
     #shinythemes::shinytheme("readable"),
+<<<<<<< HEAD
+    shiny::navbarPage(   
+      title = shiny::strong("projectLive"), selected = "About",	
+      shiny::tabPanel(
+        "About",
+        mod_about_page_ui("about_page_ui_1"),
+        icon = shiny::icon("info-circle")
+      ),
+      shiny::tabPanel(
+        "Snapshot",
+        projectlive.modules::summary_snapshot_module_ui("summary_snapshot_ui_1"),
+        icon = shiny::icon("chart-area")
+      ),
+      shiny::tabPanel(
+        "Publications",
+        projectlive.modules::publication_status_module_ui("file_status_ui_1"),
+        icon = shiny::icon("book-reader")
+      ),
+      shiny::tabPanel(
+        "Participating Studies",
+        projectlive.modules::study_summary_module_ui("study_summary_ui_1"),
+        icon = shiny::icon("bar-chart-o")
+      ),
+      shiny::tabPanel(
+        "New Submissions",
+        mod_new_submissions_ui("new_submissions_ui_1"),
+        icon = shiny::icon("bar-chart-o")
+      ),
+=======
     navbarPage(   
       title = strong("projectLive"), selected = "About",	
       tabPanel("About",
@@ -36,6 +65,7 @@ app_ui <- function() {
       # tabPanel("Resources",
       #          mod_resources_page_ui("resources_page_ui_1"),
       #          icon = icon("external-link")),
+>>>>>>> master
       collapsible = TRUE,	inverse = TRUE,
       windowTitle = "projectLive")
   )
