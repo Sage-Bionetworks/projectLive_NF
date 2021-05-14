@@ -95,7 +95,7 @@
             "cellularPhysiology": "Cellular Physiology",
             "chromatinActivity": "Chromatin Activity"
           },
-          "na_replace": "Other",
+          "na_replace": "pendingAnnotation",
           "default_replace": "Other"
         }
       }
