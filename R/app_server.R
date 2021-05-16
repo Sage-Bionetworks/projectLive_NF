@@ -28,8 +28,10 @@ app_server <- function(input, output,session) {
     require(rlang)
     
     app_config <- jsonlite::read_json("inst/app_config.json")
-    #data_config <- jsonlite::read_json("inst/data_config.json")
-    data_config <- jsonlite::read_json("inst/dev_data_config.json")
+    ## live
+    data_config <- jsonlite::read_json("inst/data_config.json")
+    ## dev
+    #data_config <- jsonlite::read_json("inst/dev_data_config.json")
     
     data <- shiny::callModule(
       mod_about_page_server, 
