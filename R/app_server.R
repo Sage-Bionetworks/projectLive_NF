@@ -18,7 +18,9 @@ app_server <- function(input, output,session) {
   
   shiny::observeEvent(input$cookie, {
     
-    syn$login(sessionToken = input$cookie)
+    syn$login(authToken = input$cookie)
+    #locally
+    # syn$login(sessionToken = input$cookie)
     
     output$title <- shiny::renderUI({
       shiny::titlePanel(sprintf("Welcome, %s", syn$getUserProfile()$userName))
