@@ -18,9 +18,7 @@ app_server <- function(input, output,session) {
   
   shiny::observeEvent(input$cookie, {
     
-    syn$login(authToken = input$cookie)
-    #locally
-    # syn$login(sessionToken = input$cookie)
+    syn$login(sessionToken = input$cookie)
     
     output$title <- shiny::renderUI({
       shiny::titlePanel(sprintf("Welcome, %s", syn$getUserProfile()$userName))
@@ -30,10 +28,8 @@ app_server <- function(input, output,session) {
     require(rlang)
     
     app_config <- jsonlite::read_json("inst/app_config.json")
-    ## live
-    data_config <- jsonlite::read_json("inst/data_config.json")
-    ## dev
-    #data_config <- jsonlite::read_json("inst/dev_data_config.json")
+    #data_config <- jsonlite::read_json("inst/data_config.json")
+    data_config <- jsonlite::read_json("inst/dev_data_config.json")
     
     data <- shiny::callModule(
       mod_about_page_server, 
