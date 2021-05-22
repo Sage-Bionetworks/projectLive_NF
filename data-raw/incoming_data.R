@@ -3,6 +3,10 @@ devtools::load_all()
 syn <- create_synapse_login()
 studies <- get_synapse_tbl(syn, "syn16787123") 
 
+# live ----
+
+# develop ----
+
 dev_incoming_data <-
   projectlive.modules::get_synapse_tbl(
     syn,
@@ -51,16 +55,9 @@ dev_incoming_data <-
     )
   )
 
-# develop ----
+
 saveRDS(dev_incoming_data, "incoming_data.RDS")
 store_file_in_synapse(
   "incoming_data.RDS",
   "syn24474593"
-)
-
-# live ----
-saveRDS(dev_incoming_data, "incoming_data.RDS")
-store_file_in_synapse(
-  "incoming_data.RDS",
-  "syn25733565"
 )
