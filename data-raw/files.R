@@ -25,13 +25,15 @@ dev_files <-
       "projectId",
       "benefactorId",
       "reportMilestone",
-      "createdOn"
+      "createdOn",
+      "type"
     ),
     col_types = readr::cols(
       "consortium" = readr::col_character(),
       "reportMilestone" = readr::col_integer()
     )
   ) %>%
+  dplyr::filter(type == "file") %>%
   format_date_columns() %>%
   dplyr::select(-c("createdOn")) %>%
   dplyr::inner_join(
