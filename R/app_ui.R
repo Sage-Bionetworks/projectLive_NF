@@ -1,18 +1,25 @@
-#' @import shiny
-#' @import shinydashboard
-#' @import waiter
+library(shiny)
+library(waiter)
 
-app_ui <- function() {
+app_ui <- function(req) {
+  if (!has_auth_code(parseQueryString(req$QUERY_STRING))) {
+    authorization_url = oauth2.0_authorize_url(api, app, scope = scope)
+    return(tags$script(HTML(sprintf("location.replace(\"%s\");",
+                                    authorization_url))))
+  } else {
+    ui_function()
+  }
+}
+
+ui_function <- function(){
   tagList(
-    # Leave this function for adding external resources
     golem_add_external_resources(),
     waiter::use_waiter(),
-  waiter::waiter_show_on_load(html = span(
+    waiter::waiter_show_on_load(html = span(
       style="color:white;",
       waiter::spin_pulsar(),
       h3("logging in...")
     )),
-    #shinythemes::shinytheme("readable"),
     shiny::navbarPage(   
       title = shiny::strong("projectLive"), selected = "About",	
       shiny::tabPanel(
@@ -41,7 +48,8 @@ app_ui <- function() {
         icon = shiny::icon("bar-chart-o")
       ),
       collapsible = TRUE,	inverse = TRUE,
-      windowTitle = "projectLive")
+      windowTitle = "projectLive"
+    )
   )
 }
 
@@ -61,5 +69,5 @@ golem_add_external_resources <- function(){
     # If you have a custom.css in the inst/app/www
     # Or for example, you can add shinyalert::useShinyalert() here
     tags$link(rel="stylesheet", type="text/css", href="www/custom.css")
-    )
+  )
 }
