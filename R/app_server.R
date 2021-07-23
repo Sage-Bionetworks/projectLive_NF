@@ -3,11 +3,9 @@ require(rlang)
 
 app_server <- shinyServer(function(input, output, session) {
   
-  url_parameters <- shiny::parseQueryString(
-    shiny::isolate(session$clientData$url_search)
+  access_token = get_oauth_access_token(
+    oauth_list = OAUTH_LIST, session = session
   )
-  
-  access_token = get_oauth_access_token(url_parameters)
   
   syn <- synapseclient$Synapse()
   syn$login(authToken = access_token)
