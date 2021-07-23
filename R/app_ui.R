@@ -4,17 +4,9 @@ app_ui <- function(req) {
 
 oauth_ui <- function(req, ui_function) {
   if (!has_auth_code(shiny::parseQueryString(req$QUERY_STRING))) {
-    
-    script_html <- create_oauth_url_script_html(
-      endpoint = OAUTH_LIST$endpoint, 
-      app      = OAUTH_LIST$app, 
-      scope    = OAUTH_LIST$scope
-    )
-    
-    return(script_html)
-    
+    return(create_oauth_url_script_html(OAUTH_LIST))
   } else {
-    ui_function()
+    return(ui_function())
   }
 }
 
