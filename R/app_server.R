@@ -1,42 +1,14 @@
 require(magrittr)
 require(rlang)
 
-synapseclient <- reticulate::import('synapseclient')
-
 app_server <- shinyServer(function(input, output, session) {
   
-  params <- shiny::parseQueryString(
+  url_parameters <- shiny::parseQueryString(
     shiny::isolate(session$clientData$url_search)
   )
   
-  if (!has_auth_code(params)) {
-    return()
-  }
+  access_token = get_oauth_access_token(url_parameters)
   
-  redirect_url <- paste0(
-    api$access, 
-    '?',
-    'redirect_uri=',
-    APP_URL, 
-    '&grant_type=',
-    'authorization_code',
-    '&code=', params$code
-  )
-  
-  # get the access_token and userinfo token
-  req <- httr::POST(
-    redirect_url,
-    encode = "form",
-    body = '',
-    httr::authenticate(app$key, app$secret, type = "basic"),
-    config = list()
-  )
-  
-  # Stop the code if anything other than 2XX status code is returned
-  httr::stop_for_status(req, task = "get an access token")
-  token_response <- httr::content(req, type = NULL)
-  access_token <- token_response$access_token
-  # Create Synapse connection
   syn <- synapseclient$Synapse()
   syn$login(authToken = access_token)
   

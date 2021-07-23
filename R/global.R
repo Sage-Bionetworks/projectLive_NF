@@ -1,11 +1,23 @@
-if (interactive()) {
-  # testing url
-  options(shiny.port = 8100)
-  APP_URL <- "http://127.0.0.1:8100"
-} else {
-  # TODO: This has to be updated per application
-  APP_URL <- "https://servername/path-to-app"
+# functions ----
+
+get_oauth_config <- function(config_file = "inst/oauth_config.yaml"){
+  oauth_config = yaml::yaml.load_file(config_file)
+  
+  client_id     <- toString(oauth_config$client_id)
+  client_secret <- oauth_config$client_secret
+  app_url       <- oauth_config$app_url
+  
+  if (is.null(client_id)) stop("config.yaml is missing client_id")
+  if (is.null(client_secret)) stop("config.yaml is missing client_secret")
+  if (is.null(app_url)) stop("config.yaml is missing app_url")
+  
+  return(list(
+    "client_id" = client_id,
+    "client_secret" = client_secret,
+    "app_url" = app_url
+  ))
 }
+
 
 has_auth_code <- function(params) {
   # params is a list object containing the parsed URL parameters. Return TRUE if
@@ -15,46 +27,74 @@ has_auth_code <- function(params) {
   return(!is.null(params$code))
 }
 
-oauth_client = yaml::yaml.load_file("inst/oauth_config.yaml")
 
-client_id <- toString(oauth_client$client_id)
-client_secret <- oauth_client$client_secret
-if (is.null(client_id)) stop("config.yaml is missing client_id")
-if (is.null(client_secret)) stop("config.yaml is missing client_secret")
+get_synapse_claims_list <- function(){
+  # These are the user info details ('claims') requested from Synapse:
+  return(
+    list(
+      family_name=NULL, 
+      given_name=NULL,
+      email=NULL,
+      email_verified=NULL,
+      userid=NULL,
+      orcid=NULL,
+      is_certified=NULL,
+      is_validated=NULL,
+      validated_given_name=NULL,
+      validated_family_name=NULL,
+      validated_location=NULL,
+      validated_email=NULL,
+      validated_company=NULL,
+      validated_at=NULL,
+      validated_orcid=NULL,
+      company=NULL
+    )
+  )
+}
 
-app <- httr::oauth_app(
-  "shinysynapse",
-  key = client_id,
-  secret = client_secret, 
-  redirect_uri = APP_URL
-)
+get_synapse_claims_json <- function(){
+  rjson::toJSON(list(
+    id_token = get_synapse_claims_list(), 
+    userinfo = get_synapse_claims_list()
+  ))
+}
 
-# These are the user info details ('claims') requested from Synapse:
-claims=list(
-  family_name=NULL, 
-  given_name=NULL,
-  email=NULL,
-  email_verified=NULL,
-  userid=NULL,
-  orcid=NULL,
-  is_certified=NULL,
-  is_validated=NULL,
-  validated_given_name=NULL,
-  validated_family_name=NULL,
-  validated_location=NULL,
-  validated_email=NULL,
-  validated_company=NULL,
-  validated_at=NULL,
-  validated_orcid=NULL,
-  company=NULL
-)
+create_oauth_app <- function(oauth_config){
+  httr::oauth_app(
+    "shinysynapse",
+    key = oauth_config$client_id,
+    secret = oauth_config$client_secret, 
+    redirect_uri = oauth_config$app_url
+  )
+}
 
-claimsParam <- rjson::toJSON(list(id_token = claims, userinfo = claims))
+create_oauth_endpoint <- function(){
+  httr::oauth_endpoint(
+    authorize = stringr::str_c(
+      "https://signin.synapse.org?claims=", 
+      get_synapse_claims_json()
+    ),
+    access = "https://repo-prod.prod.sagebase.org/auth/v1/oauth2/token"
+  )
+}
 
-api <- httr::oauth_endpoint(
-  authorize = paste0("https://signin.synapse.org?claims=", claimsParam),
-  access = "https://repo-prod.prod.sagebase.org/auth/v1/oauth2/token"
-)
+get_scopes <- function(){
+  # The 'openid' scope is required by the protocol for retrieving user information.
+  return("openid view download modify")
+}
 
-# The 'openid' scope is required by the protocol for retrieving user information.
-scope <- "openid view download modify"
+#----
+
+if (interactive()) {
+  options(shiny.port = 8100)
+} 
+
+OAUTH_CONFIG = get_oauth_config()
+
+APP_URL = OAUTH_CONFIG$app_url
+
+OAUTH_APP <- create_oauth_app(OAUTH_CONFIG)
+
+OAUTH_ENDPOINT <- create_oauth_endpoint()
+
+SCOPE <- get_scopes()
