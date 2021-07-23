@@ -1,8 +1,3 @@
-library(shiny)
-library(httr)
-library(rjson)
-library(yaml)
-
 if (interactive()) {
   # testing url
   options(shiny.port = 8100)
@@ -20,17 +15,19 @@ has_auth_code <- function(params) {
   return(!is.null(params$code))
 }
 
-oauth_client = yaml.load_file("inst/oauth_config.yaml")
+oauth_client = yaml::yaml.load_file("inst/oauth_config.yaml")
 
 client_id <- toString(oauth_client$client_id)
 client_secret <- oauth_client$client_secret
 if (is.null(client_id)) stop("config.yaml is missing client_id")
 if (is.null(client_secret)) stop("config.yaml is missing client_secret")
 
-app <- oauth_app("shinysynapse",
-                 key = client_id,
-                 secret = client_secret, 
-                 redirect_uri = APP_URL)
+app <- httr::oauth_app(
+  "shinysynapse",
+  key = client_id,
+  secret = client_secret, 
+  redirect_uri = APP_URL
+)
 
 # These are the user info details ('claims') requested from Synapse:
 claims=list(
@@ -52,10 +49,11 @@ claims=list(
   company=NULL
 )
 
-claimsParam<-toJSON(list(id_token = claims, userinfo = claims))
-api <- oauth_endpoint(
-  authorize=paste0("https://signin.synapse.org?claims=", claimsParam),
-  access="https://repo-prod.prod.sagebase.org/auth/v1/oauth2/token"
+claimsParam <- rjson::toJSON(list(id_token = claims, userinfo = claims))
+
+api <- httr::oauth_endpoint(
+  authorize = paste0("https://signin.synapse.org?claims=", claimsParam),
+  access = "https://repo-prod.prod.sagebase.org/auth/v1/oauth2/token"
 )
 
 # The 'openid' scope is required by the protocol for retrieving user information.
