@@ -1,17 +1,17 @@
 app_ui <- function(req) {
+  oauth_ui(req, ui_function)
+}
+
+oauth_ui <- function(req, ui_function) {
   if (!has_auth_code(shiny::parseQueryString(req$QUERY_STRING))) {
     
-    authorization_url = httr::oauth2.0_authorize_url(
-      endpoint = OAUTH_ENDPOINT, 
-      app      = OAUTH_APP, 
-      scope    = SCOPE
+    script_html <- create_oauth_url_script_html(
+      endpoint = OAUTH_LIST$endpoint, 
+      app      = OAUTH_LIST$app, 
+      scope    = OAUTH_LIST$scope
     )
     
-    return(
-      tags$script(HTML(sprintf(
-        "location.replace(\"%s\");",
-        authorization_url)))
-    )
+    return(script_html)
     
   } else {
     ui_function()

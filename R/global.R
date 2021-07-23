@@ -52,11 +52,8 @@ get_synapse_claims_list <- function(){
   )
 }
 
-get_synapse_claims_json <- function(){
-  rjson::toJSON(list(
-    id_token = get_synapse_claims_list(), 
-    userinfo = get_synapse_claims_list()
-  ))
+get_synapse_claims_json <- function(claims_list){
+  rjson::toJSON(list(id_token = claims_list,  userinfo = claims_list))
 }
 
 create_oauth_app <- function(oauth_config){
@@ -68,19 +65,31 @@ create_oauth_app <- function(oauth_config){
   )
 }
 
-create_oauth_endpoint <- function(){
+create_oauth_endpoint <- function(claims_list){
   httr::oauth_endpoint(
     authorize = stringr::str_c(
       "https://signin.synapse.org?claims=", 
-      get_synapse_claims_json()
+      get_synapse_claims_json(claims_list)
     ),
     access = "https://repo-prod.prod.sagebase.org/auth/v1/oauth2/token"
   )
 }
 
-get_scopes <- function(){
-  # The 'openid' scope is required by the protocol for retrieving user information.
-  return("openid view download modify")
+get_oauth_list <- function(
+  config_file = "inst/oauth_config.yaml", 
+  config      = NULL,
+  scope       = "openid view download modify",
+  claims_list = get_synapse_claims_list()
+){
+  if(is.null(config)){
+    config   <- get_oauth_config(config_file)
+  }
+  result <- list(
+    "url"      = config$app_url,
+    "app"      = create_oauth_app(config),
+    "endpoint" = create_oauth_endpoint(claims_list),
+    "scope"    = scope
+  )
 }
 
 #----
@@ -89,12 +98,4 @@ if (interactive()) {
   options(shiny.port = 8100)
 } 
 
-OAUTH_CONFIG = get_oauth_config()
-
-APP_URL = OAUTH_CONFIG$app_url
-
-OAUTH_APP <- create_oauth_app(OAUTH_CONFIG)
-
-OAUTH_ENDPOINT <- create_oauth_endpoint()
-
-SCOPE <- get_scopes()
+OAUTH_LIST <- get_oauth_list()
