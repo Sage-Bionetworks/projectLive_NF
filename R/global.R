@@ -20,7 +20,7 @@ has_auth_code <- function(params) {
   return(!is.null(params$code))
 }
 
-oauth_client = yaml.load_file("config.yaml")
+oauth_client = yaml.load_file("inst/oauth_config.yaml")
 
 client_id <- toString(oauth_client$client_id)
 client_secret <- oauth_client$client_secret
