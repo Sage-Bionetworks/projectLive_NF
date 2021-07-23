@@ -1,41 +1,49 @@
+require(magrittr)
+require(rlang)
 
-library(shiny)
-library(reticulate)
-library(waiter)
-
-# Don't necessarily have to set `RETICULATE_PYTHON` env variable
-# reticulate::use_condaenv("synapse")
-synapseclient <- import('synapseclient')
+synapseclient <- reticulate::import('synapseclient')
 
 app_server <- shinyServer(function(input, output, session) {
   
-  params <- parseQueryString(isolate(session$clientData$url_search))
+  params <- shiny::parseQueryString(
+    shiny::isolate(session$clientData$url_search)
+  )
+  
   if (!has_auth_code(params)) {
     return()
   }
-  redirect_url <- paste0(api$access, '?', 'redirect_uri=',
-                         APP_URL, '&grant_type=',
-                         'authorization_code' ,'&code=', params$code)
+  
+  redirect_url <- paste0(
+    api$access, 
+    '?',
+    'redirect_uri=',
+    APP_URL, 
+    '&grant_type=',
+    'authorization_code',
+    '&code=', params$code
+  )
+  
   # get the access_token and userinfo token
-  req <- POST(redirect_url,
-              encode = "form",
-              body = '',
-              authenticate(app$key, app$secret, type = "basic"),
-              config = list())
+  req <- httr::POST(
+    redirect_url,
+    encode = "form",
+    body = '',
+    httr::authenticate(app$key, app$secret, type = "basic"),
+    config = list()
+  )
+  
   # Stop the code if anything other than 2XX status code is returned
-  stop_for_status(req, task = "get an access token")
-  token_response <- content(req, type = NULL)
+  httr::stop_for_status(req, task = "get an access token")
+  token_response <- httr::content(req, type = NULL)
   access_token <- token_response$access_token
   # Create Synapse connection
   syn <- synapseclient$Synapse()
-  syn$login(authToken=access_token)
+  syn$login(authToken = access_token)
   
   output$title <- shiny::renderUI({
     shiny::titlePanel(sprintf("Welcome, %s", syn$getUserProfile()$userName))
   })
-  
-  require(magrittr)
-  require(rlang)
+
   
   app_config <- jsonlite::read_json("inst/app_config.json")
   #data_config <- jsonlite::read_json("inst/data_config.json")

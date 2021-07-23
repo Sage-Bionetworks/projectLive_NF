@@ -1,24 +1,24 @@
-library(shiny)
-library(waiter)
-
 app_ui <- function(req) {
-  if (!has_auth_code(parseQueryString(req$QUERY_STRING))) {
-    authorization_url = oauth2.0_authorize_url(api, app, scope = scope)
-    return(tags$script(HTML(sprintf("location.replace(\"%s\");",
-                                    authorization_url))))
+  if (!has_auth_code(shiny::parseQueryString(req$QUERY_STRING))) {
+    authorization_url = httr::oauth2.0_authorize_url(api, app, scope = scope)
+    return(
+      tags$script(HTML(sprintf(
+        "location.replace(\"%s\");",
+        authorization_url)))
+    )
   } else {
     ui_function()
   }
 }
 
 ui_function <- function(){
-  tagList(
+  shiny::tagList(
     golem_add_external_resources(),
     waiter::use_waiter(),
     waiter::waiter_show_on_load(html = span(
       style="color:white;",
       waiter::spin_pulsar(),
-      h3("logging in...")
+      shiny::h3("logging in...")
     )),
     shiny::navbarPage(   
       title = shiny::strong("projectLive"), selected = "About",	
@@ -64,7 +64,7 @@ golem_add_external_resources <- function(){
     golem::activate_js(),
     golem::favicon(),
     # add the next line to enable collection of synapse session token from browser cookie
-    includeScript(system.file("inst/app/www/readCookie.js", package = "projectLive")), 
+    shiny::includeScript(system.file("inst/app/www/readCookie.js", package = "projectLive")), 
     # Add here all the external resources
     # If you have a custom.css in the inst/app/www
     # Or for example, you can add shinyalert::useShinyalert() here
