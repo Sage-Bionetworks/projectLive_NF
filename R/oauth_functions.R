@@ -34,9 +34,13 @@ get_oauth_access_token <- function(oauth_list, session){
   access_token <- token_response$access_token
 }
 
-create_oauth_url_script_html <- function(endpoint, app, scope){
+create_oauth_url_script_html <- function(oauth_list){
   
-  authorization_url = httr::oauth2.0_authorize_url(endpoint, app, scope = scope)
+  authorization_url = httr::oauth2.0_authorize_url(
+    endpoint = oauth_list$endpoint, 
+    app      = oauth_list$app, 
+    scope    = oauth_list$scope
+  )
 
   script <- shiny::tags$script(shiny::HTML(sprintf(
     "location.replace(\"%s\");", authorization_url
