@@ -124,7 +124,7 @@ mod_about_page_server <- function(input, output, session, syn, data_config){
       purrr::pluck("data_files") %>%
       purrr::map_chr("synapse_id") %>%
       purrr::map(read_rds_file_from_synapse, syn) %>%
-      purrr::map(format_date_columns)
+      purrr::map(projectlive.modules::format_date_columns)
   })
 
   filtered_tables <- shiny::reactive({
