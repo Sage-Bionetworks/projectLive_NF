@@ -1,13 +1,5 @@
 app_ui <- function(req) {
-  oauth_ui(req, ui_function)
-}
-
-oauth_ui <- function(req, ui_function) {
-  if (!has_auth_code(shiny::parseQueryString(req$QUERY_STRING))) {
-    return(create_oauth_url_script_html(OAUTH_LIST))
-  } else {
-    return(ui_function())
-  }
+  projectlive.modules::oauth_ui(req, ui_function)
 }
 
 ui_function <- function(){

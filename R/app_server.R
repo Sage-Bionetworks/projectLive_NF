@@ -3,7 +3,7 @@ require(rlang)
 
 app_server <- shinyServer(function(input, output, session) {
   
-  access_token = get_oauth_access_token(
+  access_token = projectlive.modules::get_oauth_access_token(
     oauth_list = OAUTH_LIST, session = session
   )
   
