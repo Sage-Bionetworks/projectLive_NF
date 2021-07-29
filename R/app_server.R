@@ -9,7 +9,7 @@ app_server <- shinyServer(function(input, output, session) {
   
   syn <- synapseclient$Synapse()
   syn$login(authToken = access_token)
-  
+
   output$title <- shiny::renderUI({
     shiny::titlePanel(sprintf("Welcome, %s", syn$getUserProfile()$userName))
   })
@@ -18,10 +18,10 @@ app_server <- shinyServer(function(input, output, session) {
     id = "synapse_module",
     syn = syn,
     config = shiny::reactive(
-      jsonlite::read_json("inst/dev_synapse_module.json")
+      jsonlite::read_json("inst/synapse_module.json")
     )
   )
-  
+
   projectlive.modules::summary_snapshot_module_server(
     id = "summary_snapshot_ui_1",
     data = data,
