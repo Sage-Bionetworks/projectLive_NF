@@ -13,17 +13,13 @@ app_server <- shinyServer(function(input, output, session) {
   output$title <- shiny::renderUI({
     shiny::titlePanel(sprintf("Welcome, %s", syn$getUserProfile()$userName))
   })
-
   
-  app_config <- jsonlite::read_json("inst/app_config.json")
-  #data_config <- jsonlite::read_json("inst/data_config.json")
-  data_config <- jsonlite::read_json("inst/dev_data_config.json")
-  
-  data <- shiny::callModule(
-    mod_about_page_server, 
-    "about_page_ui_1", 
-    syn, 
-    data_config
+  data <- projectlive.modules::synapse_module_server2(
+    id = "synapse_module",
+    syn = syn,
+    config = shiny::reactive(
+      jsonlite::read_json("inst/dev_synapse_module.json")
+    )
   )
   
   projectlive.modules::summary_snapshot_module_server(
@@ -50,16 +46,12 @@ app_server <- shinyServer(function(input, output, session) {
     )
   )
   
-  purrr::walk2(
-    list(
-      mod_new_submissions_server
-    ),
-    list(
-      "new_submissions_ui_1"
-    ),
-    shiny::callModule,
-    data,
-    app_config
-  ) 
+  projectlive.modules::new_submissions_module_server(
+    id = "new_submissions_module",
+    data = data,
+    config = shiny::reactive(
+      jsonlite::read_json("inst/new_submissions_module.json")
+    )
+  )
   
 })
