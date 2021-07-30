@@ -697,10 +697,10 @@
     },
     "pillar": {
       "Package": "pillar",
-      "Version": "1.6.1",
+      "Version": "1.6.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "8672ae02bd20f6479bce2d06c7ff1401"
+      "Hash": "43f228eb4b49093d1c8a5c93cae9efe9"
     },
     "pkgbuild": {
       "Package": "pkgbuild",
@@ -774,16 +774,16 @@
     },
     "projectlive.modules": {
       "Package": "projectlive.modules",
-      "Version": "0.6.1",
+      "Version": "0.7.0",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteUsername": "Sage-Bionetworks",
       "RemoteRepo": "projectlive.modules",
       "RemoteRef": "main",
-      "RemoteSha": "11f461fe64811bd5c05b1aee51b132750fdcbeec",
+      "RemoteSha": "231f14aa9a4c35a4cad46c851ff05eb07dff3f19",
       "RemoteHost": "api.github.com",
       "Remotes": "Sage-Bionetworks/sagethemes@main",
-      "Hash": "169b16ee8c0d488866a1efbb1eac92cc"
+      "Hash": "d30e4a3355ae27fc3daaf64c6bd9a946"
     },
     "promises": {
       "Package": "promises",
