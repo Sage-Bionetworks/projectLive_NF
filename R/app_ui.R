@@ -1,5 +1,5 @@
 app_ui <- function(req) {
-  projectlive.modules::oauth_ui(req, ui_function)
+  projectlive.modules::oauth_ui(req, ui_function, OAUTH_LIST)
 }
 
 ui_function <- function(){
@@ -15,7 +15,7 @@ ui_function <- function(){
       title = shiny::strong("projectLive"), selected = "About",	
       shiny::tabPanel(
         "About",
-        mod_about_page_ui("about_page_ui_1"),
+        projectlive.modules::synapse_module_ui2("synapse_module"),
         icon = shiny::icon("info-circle")
       ),
       shiny::tabPanel(
@@ -35,7 +35,7 @@ ui_function <- function(){
       ),
       shiny::tabPanel(
         "New Submissions",
-        mod_new_submissions_ui("new_submissions_ui_1"),
+        projectlive.modules::new_submissions_module_ui("new_submissions_module"),
         icon = shiny::icon("bar-chart-o")
       ),
       collapsible = TRUE,	inverse = TRUE,
