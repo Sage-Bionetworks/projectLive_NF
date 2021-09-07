@@ -29,7 +29,6 @@ dev_files <-
       "parentId",
       "specimenID",
       "assay",
-      "initiative",
       "dataType",
       "fileFormat",
       "resourceType",
