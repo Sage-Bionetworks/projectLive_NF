@@ -57,6 +57,7 @@ files <-
       "projectId",
       "benefactorId",
       "consortium",
+      "projectReportNumber",
       "reportMilestone",
       "createdOn",
       "type"
@@ -66,6 +67,7 @@ files <-
       "reportMilestone" = readr::col_integer()
     )
   ) %>%
+  dplyr::rename("progressReportNumber" = "projectReportNumber") %>% 
   dplyr::filter(type == "file") %>%
   format_date_columns() %>%
   dplyr::select(-c("createdOn")) %>%
@@ -93,6 +95,7 @@ incoming_data <-
     columns = c(
       "fileFormat",
       "date_uploadestimate",
+      "progressReportNumber",
       "reportMilestone",
       "estimatedMinNumSamples",
       "fundingAgency",
