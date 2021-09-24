@@ -57,7 +57,7 @@ files <-
       "projectId",
       "benefactorId",
       "consortium",
-      "projectReportNumber",
+      "progressReportNumber",
       "reportMilestone",
       "createdOn",
       "type"
@@ -67,7 +67,6 @@ files <-
       "reportMilestone" = readr::col_integer()
     )
   ) %>%
-  dplyr::rename("progressReportNumber" = "projectReportNumber") %>% 
   dplyr::filter(type == "file") %>%
   format_date_columns() %>%
   dplyr::select(-c("createdOn")) %>%
