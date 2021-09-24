@@ -58,13 +58,12 @@ files <-
       "benefactorId",
       "consortium",
       "progressReportNumber",
-      "reportMilestone",
       "createdOn",
       "type"
     ),
     col_types = readr::cols(
       "consortium" = readr::col_character(),
-      "reportMilestone" = readr::col_integer()
+      "progressReportNumber" = readr::col_integer()
     )
   ) %>%
   dplyr::filter(type == "file") %>%
@@ -79,7 +78,8 @@ files <-
       "studyId"
     ),
     by = c("projectId" = "studyId")
-  )
+  ) %>% 
+  dplyr::mutate("reportMilestone" = .data$progressReportNumber)
 
 saveRDS(files, "files.RDS")
 store_file_in_synapse(syn, "files.RDS", dev_folder)
@@ -95,7 +95,6 @@ incoming_data <-
       "fileFormat",
       "date_uploadestimate",
       "progressReportNumber",
-      "reportMilestone",
       "estimatedMinNumSamples",
       "fundingAgency",
       "projectSynID",
@@ -103,7 +102,7 @@ incoming_data <-
     ),
     col_types = readr::cols(
       "estimatedMinNumSamples" = readr::col_integer(),
-      "reportMilestone" = readr::col_integer()
+      "progressReportNumber" = readr::col_integer()
     )
   ) %>%
   dplyr::left_join(
@@ -115,13 +114,13 @@ incoming_data <-
   ) %>%
   dplyr::select(-"projectSynID") %>%
   dplyr::filter(
-    !is.na(.data$date_uploadestimate) | !is.na(.data$reportMilestone)
+    !is.na(.data$date_uploadestimate) | !is.na(.data$progressReportNumber)
   ) %>%
   tidyr::unnest("fileFormat") %>%
   dplyr::group_by(
     .data$fileFormat,
     .data$date_uploadestimate,
-    .data$reportMilestone,
+    .data$progressReportNumber,
     .data$fundingAgency,
     .data$studyName,
     .data$dataType
@@ -133,7 +132,8 @@ incoming_data <-
       is.na(.data$estimatedMinNumSamples),
       0L,
       .data$estimatedMinNumSamples
-    )
+    ),
+    "reportMilestone" = .data$progressReportNumber
   )
 
 saveRDS(incoming_data, "incoming_data.RDS")
