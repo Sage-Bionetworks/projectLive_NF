@@ -141,7 +141,13 @@ store_file_in_synapse(syn, "incoming_data.RDS", live_folder)
 store_file_in_synapse(syn, "incoming_data.RDS", dev_folder)
 
 # publications ----
-pubs <- get_synapse_tbl(syn, "syn16857542")
+pubs <- 
+  get_synapse_tbl(syn, "syn16857542") %>% 
+  dplyr::mutate(
+    "year" = forcats::as_factor(.data$year),
+    "year" = forcats::fct_expand(.data$year, "2015"),
+    "year" = forcats::fct_relevel(.data$year, sort)
+  )
 saveRDS(pubs, "pubs.RDS")
 store_file_in_synapse(syn, "pubs.RDS", live_folder)
 store_file_in_synapse(syn, "pubs.RDS", dev_folder)
