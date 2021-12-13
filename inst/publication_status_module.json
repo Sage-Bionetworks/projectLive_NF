@@ -2,10 +2,6 @@
   "header_text": "You are now viewing studies moderated by {data()$selected_group}. Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot.",
   "publication_status": {
       "table": "publications",
-      "count_column": {
-        "name": "Count",
-        "complete_columns": ["year"]
-      },
       "columns": [
         {
           "name": "year",
@@ -19,7 +15,6 @@
       ],
       "plot": {
         "x": "Year",
-        "y": "Count",
         "fill": "Study Name",
         "x_axis_text": {
           "size": 10
@@ -28,7 +23,7 @@
           "size": 10
         }
       },
-      "tooltips": ["Count", "fill"]
+      "tooltips": ["count", "fill"]
     },
   "publication_disease": {
       "table": "publications",

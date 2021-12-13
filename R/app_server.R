@@ -3,25 +3,29 @@ require(rlang)
 
 app_server <- shinyServer(function(input, output, session) {
   
-  access_token = projectlive.modules::get_oauth_access_token(
+  access_token = get_oauth_access_token(
     oauth_list = OAUTH_LIST, session = session
   )
   
   syn <- synapseclient$Synapse()
   syn$login(authToken = access_token)
-
+  
   output$title <- shiny::renderUI({
     shiny::titlePanel(sprintf("Welcome, %s", syn$getUserProfile()$userName))
   })
-  
-  data <- projectlive.modules::synapse_module_server2(
-    id = "synapse_module",
-    syn = syn,
-    config = shiny::reactive(
-      jsonlite::read_json("inst/synapse_module.json")
-    )
-  )
 
+  
+  app_config <- jsonlite::read_json("inst/app_config.json")
+  #data_config <- jsonlite::read_json("inst/data_config.json")
+  data_config <- jsonlite::read_json("inst/dev_data_config.json")
+  
+  data <- shiny::callModule(
+    mod_about_page_server, 
+    "about_page_ui_1", 
+    syn, 
+    data_config
+  )
+  
   projectlive.modules::summary_snapshot_module_server(
     id = "summary_snapshot_ui_1",
     data = data,
@@ -46,12 +50,16 @@ app_server <- shinyServer(function(input, output, session) {
     )
   )
   
-  projectlive.modules::new_submissions_module_server(
-    id = "new_submissions_module",
-    data = data,
-    config = shiny::reactive(
-      jsonlite::read_json("inst/new_submissions_module.json")
-    )
-  )
+  purrr::walk2(
+    list(
+      mod_new_submissions_server
+    ),
+    list(
+      "new_submissions_ui_1"
+    ),
+    shiny::callModule,
+    data,
+    app_config
+  ) 
   
 })
