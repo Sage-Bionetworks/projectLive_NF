@@ -222,6 +222,10 @@
   },
   "publication_status_plot": {
     "table": "publications",
+    "count_column": {
+      "name": "Count",
+      "complete_columns": ["year"]
+    },
     "filter_column": "studyName",
     "unnest_columns" : "studyName",
     "columns": [
@@ -236,10 +240,11 @@
     ],
     "plot": {
       "x": "Year",
+      "y": "Count",
       "fill": "Study Name"
     },
     "empty_table_message": "This study has no associated publications yet.",
-    "tooltips": ["count", "fill"]
+    "tooltips": ["Count", "fill"]
   },
   "milestone_reporting_plot": {
     "files_table": {
@@ -272,8 +277,8 @@
           "display_name": "Date Created"
         },
         {
-          "name": "reportMilestone",
-          "display_name": "Milestone Number"
+          "name": "progressReportNumber",
+          "display_name": "Progress Report Number"
         }
       ]
     },
@@ -306,8 +311,8 @@
           "display_name": "Designated Upload Date"
         },
         {
-          "name": "reportMilestone",
-          "display_name": "Milestone Number"
+          "name": "progressReportNumber",
+          "display_name": "Progress Report Number"
         },
         {
           "name": "estimatedMinNumSamples",
@@ -316,7 +321,7 @@
       ]
     },
     "join_columns": ["Data Type", "File Format"],
-    "milestone_column": "Milestone Number",
+    "milestone_column": "Progress Report Number",
     "date_created_column": "Date Created",
     "date_estimate_column": "Designated Upload Date",
     "expected_files_column": "Expected",
