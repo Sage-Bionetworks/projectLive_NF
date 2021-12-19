@@ -30,8 +30,10 @@ jobs:
 
 #      - uses: r-lib/actions/setup-renv@v1
 
-      - name: Install rsconnect
-        run: install.packages("rsconnect")
+      - name: Install R packages
+        run: |
+          install.packages(c("rsconnect", "devtools"))
+          devtools::install_github("Sage-Bionetworks/projectlive.modules")
         shell: Rscript {0}
 
       - name: Authorize and deploy app
