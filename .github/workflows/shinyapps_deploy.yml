@@ -13,6 +13,10 @@ on:
 jobs:
   shiny-deploy:
     runs-on: ubuntu-latest
+     env:
+      # This should not be necessary for installing from public repo's however install_github() fails without it.
+      GITHUB_PAT: ${{ secrets.REPO_PAT }}
+ 
     steps:
  
       - name: Install System Dependencies
@@ -22,16 +26,12 @@ jobs:
  
       - uses: actions/checkout@v2
 
-#      - uses: r-lib/actions/setup-pandoc@v1
-
-#      - uses: r-lib/actions/setup-r@v1
-#        with:
-#          use-public-rspm: true
-
-#      - uses: r-lib/actions/setup-renv@v1
-
       - name: Install R packages
         run: |
+          # The binary package distributions from R Studio dramatically speed up installation time
+          # For Ubuntu 18.04 (Bionic) it's https://packagemanager.rstudio.com/all/__linux__/bionic/latest
+          # For Ubuntu 20.04 (Focal)  it's https://packagemanager.rstudio.com/all/__linux__/focal/latest 
+          options(repos = c(REPO_NAME = "https://packagemanager.rstudio.com/all/__linux__/bionic/latest", getOption("repos")))
           install.packages(c("rsconnect", "devtools"))
           devtools::install_github("Sage-Bionetworks/projectlive.modules")
         shell: Rscript {0}
