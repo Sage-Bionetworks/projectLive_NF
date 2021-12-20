@@ -47,6 +47,9 @@ jobs:
           if (!startsWith(branch, "release")) {
              appName = paste(appName, "staging", sep="-")
           }
+          rsConnectUser <-"${{ secrets.RSCONNECT_USER }}"
+          rsConnectToken <- "${{ secrets.RSCONNECT_TOKEN }}"
+          rsConnectSecret <- "${{ secrets.RSCONNECT_SECRET }}"
  
           # create config file
           config <- "CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}"
@@ -60,6 +63,6 @@ jobs:
              finally=close(configFileConn)
           )
  
-          rsconnect::setAccountInfo("${{ secrets.RSCONNECT_USER }}", "${{ secrets.RSCONNECT_TOKEN }}", "${{ secrets.RSCONNECT_SECRET }}")
+          rsconnect::setAccountInfo(rsConnectUser, rsConnectToken, rsConnectSecret)
           rsconnect::deployApp(appName = appName)
         shell: Rscript {0}
