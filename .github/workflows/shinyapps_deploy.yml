@@ -38,7 +38,7 @@ jobs:
       - name: Install Python Dependencies
         shell: bash
         run: |
-          source "${{ env.CONDA_ENV_NAME }}"/bin/activate
+          source "${{ env.VENV_NAME }}"/bin/activate
           pip3 install synapseclient
         
       - name: Install R packages
