@@ -48,10 +48,6 @@ jobs:
           devtools::install_github("Sage-Bionetworks/projectlive.modules")
         shell: Rscript {0}
 
-      - name: Ensure executability in venv
-        shell: bash
-        run: chmod -R +x "${{ env.VENV_NAME }}"
-  
       - name: Authorize and deploy app
         run: |
           branch<-Sys.getenv("GITHUB_REF_NAME")
