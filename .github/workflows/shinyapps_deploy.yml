@@ -14,6 +14,8 @@ jobs:
   shiny-deploy:
     runs-on: ubuntu-latest
     env:
+      # Note, this name is referred to in 'global.R'
+      VENV_NAME: virtual_env
       # This should not be necessary for installing from public repo's however install_github() fails without it.
       GITHUB_PAT: ${{ secrets.REPO_PAT }}
  
@@ -23,10 +25,17 @@ jobs:
         run: |
           sudo apt-get update
           # need libicui18n
-          sudo apt-get install -y libcurl4-openssl-dev
+          sudo apt-get install -y pip python3.8-venv libcurl4-openssl-dev
  
       - uses: actions/checkout@v2
 
+      - name: Create and Activate Python Virtual Environment
+        shell: bash
+        run: |
+          python3 -m venv "${{ env.CONDA_ENV_NAME }}"
+          chmod 755 "${{ env.CONDA_ENV_NAME }}"/bin/activate
+          source "${{ env.CONDA_ENV_NAME }}"/bin/activate
+        
       - name: Install R packages
         run: |
           # The binary package distributions from R Studio dramatically speed up installation time
