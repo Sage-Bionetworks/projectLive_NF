@@ -1,0 +1,80 @@
+# Workflow derived from https://github.com/r-lib/actions/tree/master/examples
+# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+
+name: shiny-deploy
+
+on:
+  push:
+    branches:
+      - IT-828
+      - master
+      - release*
+
+jobs:
+  shiny-deploy:
+    runs-on: ubuntu-latest
+    env:
+      # Note, this name is referred to in 'global.R'
+      VENV_NAME: virtual_env
+      # This should not be necessary for installing from public repo's however install_github() fails without it.
+      GITHUB_PAT: ${{ secrets.REPO_PAT }}
+ 
+    steps:
+ 
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pip python3.8-venv libcurl4-openssl-dev
+ 
+      - uses: actions/checkout@v2
+
+      - name: Create and Activate Python Virtual Environment
+        shell: bash
+        run: |
+          python3 -m venv "${{ env.VENV_NAME }}"
+          chmod 755 "${{ env.VENV_NAME }}"/bin/activate
+          source "${{ env.VENV_NAME }}"/bin/activate
+        
+      - name: Install Python Dependencies
+        shell: bash
+        run: |
+          source "${{ env.VENV_NAME }}"/bin/activate
+          pip3 install synapseclient
+        
+      - name: Install R packages
+        run: |
+          # The binary package distributions from R Studio dramatically speed up installation time
+          options(repos = c(REPO_NAME = "https://packagemanager.rstudio.com/all/__linux__/focal/latest", 
+             getOption("repos")))
+          install.packages(c("assertthat", "attempt", "config", "dockerfiler", "golem", 
+             "markdown", "parsedate", "rematch", "rhub", "uuid", "rsconnect", "devtools", "wesanderson"))
+          devtools::install_github("Sage-Bionetworks/projectlive.modules")
+        shell: Rscript {0}
+
+      - name: Authorize and deploy app
+        run: |
+          branch<-Sys.getenv("GITHUB_REF_NAME")
+          repo<-Sys.getenv("GITHUB_REPOSITORY")
+          appName<-strsplit(repo, "/")[[1]][2]
+          if (!startsWith(branch, "release")) {
+             appName = paste(appName, "staging", sep="-")
+          }
+          rsConnectUser <-"${{ secrets.RSCONNECT_USER }}"
+          rsConnectToken <- "${{ secrets.RSCONNECT_TOKEN }}"
+          rsConnectSecret <- "${{ secrets.RSCONNECT_SECRET }}"
+ 
+          # create config file
+          config <- "client_id: ${{ secrets.OAUTH_CLIENT_ID }}"
+          config <- c(config, "client_secret: ${{ secrets.OAUTH_CLIENT_SECRET }}")
+          appUrl<- sprintf("https://%s.shinyapps.io/%s", rsConnectUser, appName)
+          config <- c(config, sprintf("app_url: %s", appUrl))
+         
+          configFileConn<-file("oauth_config.yaml")
+          tryCatch(
+             writeLines(config, configFileConn),
+             finally=close(configFileConn)
+          )
+ 
+          rsconnect::setAccountInfo(rsConnectUser, rsConnectToken, rsConnectSecret)
+          rsconnect::deployApp(appName = appName)
+        shell: Rscript {0}
