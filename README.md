@@ -1,6 +1,9 @@
 # projectLive
 Track the impact of our funding partners in real time
 
+## Release on Shinyapps.io
+`release-1.0` : This refers to version 2.0 of the application as tracked in NF progress reports
+
 ## Shiny app configuration:
 There are two editions of the front end:
 
