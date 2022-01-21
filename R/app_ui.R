@@ -59,6 +59,7 @@ golem_add_external_resources <- function(){
     # Add here all the external resources
     # If you have a custom.css in the inst/app/www
     # Or for example, you can add shinyalert::useShinyalert() here
-    tags$link(rel="stylesheet", type="text/css", href="www/custom.css")
+    tags$link(rel="stylesheet", type="text/css", href="www/custom.css"),
+    tags$script(htmlwidgets::JS("setTimeout(function(){history.pushState({}, 'ProjectLive NF', window.location.pathname);},2000);"))
   )
 }
