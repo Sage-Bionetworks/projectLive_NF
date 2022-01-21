@@ -112,11 +112,12 @@
     "columns": [
       {
         "name": "studyName",
-        "display_name": "Study Name"
+        "display_name": "Study Name",
       },
       {
         "name": "resourceType",
-        "display_name": "Resource Type"
+        "display_name": "Resource Type",
+         "recode": {"na_replace": "Pending Annotation"}
       },
       {
         "name": "year",
@@ -148,19 +149,23 @@
       },
       {
         "name": "assay",
-        "display_name": "Assays Used"
+        "display_name": "Assays Used",
+        "recode": {"na_replace": "Pending Annotation"}
       },
       {
         "name": "resourceType",
-        "display_name": "Resource Added"
+        "display_name": "Resource Added",
+        "recode": {"na_replace": "Pending Annotation"}
       },
       {
         "name": "species",
-        "display_name": "Species Used"
+        "display_name": "Species Used",
+        "recode": {"na_replace": "Pending Annotation"}
       },
       {
         "name": "tumorType",
-        "display_name": "Tumor Types Investigated"
+        "display_name": "Tumor Types Investigated",
+        "recode": {"na_replace": "Pending Annotation"}
       }
     ],
     "plot": {
