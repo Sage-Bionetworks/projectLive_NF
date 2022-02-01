@@ -53,10 +53,7 @@ golem_add_external_resources <- function(){
   
   tags$head(
     golem::activate_js(),
-    tags$link(
-      rel = "icon",
-      href="https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://nfdataportal.org&size=256"
-    ),
+    golem::favicon(),
     # add the next line to enable collection of synapse session token from browser cookie
     shiny::includeScript(system.file("inst/app/www/readCookie.js", package = "projectLive")), 
     # Add here all the external resources
