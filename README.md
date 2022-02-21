@@ -5,7 +5,7 @@ Track the impact of our funding partners in real time
 There are two editions of the front end:
 
 https://sagebio.shinyapps.io/projectLive_NF/ (pulling from the master branch)
-https://sagebio.shinyapps.io/projectLive_NF-staging/ (pulling from the develop branch)
+https://sagebio.shinyapps.io/projectLive_NF-staging/ (pulling from the develop branch) [work in progress]
 
 ## Development pipeline:
 1. Please branch off of develop branch
