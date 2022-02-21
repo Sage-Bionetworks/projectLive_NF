@@ -15,6 +15,16 @@ https://sagebio.shinyapps.io/projectLive_NF-staging/ (pulling from the develop b
 Note - as with all Shiny apps, touch restart.txt any time you make changes to make sure they are reflected in your testing.
 
 
+## Setting up the app locally:
+ 
+1. Clone the code on this github branch (develop):
+
+`git clone --single-branch --branch develop https://github.com/SageBionetworks/projectLive_NF`
+
+2. `cd` into the `projectLive_NF` dir
+3. Start RStudio
+4. Restore the development environment using `renv::restore()`
+
 ## Getting the virtual environment working locally
 1. cd into the app directory
 2. python3 -m venv virtual_env
