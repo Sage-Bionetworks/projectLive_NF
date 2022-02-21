@@ -30,4 +30,4 @@ Note - as with all Shiny apps, touch restart.txt any time you make changes to ma
 2. `python3 -m venv virtual_env`
 3. chmod 755 virtual_env/bin/activate
 4. `source virtual_env/bin/activate`
-5. pip3 install synapseclient
+5. `pip3 install synapseclient`
