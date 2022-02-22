@@ -112,7 +112,7 @@
     "columns": [
       {
         "name": "studyName",
-        "display_name": "Study Name",
+        "display_name": "Study Name"
       },
       {
         "name": "resourceType",
