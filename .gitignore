@@ -7,3 +7,5 @@ man/*
 R/use_conda_env.R
 NAMESPACE
 inst/oauth_config.yaml
+oauth_config.yaml
+virtual_env
