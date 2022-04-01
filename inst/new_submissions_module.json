@@ -1,50 +1,83 @@
 {
+  "header_text": "You are now viewing studies moderated by {data()$selected_group}.Please hover your cursor over the plots to view more information. You can also zoom into parts of the plot.",
   "new_files_table": {
     "date_column": "date",
+    "table": "files"
+  },
+  "data_table":{
+    "table": "files",
     "empty_table_message": "No files uploaded within the selected number of days",
-    "table": {
-      "columns": [
-        {
-          "display_name": "File Name",
-          "name": "name",
-          "type": "character"
-        },
-        {
-          "display_name": "Date",
-          "name": "date",
-          "type": "other"
-        },
-        {
-          "display_name": "Study Name",
-          "name": "studyName",
-          "type": "character",
-          "na_replace": "Not Annotated"
-        },
-        {
-          "display_name": "Study Leads",
-          "name": "studyLeads",
-          "type": "list:character",
-          "na_replace": "Not Annotated"
-        },
-        {
-          "display_name": "Parent ID",
-          "name": "parentId",
-          "type": "character",
-          "na_replace": "Not Annotated"
-        },
-        {
-          "display_name": "Resource Type",
-          "name": "resourceType",
-          "type": "character",
-          "na_replace": "Not Annotated"
-        },
-        {
-          "display_name": "Assay",
-          "name": "assay",
-          "type": "character",
-          "na_replace": "Not Annotated"
-        }
-      ]
-    }
+    "columns": [
+      {
+        "display_name": "File Name",
+        "name": "name",
+        "type": "character"
+      },
+      {
+        "display_name": "Date",
+        "name": "date",
+        "type": "other"
+      },
+      {
+        "display_name": "Study Name",
+        "name": "studyName",
+        "type": "character",
+        "na_replace": "Not Annotated"
+      },
+      {
+        "display_name": "Study Leads",
+        "name": "studyLeads",
+        "type": "list:character",
+        "na_replace": "Not Annotated"
+      },
+      {
+        "display_name": "Parent ID",
+        "name": "parentId",
+        "type": "character",
+        "na_replace": "Not Annotated"
+      },
+      {
+        "display_name": "Resource Type",
+        "name": "resourceType",
+        "type": "character",
+        "na_replace": "Not Annotated"
+      },
+      {
+        "display_name": "Assay",
+        "name": "assay",
+        "type": "character",
+        "na_replace": "Not Annotated"
+      }
+    ]
+  },
+  "plot": {
+    "table": "files",
+    "empty_table_message": "No files uploaded within the selected number of days",
+    "reorder_table": {
+      "value_column": "Count",
+      "reorder_column": "studyName",
+      "ascending": true
+    },
+    "columns": [
+      {
+        "name": "studyName",
+        "display_name": "Study Name",
+        "recode": {"na_replace": "Not Annotated"},
+        "truncate": 40
+      },
+      {
+        "display_name": "Assay",
+        "name": "assay",
+        "recode": {"na_replace": "Not Annotated"}
+      }
+    ],
+    "plot": {
+      "x": "Study Name",
+      "fill": "Assay",
+      "y_axis_text": {
+        "size": 10
+      }
+    },
+    "tooltips": ["fill", "C"]
   }
 }
