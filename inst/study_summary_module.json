@@ -1,12 +1,13 @@
 {
   "header_text": "You are now viewing studies moderated by {data()$selected_group}.Please click on a row in the table below to select a study and view the details. You can also hover over or zoom into parts of the plots to view more information.",
   "study_table": {
-    "join_column": "studyName",
+    "join_column": "studyId",
     "filter_column": "initiative",
     "tables": {
       "studies": {
         "columns": [
           "studyName",
+          "studyId",
           "initiative",
           "studyLeads",
           "studyStatus",
@@ -16,7 +17,7 @@
       },
       "files": {
         "columns": [
-          "studyName",
+          "studyId",
           "id",
           "individualID",
           "specimenID",
@@ -25,7 +26,7 @@
       },
       "tools": {
         "columns": [
-          "studyName",
+          "studyId",
           "softwareName"
         ]
       },
@@ -34,6 +35,10 @@
           {
             "display_name": "Name",
             "name": "studyName"
+          },
+          {
+            "display_name": "Id",
+            "name": "studyId"
           },
           {
             "display_name": "Initiative",
@@ -80,6 +85,7 @@
     }
   },
   "study_name_column": "Name",
+  "study_id_column": "Id",
   "study_summary": {
     "table": "studies",
     "filter_column": "studyName",
