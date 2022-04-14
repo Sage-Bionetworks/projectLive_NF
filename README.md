@@ -4,7 +4,7 @@ Track the impact of our funding partners in real time
 ## Shiny app configuration:
 There are two editions of the front end:
 
-https://sagebio.shinyapps.io/projectLive_NF/ (pulling from the master branch)
+https://sagebio.shinyapps.io/projectLive_NF/ (pulling from the release-x.x branch)
 https://sagebio.shinyapps.io/projectLive_NF-staging/ (pulling from the develop branch) [work in progress]
 
 ## Development pipeline:
