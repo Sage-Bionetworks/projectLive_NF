@@ -18,7 +18,7 @@ app_server <- shinyServer(function(input, output, session) {
     id = "synapse_module",
     syn = syn,
     config = shiny::reactive(
-      jsonlite::read_json("inst/dev_synapse_module.json")
+      jsonlite::read_json("inst/synapse_module.json")
     )
   )
 
