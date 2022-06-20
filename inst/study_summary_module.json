@@ -290,6 +290,10 @@
         {
           "name": "progressReportNumber",
           "display_name": "Progress Report Number"
+        },
+        {
+          "name": "id",
+          "display_name": "File ID"
         }
       ]
     },
@@ -336,6 +340,7 @@
     "date_created_column": "Date Created",
     "date_estimate_column": "Designated Upload Date",
     "expected_files_column": "Expected",
-    "actual_files_column": "Actual"
+    "actual_files_column": "Actual",
+    "file_id_column": "File ID"
   }
 }

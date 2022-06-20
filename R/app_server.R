@@ -43,7 +43,8 @@ app_server <- shinyServer(function(input, output, session) {
     data = data,
     config = shiny::reactive(
       jsonlite::read_json("inst/study_summary_module.json")
-    )
+    ),
+    syn = syn
   )
   
   projectlive.modules::new_submissions_module_server(
