@@ -19,7 +19,7 @@ store_file_in_synapse <- function(syn, file, parent_id){
 
 
 # studies ----
-studies <- get_synapse_tbl(syn, "syn16787123")
+studies <- get_synapse_tbl(syn, "syn52694652")
 saveRDS(studies, "studies.RDS")
 
 store_file_in_synapse(
