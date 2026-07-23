@@ -11,7 +11,8 @@ https://sagebio.shinyapps.io/projectLive_NF-staging/ (pulling from the master br
 1. Please branch off of develop branch
 2. Reference the issue you are working on in the new branch name (eg. user/issueX)
 3. Make your additions, test locally, and then file a PR against develop (no review required). 
-4. Once the changes have been deployed in the staging app and tested, PR against master (1 review required). 
+4. Once the changes have been tested on develop, PR against master to test the new changes on staging site. Make sure that `dev_synapse_module.json` is selected in `app_server.R` (1 review required). 
+5. Release: From master make a new branch named `release-X.X`. Make sure `synapse_module.json` is selected in `app_server.R`. Follow steps for release on Github.
 Note - as with all Shiny apps, touch restart.txt any time you make changes to make sure they are reflected in your testing.
 
 
